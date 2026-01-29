@@ -10,7 +10,6 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import ThemeSelector from "./ThemeSelector";
 
 function Navbar() {
   const { isSignedIn } = useAuth();
@@ -43,7 +42,7 @@ function Navbar() {
 
           {/* DESKTOP ACTIONS */}
           <div className="hidden lg:flex gap-2 items-center">
-            <ThemeSelector />
+            {/* <ThemeSelector /> */}
 
             {isSignedIn ? (
               <>
@@ -97,10 +96,6 @@ function Navbar() {
           }`}
         >
           <div className="py-3 space-y-2 border-t border-base-content/10">
-            <div className="px-1">
-              <ThemeSelector />
-            </div>
-
             {isSignedIn ? (
               <>
                 <button
