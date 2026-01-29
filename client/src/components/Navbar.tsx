@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import {
-  SignInButton,
-  SignUpButton,
-  UserButton,
-  useAuth,
-} from "@clerk/clerk-react";
+import { SignInButton, SignUpButton, useAuth } from "@clerk/clerk-react";
+
 import {
   ShoppingBagIcon,
   PlusIcon,
@@ -65,8 +61,6 @@ function Navbar() {
                   <UserIcon className="w-4 h-4" />
                   <span>Profile</span>
                 </Link>
-
-                <UserButton />
               </>
             ) : (
               <>
@@ -132,10 +126,6 @@ function Navbar() {
                   <UserIcon className="w-4 h-4 shrink-0" />
                   Profile
                 </button>
-
-                <div className="px-2 pt-2">
-                  <UserButton />
-                </div>
               </>
             ) : (
               <>
