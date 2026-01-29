@@ -10,6 +10,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { Cart } from "./Cart";
 
 function Navbar() {
   const { isSignedIn } = useAuth();
@@ -60,6 +61,7 @@ function Navbar() {
                   <UserIcon className="w-4 h-4" />
                   <span>Profile</span>
                 </Link>
+                <Cart />
               </>
             ) : (
               <>
