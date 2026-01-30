@@ -76,19 +76,21 @@ function Navbar() {
               </>
             )}
           </div>
-
-          {/* MOBILE HAMBURGER */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="lg:hidden btn btn-ghost btn-square btn-sm"
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
+          <div className="lg:hidden flex gap-6 justify-end items-center">
+            <Cart />
+            {/* MOBILE HAMBURGER */}
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="lg:hidden btn btn-ghost btn-square btn-sm"
+              aria-label="Toggle menu"
+            >
+              {menuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* MOBILE MENU */}

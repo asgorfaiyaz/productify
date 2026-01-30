@@ -1,51 +1,103 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ShoppingCart } from "lucide-react";
+import { useShoppingCart } from "@/context/shoppingCartContext";
+import { ShoppingCart, Minus, Plus, Trash2 } from "lucide-react";
 
 export function Cart() {
-  const cartItems = [];
+  const { cartItems, addToCart, removeFromCart } = useShoppingCart();
+
+  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <button className="relative p-2 rounded-full border-2 border-gray-300 hover:border-gray-400 transition-colors">
-          <ShoppingCart size={18} />
-          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full min-w-[20px] h-5 px-1.5 flex items-center justify-center">
-            {cartItems.length > 0 ? cartItems.length : 0}
-          </span>
+        <button className="relative p-2 rounded-full border hover:bg-muted transition">
+          <ShoppingCart size={16} />
+          {totalItems > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center">
+              {totalItems}
+            </span>
+          )}
         </button>
       </SheetTrigger>
-      <SheetContent>
+
+      <SheetContent className="flex flex-col border-none">
         <SheetHeader>
-          <SheetTitle>Edit profile</SheetTitle>
-          <SheetDescription>
-            Make changes to your profile here. Click save when you&apos;re done.
-          </SheetDescription>
+          <SheetTitle>Your Cart</SheetTitle>
         </SheetHeader>
-        <div className="grid flex-1 auto-rows-min gap-6 px-4">
-          <div className="grid gap-3">
-            <Label htmlFor="sheet-demo-name">Name</Label>
-            <Input id="sheet-demo-name" defaultValue="Pedro Duarte" />
-          </div>
-          <div className="grid gap-3">
-            <Label htmlFor="sheet-demo-username">Username</Label>
-            <Input id="sheet-demo-username" defaultValue="@peduarte" />
-          </div>
+
+        {/* Cart Items */}
+        <div className="flex-1 overflow-y-auto py-4 space-y-4">
+          {cartItems.length === 0 ? (
+            <p className="text-muted-foreground text-center">
+              Your cart is empty
+            </p>
+          ) : (
+            cartItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center justify-between gap-4 rounded-lg p-3"
+              >
+                <div className="flex flex-col">
+                  <span className="font-medium">Product {item.id}</span>
+                  <span className="text-sm text-muted-foreground">
+                    Quantity: {item.quantity}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => removeFromCart(item.id)}
+                  >
+                    <Minus size={14} />
+                  </Button>
+
+                  <span className="w-6 text-center">{item.quantity}</span>
+
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => addToCart(item.id)}
+                  >
+                    <Plus size={14} />
+                  </Button>
+
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => {
+                      if (item.quantity > 0) {
+                        removeFromCart(item.id);
+                      }
+                    }}
+                  >
+                    <Trash2 size={16} className="text-red-500" />
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
-        <SheetFooter>
-          <Button type="submit">Save changes</Button>
+
+        {/* Footer */}
+        <SheetFooter className="mt-auto flex-col gap-2">
+          <Button disabled={cartItems.length === 0} className="w-full">
+            Checkout
+          </Button>
           <SheetClose asChild>
-            <Button variant="outline">Close</Button>
+            <Button variant="outline" className="w-full bg-base-300">
+              Continue Shopping
+            </Button>
           </SheetClose>
         </SheetFooter>
       </SheetContent>
