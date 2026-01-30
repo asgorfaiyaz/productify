@@ -65,6 +65,8 @@ function Navbar() {
               </>
             ) : (
               <>
+                <Cart />
+
                 <SignInButton mode="modal">
                   <button className="btn btn-ghost btn-sm">Sign In</button>
                 </SignInButton>
