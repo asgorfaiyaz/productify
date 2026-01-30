@@ -10,6 +10,7 @@ import DashboardNavbar from "./dashboard/components/DashboardNavbar";
 import DashboardPage from "./dashboard/pages/DashboardPage";
 import DashboardProducts from "./dashboard/pages/DashboardProducts";
 import Checkout from "./components/Checkout";
+import DashboardSales from "./dashboard/pages/DashboardSales";
 
 function App() {
   const { isSignedIn, isClerkLoaded } = useAuthReq();
@@ -29,6 +30,7 @@ function App() {
                   <Routes>
                     <Route index element={<DashboardPage />} />
                     <Route path="products" element={<DashboardProducts />} />
+                    <Route path="sales" element={<DashboardSales />} />
                     {/* Add more dashboard sub-routes here */}
                   </Routes>
                 </main>
