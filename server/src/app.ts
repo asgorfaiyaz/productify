@@ -20,7 +20,9 @@ app.use(
 );
 
 // routes
-
+app.get("/health", (_req: Request, res: Response) => {
+  res.status(200).send("OK");
+});
 app.use("/api/webhooks", clerkRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/comments", commentRoutes);
