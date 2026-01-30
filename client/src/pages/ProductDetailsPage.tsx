@@ -14,10 +14,13 @@ import { useDeleteProduct, useProduct } from "../hooks/useProducts";
 import LoadingSpinner from "../components/LoadingSpinner";
 import CommentsSection from "../components/CommentSection";
 import { formatCurrency } from "../lib/formatter";
+import { Button } from "@/components/ui/button";
+import { useShoppingCart } from "@/context/shoppingCartContext";
 
 function ProductDetailsPage() {
   const { id } = useParams();
   const { userId } = useAuth();
+  const { addToCart, removeFromCart } = useShoppingCart();
   const navigate = useNavigate();
   const { data: product, error, isLoading } = useProduct(id!);
   const deleteProduct = useDeleteProduct();
@@ -124,7 +127,10 @@ function ProductDetailsPage() {
                 {product?.owner?.name}
               </div>
             </div>
-
+            <Button onClick={() => addToCart(product.id)}>Add to Cart</Button>
+            <Button onClick={() => removeFromCart(product.id)}>
+              Remove from Cart
+            </Button>
             <div className="divider my-2"></div>
 
             <p className="text-base-content/80 leading-relaxed">
