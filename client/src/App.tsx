@@ -9,6 +9,7 @@ import ProfilePage from "./pages/ProfilePage";
 import DashboardNavbar from "./dashboard/components/DashboardNavbar";
 import DashboardPage from "./dashboard/pages/DashboardPage";
 import DashboardProducts from "./dashboard/pages/DashboardProducts";
+import Checkout from "./components/Checkout";
 
 function App() {
   const { isSignedIn, isClerkLoaded } = useAuthReq();
@@ -47,6 +48,7 @@ function App() {
               <main className="max-w-6xl mx-auto px-4 py-6">
                 <Routes>
                   <Route path="/" element={<HomePage />} />
+                  <Route path="/checkout" element={<Checkout />} />
                   <Route path="/product/:id" element={<ProductDetailsPage />} />
                   <Route
                     path="/create"

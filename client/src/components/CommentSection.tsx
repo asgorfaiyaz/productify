@@ -36,7 +36,7 @@ function CommentsSection({
       <div className="flex items-center gap-2">
         <MessageSquareIcon className="size-5 text-primary" />
         <h3 className="font-bold">Comments</h3>
-        <span className="badge badge-neutral badge-sm">{comments.length}</span>
+        <span className="">{comments.length}</span>
       </div>
 
       {isSignedIn ? (
