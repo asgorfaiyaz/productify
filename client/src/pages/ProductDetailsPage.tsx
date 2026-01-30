@@ -7,6 +7,8 @@ import {
   GlobeIcon,
   LockIcon,
   DollarSignIcon,
+  XIcon,
+  ShoppingCartIcon,
 } from "lucide-react";
 import { useAuth } from "@clerk/clerk-react";
 import { useParams, Link, useNavigate } from "react-router";
@@ -20,7 +22,10 @@ import { useShoppingCart } from "@/context/shoppingCartContext";
 function ProductDetailsPage() {
   const { id } = useParams();
   const { userId } = useAuth();
-  const { addToCart, removeFromCart } = useShoppingCart();
+  const { cartItems, addToCart, removeFromCart } = useShoppingCart();
+
+  const isInCart = cartItems.some((item) => item.id === id);
+
   const navigate = useNavigate();
   const { data: product, error, isLoading } = useProduct(id!);
   const deleteProduct = useDeleteProduct();
@@ -63,7 +68,7 @@ function ProductDetailsPage() {
             </Link>
             <button
               onClick={handleDelete}
-              className="btn btn-error btn-sm gap-1"
+              className="btn btn-error btn-sm gap-1 text-white"
               disabled={deleteProduct.isPending}
             >
               {deleteProduct.isPending ? (
@@ -127,10 +132,26 @@ function ProductDetailsPage() {
                 {product?.owner?.name}
               </div>
             </div>
-            <Button onClick={() => addToCart(product.id)}>Add to Cart</Button>
-            <Button onClick={() => removeFromCart(product.id)}>
-              Remove from Cart
-            </Button>
+            {!isInCart ? (
+              <Button
+                variant={"outline"}
+                className="rounded"
+                onClick={() => addToCart(product.id)}
+              >
+                <ShoppingCartIcon className="size-5" />
+                Add to Cart
+              </Button>
+            ) : (
+              <Button
+                variant="destructive"
+                className="rounded"
+                onClick={() => removeFromCart(product.id)}
+              >
+                <XIcon className="size-5" />
+                Remove from Cart
+              </Button>
+            )}
+
             <div className="divider my-2"></div>
 
             <p className="text-base-content/80 leading-relaxed">

@@ -40,7 +40,9 @@ const ProductCard = ({
         <h2 className="card-title text-base">
           {product.title}
           {isNew && (
-            <span className="badge badge-secondary badge-sm ml-1">NEW</span>
+            <span className="badge badge-secondary badge-sm w-10 ml-1">
+              NEW
+            </span>
           )}
         </h2>
 

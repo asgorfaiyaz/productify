@@ -10,11 +10,13 @@ import {
 } from "@/components/ui/sheet";
 import { useShoppingCart } from "@/context/shoppingCartContext";
 import { ShoppingCart, Minus, Plus, Trash2 } from "lucide-react";
+import { Link } from "react-router";
 
 export function Cart() {
   const { cartItems, addToCart, removeFromCart } = useShoppingCart();
 
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalItems = cartItems.length;
+  // const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <Sheet>
@@ -91,8 +93,8 @@ export function Cart() {
 
         {/* Footer */}
         <SheetFooter className="mt-auto flex-col gap-2">
-          <Button disabled={cartItems.length === 0} className="w-full">
-            Checkout
+          <Button asChild disabled={cartItems.length === 0} className="w-full">
+            <Link to={"/checkout"}>Checkout</Link>
           </Button>
           <SheetClose asChild>
             <Button variant="outline" className="w-full bg-base-300">
