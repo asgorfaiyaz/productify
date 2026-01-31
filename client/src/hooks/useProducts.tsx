@@ -19,10 +19,10 @@ export function useCreateProduct() {
   });
 }
 
-export function useProducts() {
+export function useProducts(page: number) {
   return useQuery({
-    queryFn: fetchProducts,
-    queryKey: ["products"],
+    queryFn: () => fetchProducts(page),
+    queryKey: ["products", page],
   });
 }
 export function useMyProducts() {
