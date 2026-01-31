@@ -68,10 +68,12 @@ function Navbar() {
                 <Cart />
 
                 <SignInButton mode="modal">
-                  <button className="btn btn-ghost btn-sm">Sign In</button>
+                  <button className="btn ml-5 btn-primary btn-sm">
+                    Sign In
+                  </button>
                 </SignInButton>
                 <SignUpButton mode="modal">
-                  <button className="btn btn-outline btn-sm">
+                  <button className="btn btn-primary btn-sm">
                     Get Started
                   </button>
                 </SignUpButton>
@@ -133,7 +135,7 @@ function Navbar() {
                 <SignInButton mode="modal">
                   <button
                     onClick={closeMenu}
-                    className="btn btn-ghost w-full justify-start py-3"
+                    className="btn btn-primary w-full justify-start py-3"
                   >
                     Sign In
                   </button>
@@ -142,7 +144,7 @@ function Navbar() {
                 <SignUpButton mode="modal">
                   <button
                     onClick={closeMenu}
-                    className="btn btn-outline w-full justify-start py-3"
+                    className="btn btn-primary w-full justify-start py-3"
                   >
                     Get Started
                   </button>
