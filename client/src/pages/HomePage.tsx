@@ -47,15 +47,17 @@ function HomePage() {
       <div className="mt-3">
         <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
           <PackageIcon className="size-5 text-primary" />
-          All Products ( {data?.totalProducts} )
+          All Products
         </h2>
 
         {/* PAGINATION CONTROLS */}
-        <ProductPagination
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          totalPages={totalPages}
-        />
+        {!isLoading && (
+          <ProductPagination
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
+          />
+        )}
 
         {data?.products?.length === 0 ? (
           <div className="card bg-base-300">
