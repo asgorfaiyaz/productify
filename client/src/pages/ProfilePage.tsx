@@ -1,5 +1,7 @@
 import { UserProfile, ClerkLoading } from "@clerk/clerk-react";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { MoreHorizontal } from "lucide-react";
+import { SignOutButton } from "@/components/SignOutButton";
 
 function ProfilePage() {
   return (
@@ -25,7 +27,17 @@ function ProfilePage() {
             },
           },
         }}
-      />
+      >
+        <UserProfile.Page
+          label="More"
+          labelIcon={<MoreHorizontal className="text-gray-400" size={16} />}
+          url="more"
+        >
+          <div>
+            <SignOutButton />
+          </div>
+        </UserProfile.Page>
+      </UserProfile>
     </>
   );
 }
