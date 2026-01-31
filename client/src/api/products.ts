@@ -42,10 +42,10 @@ export const updateProduct = async ({
   return response.data;
 };
 
-export const fetchProducts = async () => {
-  const response = await axiosInstance.get("/products");
-  if (response.data === null) return [];
-  return response.data as {
+export const fetchProducts = async (
+  page: number,
+): Promise<{
+  products: {
     title: string;
     description: string;
     imageUrl: string;
@@ -59,6 +59,11 @@ export const fetchProducts = async () => {
     createdAt: string;
     id: string;
   }[];
+  totalProducts: number;
+  totalPages: number;
+}> => {
+  const response = await axiosInstance.get(`/products?page=${page || 1}`);
+  return response.data;
 };
 export const fetchMyProducts = async () => {
   const response = await axiosInstance.get("/products/me");

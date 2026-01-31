@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import type { z } from "zod";
 import { ProductsTable, UsersTable } from "../db/schema.js";
 import {
@@ -62,6 +62,7 @@ export const getProductById = async (productId: string) => {
     },
   });
 };
+
 export const getUserByClerkId = async (clerkId: string) => {
   const res = await db.query.UsersTable.findFirst({
     where: eq(UsersTable.clerkId, clerkId),
@@ -78,11 +79,32 @@ export const isProductExist = async (productId: string) => {
   });
 };
 
-export const getAllProducts = async () => {
-  return await db.query.ProductsTable.findMany({
-    with: { owner: true },
+export const getAllProducts = async (page: number, limit: number) => {
+  const offset = (page - 1) * limit;
+  const products = await db.query.ProductsTable.findMany({
+    with: {
+      owner: {
+        columns: {
+          name: true,
+          imageUrl: true,
+        },
+      },
+    },
+    limit,
+    offset,
   });
+  const [{ total: totalProducts }] = await db
+    .select({ total: sql<number>`count(*)` })
+    .from(ProductsTable);
+
+  const totalPages = Math.ceil(totalProducts / limit);
+  return {
+    products,
+    totalProducts,
+    totalPages,
+  };
 };
+
 export const getMyProducts = async (userId: string) => {
   return await db.query.ProductsTable.findMany({
     with: { owner: true },
