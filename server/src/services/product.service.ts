@@ -82,7 +82,14 @@ export const isProductExist = async (productId: string) => {
 export const getAllProducts = async (page: number, limit: number) => {
   const offset = (page - 1) * limit;
   const products = await db.query.ProductsTable.findMany({
-    with: { owner: true },
+    with: {
+      owner: {
+        columns: {
+          name: true,
+          imageUrl: true,
+        },
+      },
+    },
     limit,
     offset,
   });
