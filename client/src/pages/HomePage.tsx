@@ -4,9 +4,13 @@ import { SignInButton } from "@clerk/clerk-react";
 import { useProducts } from "../hooks/useProducts";
 import ProductCard from "../components/ProductCard";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { useState } from "react";
+import ProductPagination from "@/components/ProductPagination";
 
 function HomePage() {
-  const { data: products, isLoading } = useProducts();
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data, isLoading } = useProducts(currentPage);
+  const totalPages = data?.totalPages ?? 1;
 
   return (
     // Changed mb-5 to pb-10 to ensure space at the very bottom of the page
@@ -43,10 +47,17 @@ function HomePage() {
       <div className="mt-3">
         <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
           <PackageIcon className="size-5 text-primary" />
-          All Products
+          All Products ( {data?.totalProducts} )
         </h2>
 
-        {products?.length === 0 ? (
+        {/* PAGINATION CONTROLS */}
+        <ProductPagination
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          totalPages={totalPages}
+        />
+
+        {data?.products?.length === 0 ? (
           <div className="card bg-base-300">
             <div className="card-body items-center text-center py-14">
               <PackageIcon className="size-16 text-base-content/20" />
@@ -65,7 +76,7 @@ function HomePage() {
           <LoadingSpinner />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {products?.map((product) => (
+            {data?.products?.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
