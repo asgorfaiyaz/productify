@@ -1,6 +1,7 @@
 import { requireAuth } from "@clerk/express";
 import express from "express";
 import {
+  createOrder,
   createProduct,
   deleteProduct,
   getProduct,
@@ -23,5 +24,7 @@ router
   .get(getProduct)
   .put(requireAuth(), requireUser, updateProduct)
   .delete(requireAuth(), requireUser, deleteProduct);
+
+router.route("/:id/purchase").post(requireAuth(), requireUser, createOrder);
 
 export default router;

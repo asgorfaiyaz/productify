@@ -3,6 +3,7 @@ import { createdAt, deletedAt, id, updatedAt } from "../schemaHelper.js";
 import { relations, sql } from "drizzle-orm";
 import { ProductsTable } from "./products.js";
 import { CommentsTable } from "./comments.js";
+import { PurchasesTable } from "./purchases.js";
 
 export const userRoles = ["user", "admin"] as const;
 export type UserRole = (typeof userRoles)[number];
@@ -25,10 +26,11 @@ export const UsersTable = pgTable(
     uniqueIndex("email_idx")
       .on(table.email)
       .where(sql`${table.deletedAt} IS NULL`),
-  ]
+  ],
 );
 
 export const usersRelations = relations(UsersTable, ({ many }) => ({
   products: many(ProductsTable),
   comments: many(CommentsTable),
+  orders: many(PurchasesTable),
 }));
