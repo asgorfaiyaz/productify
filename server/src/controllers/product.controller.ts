@@ -112,7 +112,7 @@ export const getProduct = handleAsync(async (req: Request, res: Response) => {
 
 export const getProducts = handleAsync(async (req: Request, res: Response) => {
   const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 2;
+  const limit = Number(req.query.limit) || 6;
   const { products, totalPages, totalProducts } = await getAllProducts(
     page,
     limit,
