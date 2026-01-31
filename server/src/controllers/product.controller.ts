@@ -110,9 +110,14 @@ export const getProduct = handleAsync(async (req: Request, res: Response) => {
   return res.status(200).json(product);
 });
 
-export const getProducts = handleAsync(async (_: Request, res: Response) => {
-  const products = await getAllProducts();
-  return res.status(200).json(products);
+export const getProducts = handleAsync(async (req: Request, res: Response) => {
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 2;
+  const { products, totalPages, totalProducts } = await getAllProducts(
+    page,
+    limit,
+  );
+  return res.status(200).json({ products, totalPages, totalProducts });
 });
 export const myProducts = handleAsync(async (req: Request, res: Response) => {
   const { id: userId } = req.user;
