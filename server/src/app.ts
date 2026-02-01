@@ -9,6 +9,13 @@ import type { NextFunction, Request, Response } from "express";
 
 const app = express();
 
+app.get("/health", (_req: Request, res: Response) => {
+  res.status(200).send("OK");
+});
+app.head("/health", (_req: Request, res: Response) => {
+  res.sendStatus(200);
+});
+
 // middlewares
 app.use(clerkMiddleware());
 app.use(express.json());
@@ -20,12 +27,6 @@ app.use(
 );
 
 // routes
-app.get("/health", (_req: Request, res: Response) => {
-  res.status(200).send("OK");
-});
-app.head("/health", (_req: Request, res: Response) => {
-  res.sendStatus(200);
-});
 
 app.use("/api/webhooks", clerkRoutes);
 app.use("/api/products", productRoutes);
