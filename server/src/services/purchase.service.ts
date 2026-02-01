@@ -28,8 +28,11 @@ export const getSalesByUserIdFromDB = async (userId: string) => {
     .from(PurchasesTable)
     .where(eq(PurchasesTable.userId, userId));
 
+  const averageSaleValue = totalSalesAmount / totalSales;
+
   return {
     totalSalesAmount,
     totalSales,
+    averageSaleValue,
   };
 };

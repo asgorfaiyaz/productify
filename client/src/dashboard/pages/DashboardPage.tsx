@@ -3,17 +3,17 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { useMyProducts } from "../../hooks/useProducts";
 import { Link } from "react-router";
 import { formatCurrency } from "../../lib/formatter";
-import DashboardCard from "../components/DashboardCard";
+import { useSalesDataByUser } from "@/hooks/usePurchases";
 
 function DashboardPage() {
-  const { data: products, isLoading, error } = useMyProducts();
+  const { data: products, error } = useMyProducts();
+  const { data: salesInfo, isLoading } = useSalesDataByUser();
 
   const totalProducts = products?.length || 0;
   const publicProducts =
     products?.filter((p) => p.status === "public").length || 0;
   const privateProducts =
     products?.filter((p) => p.status === "private").length || 0;
-  const totalValue = products?.reduce((sum, p) => sum + p.priceInCents, 0) || 0;
 
   return (
     <div className="space-y-6">
@@ -52,6 +52,16 @@ function DashboardPage() {
             <div className="stat-title">Total Products</div>
             <div className="stat-value text-primary">{totalProducts}</div>
           </div>
+          {/* Total Sales */}
+          <div className="stat bg-base-300 rounded-xl shadow">
+            <div className="stat-figure text-primary">
+              <Package className="size-6" />
+            </div>
+            <div className="stat-title">Total Sales</div>
+            <div className="stat-value text-primary">
+              {salesInfo?.totalSales}
+            </div>
+          </div>
 
           {/* Public */}
           <div className="stat bg-base-300 rounded-xl shadow">
@@ -76,29 +86,28 @@ function DashboardPage() {
             <div className="stat-figure text-primary">
               <DollarSign className="size-6" />
             </div>
-            <div className="stat-title">Total Value</div>
+            <div className="stat-title">Total Revenu</div>
             <div className="stat-value text-primary">
-              {formatCurrency(totalValue / 100)}
+              {salesInfo?.totalSalesAmount
+                ? formatCurrency(salesInfo?.totalSalesAmount / 100)
+                : 0}{" "}
+            </div>
+          </div>
+
+          {/* Avg Products */}
+          <div className="stat bg-base-300 rounded-xl shadow">
+            <div className="stat-figure text-primary">
+              <Package className="size-6" />
+            </div>
+            <div className="stat-title">Avg Sale</div>
+            <div className="stat-value text-primary">
+              {salesInfo?.averageSaleValue
+                ? formatCurrency(salesInfo?.averageSaleValue / 100)
+                : 0}
             </div>
           </div>
         </div>
       )}
-
-      <DashboardCard
-        title="Total sales"
-        description="5 orders"
-        content="1580$"
-      />
-      <DashboardCard
-        title="Total Customers"
-        description="100 avg value"
-        content="5"
-      />
-      <DashboardCard
-        title="Products Activity"
-        description="5 products public"
-        content="5 products private"
-      />
     </div>
   );
 }
