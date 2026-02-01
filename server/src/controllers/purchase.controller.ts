@@ -1,4 +1,7 @@
-import { insertOrder } from "../services/product.service.js";
+import {
+  getSalesByUserIdFromDB,
+  insertOrder,
+} from "../services/purchase.service.js";
 import { getParam } from "../utils/getParam.js";
 import handleAsync from "../utils/handleAsync.js";
 import type { Request, Response } from "express";
@@ -22,3 +25,14 @@ export const createOrder = handleAsync(async (req: Request, res: Response) => {
 
   return res.status(201).json(purchase);
 });
+
+export const getSalesByUserId = handleAsync(
+  async (req: Request, res: Response) => {
+    const { id: userId } = req.user;
+
+    const { totalSales, totalSalesAmount } =
+      await getSalesByUserIdFromDB(userId);
+
+    return res.status(201).json({ totalSales, totalSalesAmount });
+  },
+);
