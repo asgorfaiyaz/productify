@@ -30,9 +30,11 @@ export const getSalesByUserId = handleAsync(
   async (req: Request, res: Response) => {
     const { id: userId } = req.user;
 
-    const { totalSales, totalSalesAmount } =
+    const { totalSales, totalSalesAmount, averageSaleValue } =
       await getSalesByUserIdFromDB(userId);
 
-    return res.status(201).json({ totalSales, totalSalesAmount });
+    return res
+      .status(201)
+      .json({ totalSales, averageSaleValue, totalSalesAmount });
   },
 );

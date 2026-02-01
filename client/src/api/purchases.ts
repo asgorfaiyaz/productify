@@ -8,6 +8,7 @@ export const createOrder = async (productId: string) => {
 export const getSalesDataByUserId = async (): Promise<{
   totalSales: number;
   totalSalesAmount: number;
+  averageSaleValue: number;
 }> => {
   const res = await axiosInstance.get("/purchases");
   return res.data;
