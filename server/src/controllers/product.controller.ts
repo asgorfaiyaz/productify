@@ -8,6 +8,7 @@ import {
   getAllProducts,
   getMyProducts,
   getProductById,
+  insertOrder,
   insertProduct,
   isProductExist,
   updateProductById,
@@ -39,6 +40,25 @@ export const createProduct = handleAsync(
     return res.status(201).json(product);
   },
 );
+export const createOrder = handleAsync(async (req: Request, res: Response) => {
+  const { id: userId } = req.user;
+  const productId = getParam(req.params.id);
+  if (!productId) {
+    return res.status(400).send("Product ID is required");
+  }
+  const { priceInCents } = req.body;
+  if (!priceInCents) {
+    return res.status(400).send("Price is required, failed to place order");
+  }
+
+  const purchase = await insertOrder({
+    userId,
+    productId,
+    priceInCents,
+  });
+
+  return res.status(201).json(purchase);
+});
 
 export const updateProduct = handleAsync(
   async (req: Request, res: Response) => {

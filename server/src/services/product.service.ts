@@ -1,6 +1,6 @@
 import { eq, sql } from "drizzle-orm";
 import type { z } from "zod";
-import { ProductsTable, UsersTable } from "../db/schema.js";
+import { ProductsTable, PurchasesTable, UsersTable } from "../db/schema.js";
 import {
   createProductSchema,
   updateProductSchema,
@@ -20,6 +20,14 @@ export const insertProduct = async (
     .values({ ...rest, userId, priceInCents: Math.round(price * 100) })
     .returning();
   return product;
+};
+export const insertOrder = async (data: {
+  userId: string;
+  productId: string;
+  priceInCents: number;
+}) => {
+  const [purchase] = await db.insert(PurchasesTable).values(data).returning();
+  return purchase;
 };
 
 export const updateProductById = async (
