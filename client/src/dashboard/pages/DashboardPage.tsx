@@ -3,6 +3,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { useMyProducts } from "../../hooks/useProducts";
 import { Link } from "react-router";
 import { formatCurrency } from "../../lib/formatter";
+import DashboardCard from "../components/DashboardCard";
 
 function DashboardPage() {
   const { data: products, isLoading, error } = useMyProducts();
@@ -82,6 +83,22 @@ function DashboardPage() {
           </div>
         </div>
       )}
+
+      <DashboardCard
+        title="Total sales"
+        description="5 orders"
+        content="1580$"
+      />
+      <DashboardCard
+        title="Total Customers"
+        description="100 avg value"
+        content="5"
+      />
+      <DashboardCard
+        title="Products Activity"
+        description="5 products public"
+        content="5 products private"
+      />
     </div>
   );
 }
