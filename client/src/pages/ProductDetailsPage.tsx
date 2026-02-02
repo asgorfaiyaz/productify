@@ -17,14 +17,14 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import CommentsSection from "../components/CommentSection";
 import { formatCurrency } from "../lib/formatter";
 import { Button } from "@/components/ui/button";
-import { useShoppingCart } from "@/context/shoppingCartContext";
+import { useCartStore } from "@/store/cart-store";
 
 function ProductDetailsPage() {
   const { id } = useParams();
   const { userId } = useAuth();
-  const { cartItems, addToCart, removeFromCart } = useShoppingCart();
+  const cart = useCartStore();
 
-  const isInCart = cartItems.some((item) => item.id === id);
+  const isInCart = cart.cartItems.some((item) => item.id === id);
 
   const navigate = useNavigate();
   const { data: product, error, isLoading } = useProduct(id!);
@@ -136,7 +136,15 @@ function ProductDetailsPage() {
               <Button
                 variant={"outline"}
                 className="rounded"
-                onClick={() => addToCart(product.id)}
+                onClick={() =>
+                  cart.addToCart({
+                    id: product.id,
+                    title: product.title,
+                    description: product.description,
+                    price: product.priceInCents / 100,
+                    quantity: 1,
+                  })
+                }
               >
                 <ShoppingCartIcon className="size-5" />
                 Add to Cart
@@ -145,7 +153,7 @@ function ProductDetailsPage() {
               <Button
                 variant="destructive"
                 className="rounded"
-                onClick={() => removeFromCart(product.id)}
+                onClick={() => cart.removeFromCart(product.id)}
               >
                 <XIcon className="size-5" />
                 Remove from Cart
