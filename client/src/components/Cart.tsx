@@ -104,7 +104,13 @@ export function Cart() {
         <SheetFooter className="mt-4 flex-col gap-2">
           <Button
             onClick={async () => {
-              const url = await createCheckout(cartItems.map((itm) => itm.id));
+              const itms = cartItems.map((itm) => {
+                return {
+                  quantity: itm.quantity,
+                  id: itm.id,
+                };
+              });
+              const url = await createCheckout(itms);
               window.location.href = url;
             }}
             disabled={cartItems.length === 0}

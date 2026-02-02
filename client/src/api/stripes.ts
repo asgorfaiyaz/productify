@@ -1,8 +1,10 @@
 import axiosInstance from "@/lib/axios";
 
-export const createCheckout = async (productIds: string[]): Promise<string> => {
+export const createCheckout = async (
+  products: { id: string; quantity: number }[],
+): Promise<string> => {
   const res = await axiosInstance.post(`/stripe/checkout`, {
-    productIds,
+    products,
   });
   return res.data.url;
 };
