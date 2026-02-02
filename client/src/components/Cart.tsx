@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/sheet";
 import { useCartStore } from "@/store/cart-store";
 import { ShoppingCart } from "lucide-react";
-import { Link } from "react-router";
 import CartItemCard from "./CartItemCard";
+import { createCheckout } from "@/api/stripes";
 
 export function Cart() {
   const { cartItems, addToCart, removeFromCart } = useCartStore();
@@ -102,8 +102,15 @@ export function Cart() {
 
         {/* Footer */}
         <SheetFooter className="mt-4 flex-col gap-2">
-          <Button asChild disabled={cartItems.length === 0} className="w-full">
-            <Link to="/checkout">Checkout</Link>
+          <Button
+            onClick={async () => {
+              const url = await createCheckout(cartItems.map((itm) => itm.id));
+              window.location.href = url;
+            }}
+            disabled={cartItems.length === 0}
+            className="w-full"
+          >
+            Checkout
           </Button>
 
           <SheetClose asChild>
