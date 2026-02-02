@@ -3,20 +3,31 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
+  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useShoppingCart } from "@/context/shoppingCartContext";
-import { ShoppingCart, Minus, Plus, Trash2 } from "lucide-react";
+import { useCartStore } from "@/store/cart-store";
+import { ShoppingCart } from "lucide-react";
 import { Link } from "react-router";
+import CartItemCard from "./CartItemCard";
 
 export function Cart() {
-  const { cartItems, addToCart, removeFromCart } = useShoppingCart();
+  const { cartItems, addToCart, removeFromCart } = useCartStore();
 
-  const totalItems = cartItems.length;
-  // const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  // ✅ Derived values (best practice)
+  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
+
+  const tax = subtotal * 0.1; // 10% tax (example)
+  const shipping = subtotal > 0 ? 5 : 0;
+  const total = subtotal + tax + shipping;
 
   return (
     <Sheet>
@@ -25,7 +36,7 @@ export function Cart() {
           <ShoppingCart size={16} />
           {totalItems > 0 && (
             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center">
-              {totalItems}
+              {cartItems.length}
             </span>
           )}
         </button>
@@ -34,6 +45,9 @@ export function Cart() {
       <SheetContent className="flex flex-col border-none">
         <SheetHeader>
           <SheetTitle>Your Cart</SheetTitle>
+          <SheetDescription>
+            Review your selected items before checkout.
+          </SheetDescription>
         </SheetHeader>
 
         {/* Cart Items */}
@@ -44,58 +58,54 @@ export function Cart() {
             </p>
           ) : (
             cartItems.map((item) => (
-              <div
+              <CartItemCard
                 key={item.id}
-                className="flex items-center justify-between gap-4 rounded-lg p-3"
-              >
-                <div className="flex flex-col">
-                  <span className="font-medium">Product {item.id}</span>
-                  <span className="text-sm text-muted-foreground">
-                    Quantity: {item.quantity}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    onClick={() => removeFromCart(item.id)}
-                  >
-                    <Minus size={14} />
-                  </Button>
-
-                  <span className="w-6 text-center">{item.quantity}</span>
-
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    onClick={() => addToCart(item.id)}
-                  >
-                    <Plus size={14} />
-                  </Button>
-
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => {
-                      if (item.quantity > 0) {
-                        removeFromCart(item.id);
-                      }
-                    }}
-                  >
-                    <Trash2 size={16} className="text-red-500" />
-                  </Button>
-                </div>
-              </div>
+                id={item.id}
+                title={item.title}
+                description={item.description}
+                price={item.price}
+                quantity={item.quantity}
+                onAdd={addToCart}
+                onRemove={removeFromCart}
+                onDelete={removeFromCart}
+              />
             ))
           )}
         </div>
 
+        {/* 🧾 Order Summary */}
+        {cartItems.length > 0 && (
+          <div className="pt-4 space-y-2 text-sm px-5">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">
+                Items ({totalItems})
+              </span>
+              <span>${subtotal.toFixed(2)}</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Tax</span>
+              <span>${tax.toFixed(2)}</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Shipping</span>
+              <span>${shipping.toFixed(2)}</span>
+            </div>
+
+            <div className="flex justify-between font-semibold text-base border-t pt-2">
+              <span>Total</span>
+              <span>${total.toFixed(2)}</span>
+            </div>
+          </div>
+        )}
+
         {/* Footer */}
-        <SheetFooter className="mt-auto flex-col gap-2">
+        <SheetFooter className="mt-4 flex-col gap-2">
           <Button asChild disabled={cartItems.length === 0} className="w-full">
-            <Link to={"/checkout"}>Checkout</Link>
+            <Link to="/checkout">Checkout</Link>
           </Button>
+
           <SheetClose asChild>
             <Button variant="outline" className="w-full bg-base-300">
               Continue Shopping
