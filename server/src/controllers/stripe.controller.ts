@@ -1,9 +1,14 @@
 import type { Request, Response } from "express";
 import db from "../db/index.js";
-import { inArray } from "drizzle-orm";
-import { ProductsTable } from "../db/schema.js";
+import { eq, inArray } from "drizzle-orm";
+import { ProductsTable, PurchasesTable } from "../db/schema.js";
 import { stripe } from "../lib/stripe.js";
 import Stripe from "stripe";
+import {
+  insertPurchase,
+  insertPurchaseItem,
+} from "../services/purchase.service.js";
+import { getProductsByIds } from "../services/product.service.js";
 
 export const createCheckoutSession = async (req: Request, res: Response) => {
   const { id: userId } = req.user;
@@ -73,7 +78,10 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
   let event: Stripe.Event;
-
+  type CheckoutProduct = {
+    id: string;
+    quantity: number;
+  };
   try {
     // Verify the event came from Stripe
     event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
@@ -86,24 +94,51 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
   switch (event.type) {
     case "checkout.session.completed":
       const session = event.data.object as Stripe.Checkout.Session;
+      const existing = await db.query.PurchasesTable.findFirst({
+        where: eq(PurchasesTable.stripeSessionId, session.id),
+      });
+
+      if (existing) {
+        return res.json({ received: true });
+      }
 
       try {
         const userId = session.metadata?.userId;
-        const products = session.metadata?.productIds
+        const totalAmount = session.amount_total;
+        const products: CheckoutProduct[] = session.metadata?.productIds
           ? JSON.parse(session.metadata.productIds)
           : [];
+        if (!userId || !totalAmount || !products || products.length === 0) {
+          throw new Error("invalid");
+        }
 
-        // Insert order in your DB
-        // await db.insert(OrdersTable).values({
-        //   userId,
-        //   stripeSessionId: session.id,
-        //   products: JSON.stringify(products),
-        //   totalAmount: session.amount_total || 0,
-        //   status: "paid",
-        //   createdAt: new Date(),
-        // });
+        const productIds = products.map((product) => product.id);
+        const updatedProducts = await getProductsByIds(productIds);
+        const latestProducts = updatedProducts.map((p) => {
+          return {
+            ...p,
+            quantity: products.find((pr) => pr.id === p.id)?.quantity,
+          };
+        });
+        const purchase = await insertPurchase({
+          userId,
+          stripeSessionId: session.id,
+          isPaid: true,
+          totalAmount,
+        });
 
-        console.log(`✅ Order created for user ${userId}`);
+        await Promise.all(
+          latestProducts.map((product) =>
+            insertPurchaseItem({
+              purchaseId: purchase.id,
+              productId: product.id,
+              quantity: product.quantity!,
+              priceInCents: product.priceInCents!,
+            }),
+          ),
+        );
+
+        // console.log(`✅ Order created for user ${userId}`);
       } catch (err) {
         console.error("❌ Failed to create order in DB:", err);
         return res.status(500).send("DB error");

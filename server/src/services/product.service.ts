@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { eq, inArray, sql } from "drizzle-orm";
 import type { z } from "zod";
 import { ProductsTable, UsersTable } from "../db/schema.js";
 import {
@@ -70,6 +70,12 @@ export const getUserByClerkId = async (clerkId: string) => {
       id: true,
       clerkId: true,
     },
+  });
+  return res;
+};
+export const getProductsByIds = async (productIds: string[]) => {
+  const res = await db.query.ProductsTable.findMany({
+    where: inArray(ProductsTable.id, productIds),
   });
   return res;
 };
