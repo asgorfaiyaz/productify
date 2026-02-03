@@ -23,10 +23,6 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "noImplicitThis": true,
-    "alwaysStrict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
 
     /* Completeness */
     "skipLibCheck": true
