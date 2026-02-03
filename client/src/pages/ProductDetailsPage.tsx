@@ -142,6 +142,7 @@ function ProductDetailsPage() {
                     title: product.title,
                     description: product.description,
                     price: product.priceInCents / 100,
+                    imageUrl: product.imageUrl,
                     quantity: 1,
                   })
                 }
