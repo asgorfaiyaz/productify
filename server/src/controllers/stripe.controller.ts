@@ -6,6 +6,8 @@ import { stripe } from "../lib/stripe.js";
 import Stripe from "stripe";
 
 export const createCheckoutSession = async (req: Request, res: Response) => {
+  const { id: userId } = req.user;
+
   const clientProducts = req.body.products as {
     id: string;
     quantity: number;
@@ -54,7 +56,62 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
     mode: "payment",
     success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.FRONTEND_URL}/cancel`,
+    metadata: {
+      userId,
+      productIds: JSON.stringify(
+        finalProducts.map((p) => ({ id: p.id, quantity: p.quantity })),
+      ),
+    },
+    payment_method_types: ["card"],
   });
 
   return res.status(200).json({ url: session.url });
+};
+
+export const handleStripeWebhook = async (req: Request, res: Response) => {
+  const sig = req.headers["stripe-signature"]!;
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+
+  let event: Stripe.Event;
+
+  try {
+    // Verify the event came from Stripe
+    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+  } catch (err: any) {
+    console.error("⚠️  Webhook signature verification failed.", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // Handle the event
+  switch (event.type) {
+    case "checkout.session.completed":
+      const session = event.data.object as Stripe.Checkout.Session;
+
+      try {
+        const userId = session.metadata?.userId;
+        const products = session.metadata?.productIds
+          ? JSON.parse(session.metadata.productIds)
+          : [];
+
+        // Insert order in your DB
+        // await db.insert(OrdersTable).values({
+        //   userId,
+        //   stripeSessionId: session.id,
+        //   products: JSON.stringify(products),
+        //   totalAmount: session.amount_total || 0,
+        //   status: "paid",
+        //   createdAt: new Date(),
+        // });
+
+        console.log(`✅ Order created for user ${userId}`);
+      } catch (err) {
+        console.error("❌ Failed to create order in DB:", err);
+        return res.status(500).send("DB error");
+      }
+      break;
+
+    default:
+      console.log(`Unhandled event type ${event.type}`);
+  }
+  res.json({ received: true });
 };
