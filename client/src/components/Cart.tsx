@@ -10,13 +10,16 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useCartStore } from "@/store/cart-store";
-import { ShoppingCart } from "lucide-react";
+import { Loader2, ShoppingCart } from "lucide-react";
 import CartItemCard from "./CartItemCard";
 import { createCheckout } from "@/api/stripes";
+import { SignInButton, useUser } from "@clerk/clerk-react";
+import { useState } from "react";
 
 export function Cart() {
   const { cartItems, addToCart, removeFromCart } = useCartStore();
-
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const { isSignedIn } = useUser();
   // ✅ Derived values (best practice)
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -24,6 +27,25 @@ export function Cart() {
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
+
+  const handleCheckout = async () => {
+    if (isCheckoutLoading) return;
+
+    try {
+      setIsCheckoutLoading(true);
+
+      const itms = cartItems.map((itm) => ({
+        quantity: itm.quantity,
+        id: itm.id,
+      }));
+
+      const url = await createCheckout(itms);
+      window.location.href = url;
+    } catch (error) {
+      console.error("Checkout failed", error);
+      setIsCheckoutLoading(false);
+    }
+  };
 
   const tax = subtotal * 0.1; // 10% tax (example)
   const shipping = subtotal > 0 ? 5 : 0;
@@ -53,9 +75,18 @@ export function Cart() {
         {/* Cart Items */}
         <div className="flex-1 overflow-y-auto py-4 space-y-4">
           {cartItems.length === 0 ? (
-            <p className="text-muted-foreground text-center">
-              Your cart is empty
-            </p>
+            <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+                <ShoppingCart className="h-6 w-6 text-muted-foreground" />
+              </div>
+
+              <div className="space-y-1">
+                <p className="text-sm font-medium">Your cart is empty</p>
+                <p className="text-xs text-muted-foreground">
+                  Add items to get started
+                </p>
+              </div>
+            </div>
           ) : (
             cartItems.map((item) => (
               <CartItemCard
@@ -64,6 +95,7 @@ export function Cart() {
                 title={item.title}
                 description={item.description}
                 price={item.price}
+                imageUrl={item.imageUrl}
                 quantity={item.quantity}
                 onAdd={addToCart}
                 onRemove={removeFromCart}
@@ -102,22 +134,28 @@ export function Cart() {
 
         {/* Footer */}
         <SheetFooter className="mt-4 flex-col gap-2">
-          <Button
-            onClick={async () => {
-              const itms = cartItems.map((itm) => {
-                return {
-                  quantity: itm.quantity,
-                  id: itm.id,
-                };
-              });
-              const url = await createCheckout(itms);
-              window.location.href = url;
-            }}
-            disabled={cartItems.length === 0}
-            className="w-full"
-          >
-            Checkout
-          </Button>
+          {isSignedIn ? (
+            <Button
+              onClick={handleCheckout}
+              disabled={cartItems.length === 0 || isCheckoutLoading}
+              className="w-full"
+            >
+              {isCheckoutLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Redirecting to checkout…
+                </span>
+              ) : (
+                "Checkout"
+              )}
+            </Button>
+          ) : (
+            <SignInButton mode="modal">
+              <Button disabled={cartItems.length === 0} className="w-full">
+                Sign in to Checkout
+              </Button>
+            </SignInButton>
+          )}
 
           <SheetClose asChild>
             <Button variant="outline" className="w-full bg-base-300">
