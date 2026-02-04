@@ -47,7 +47,7 @@ app.use("/api/purchases", purchaseRoutes);
 app.use("/api/stripe", stripeRoutes);
 
 // SPA fallback
-app.get("*", (_req: Request, res: Response) => {
+app.use((_req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, "../dist/index.html"));
 });
 
