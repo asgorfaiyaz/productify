@@ -94,11 +94,10 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
   switch (event.type) {
     case "checkout.session.completed":
       const session = event.data.object as Stripe.Checkout.Session;
-      const existing = await db.query.PurchasesTable.findFirst({
+      const existingSessionId = await db.query.PurchasesTable.findFirst({
         where: eq(PurchasesTable.stripeSessionId, session.id),
       });
-
-      if (existing) {
+      if (existingSessionId !== undefined) {
         return res.json({ received: true });
       }
 
@@ -108,7 +107,17 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
         const products: CheckoutProduct[] = session.metadata?.productIds
           ? JSON.parse(session.metadata.productIds)
           : [];
+
+        console.log("👤 UserId:", userId); // Add this
+        console.log("💵 Total:", totalAmount); // Add this
+        console.log("📦 Products:", products); // Add this
+
         if (!userId || !totalAmount || !products || products.length === 0) {
+          console.error("❌ Validation failed:", {
+            userId,
+            totalAmount,
+            products,
+          }); // Add this
           throw new Error("invalid");
         }
 
@@ -138,11 +147,28 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
           ),
         );
 
-        // console.log(`✅ Order created for user ${userId}`);
+        console.log(`✅ Order created for user ${userId}`);
       } catch (err) {
         console.error("❌ Failed to create order in DB:", err);
+        console.error("❌ Full error details:", JSON.stringify(err, null, 2)); // Add this
         return res.status(500).send("DB error");
       }
+      break;
+
+    case "payment_intent.succeeded":
+      const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      console.log(`✅ Payment succeeded: ${paymentIntent.id}`);
+      // Add any additional logic if needed
+      break;
+
+    case "charge.succeeded":
+      const charge = event.data.object as Stripe.Charge;
+      console.log(`✅ Charge succeeded: ${charge.id}`);
+      break;
+
+    case "payment_intent.created":
+    case "charge.updated":
+      // Acknowledge but don't process
       break;
 
     default:

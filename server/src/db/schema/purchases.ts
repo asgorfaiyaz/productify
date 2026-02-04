@@ -10,8 +10,8 @@ export const PurchasesTable = pgTable("purchases", {
   userId: uuid("user_id")
     .references(() => UsersTable.id, { onDelete: "cascade" })
     .notNull(),
-  totalAmount: integer().notNull(),
-  isPaid: boolean().default(false),
+  totalAmount: integer("total_amount").notNull(),
+  isPaid: boolean("is_paid").default(false),
   stripeSessionId: text("stripe_session_id").notNull().unique(),
   createdAt,
   updatedAt,
@@ -27,7 +27,7 @@ export const PurchaseItemsTable = pgTable("purchase_items", {
     .references(() => ProductsTable.id, { onDelete: "restrict" })
     .notNull(),
   quantity: integer().notNull(),
-  priceInCents: integer().notNull(),
+  priceInCents: integer("price_in_cents").notNull(),
 });
 
 // Relations
