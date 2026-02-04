@@ -29,8 +29,8 @@ export function PaymentSuccessPage() {
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           <Button asChild className="w-full">
-            <Link to="/dashboard">
-              Go to Dashboard <ArrowRight className="ml-2 h-4 w-4" />
+            <Link to="/">
+              Let's do shoping <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
           <Button asChild variant="outline" className="w-full">
