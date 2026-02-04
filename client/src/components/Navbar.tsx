@@ -9,6 +9,7 @@ import {
   LayoutDashboardIcon,
   Menu,
   X,
+  ListOrderedIcon,
 } from "lucide-react";
 import { Cart } from "./Cart";
 
@@ -61,6 +62,10 @@ function Navbar() {
                   <UserIcon className="w-4 h-4" />
                   <span>Profile</span>
                 </Link>
+                <Link to="/orders" className="btn btn-ghost btn-sm gap-1">
+                  <ListOrderedIcon className="w-4 h-4" />
+                  <span>Orders</span>
+                </Link>
                 <Cart />
               </>
             ) : (
@@ -112,6 +117,13 @@ function Navbar() {
                 >
                   <LayoutDashboardIcon className="w-4 h-4 shrink-0" />
                   Dashboard
+                </button>
+                <button
+                  onClick={() => handleNavigation("/orders")}
+                  className="btn btn-ghost w-full justify-start py-3 gap-2"
+                >
+                  <ListOrderedIcon className="w-4 h-4 shrink-0" />
+                  Orders
                 </button>
 
                 <button
