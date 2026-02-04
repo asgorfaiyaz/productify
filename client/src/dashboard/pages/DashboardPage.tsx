@@ -2,12 +2,12 @@ import { Home, Globe, Lock, DollarSign, Package } from "lucide-react";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useMyProducts } from "../../hooks/useProducts";
 import { Link } from "react-router";
-import { formatCurrency } from "../../lib/formatter";
-import { useSalesDataByUser } from "@/hooks/usePurchases";
+// import { formatCurrency } from "../../lib/formatter";
+// import { useSalesDataByUser } from "@/hooks/usePurchases";
 
 function DashboardPage() {
-  const { data: products, error } = useMyProducts();
-  const { data: salesInfo, isLoading } = useSalesDataByUser();
+  const { data: products, error, isLoading } = useMyProducts();
+  // const { data: salesInfo, isLoading } = useSalesDataByUser();
 
   const totalProducts = products?.length || 0;
   const publicProducts =
@@ -59,7 +59,7 @@ function DashboardPage() {
             </div>
             <div className="stat-title">Total Sales</div>
             <div className="stat-value text-primary">
-              {salesInfo?.totalSales}
+              {/* {salesInfo?.totalSales} */} 0
             </div>
           </div>
 
@@ -88,9 +88,10 @@ function DashboardPage() {
             </div>
             <div className="stat-title">Total Revenu</div>
             <div className="stat-value text-primary">
-              {salesInfo?.totalSalesAmount
+              {/* {salesInfo?.totalSalesAmount
                 ? formatCurrency(salesInfo?.totalSalesAmount / 100)
-                : 0}{" "}
+                : 0}{" "} */}
+              0
             </div>
           </div>
 
@@ -101,9 +102,10 @@ function DashboardPage() {
             </div>
             <div className="stat-title">Avg Sale</div>
             <div className="stat-value text-primary">
-              {salesInfo?.averageSaleValue
+              {/* {salesInfo?.averageSaleValue
                 ? formatCurrency(salesInfo?.averageSaleValue / 100)
-                : 0}
+                : 0} */}
+              0
             </div>
           </div>
         </div>

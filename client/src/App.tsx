@@ -9,10 +9,10 @@ import ProfilePage from "./pages/ProfilePage";
 import DashboardNavbar from "./dashboard/components/DashboardNavbar";
 import DashboardPage from "./dashboard/pages/DashboardPage";
 import DashboardProducts from "./dashboard/pages/DashboardProducts";
-import Checkout from "./components/Checkout";
 import DashboardSales from "./dashboard/pages/DashboardSales";
 import { PaymentSuccessPage } from "./pages/PaymentSuccessPage";
 import { PaymentCancelPage } from "./pages/PaymentCancelPage";
+import OrdersPage from "./pages/OrdersPage";
 
 function App() {
   const { isSignedIn, isClerkLoaded } = useAuthReq();
@@ -52,7 +52,10 @@ function App() {
               <main className="max-w-6xl mx-auto px-4 py-6">
                 <Routes>
                   <Route path="/" element={<HomePage />} />
-                  <Route path="/checkout" element={<Checkout />} />
+                  <Route
+                    path="/orders"
+                    element={isSignedIn ? <OrdersPage /> : <Navigate to="/" />}
+                  />
                   <Route
                     path="/payment/success"
                     element={<PaymentSuccessPage />}
