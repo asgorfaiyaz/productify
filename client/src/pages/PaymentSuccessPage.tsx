@@ -8,8 +8,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 import { Link } from "react-router";
+import { useCartStore } from "@/store/cart-store";
+import { useEffect } from "react";
 
 export function PaymentSuccessPage() {
+  const { clearCartItems } = useCartStore();
+  useEffect(() => {
+    clearCartItems();
+  }, [clearCartItems]);
+
   return (
     <div className="min-h-[80vh] flex items-center justify-center bg-muted/40 px-4">
       <Card className="w-full max-w-md shadow-lg rounded-2xl">
