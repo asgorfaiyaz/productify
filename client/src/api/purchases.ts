@@ -5,11 +5,23 @@ export const createOrder = async (productId: string) => {
   return res.data;
 };
 
-export const getSalesDataByUserId = async (): Promise<{
-  totalSales: number;
-  totalSalesAmount: number;
-  averageSaleValue: number;
-}> => {
-  const res = await axiosInstance.get("/purchases");
+export const getSalesDataByUserId = async (): Promise<
+  {
+    id: string;
+    totalAmount: number;
+    isPaid: boolean | null;
+    createdAt: Date;
+    items: {
+      priceInCents: number;
+      quantity: number;
+      product: {
+        imageUrl: string | null;
+        description: string | null;
+        title: string;
+      };
+    }[];
+  }[]
+> => {
+  const res = await axiosInstance.get(`/purchases/user`);
   return res.data;
 };
