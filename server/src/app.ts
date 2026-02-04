@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import { env } from "./config/env.js";
 import { clerkMiddleware } from "@clerk/express";
 import clerkRoutes from "./routes/clerk.routes.js";
@@ -9,6 +11,8 @@ import purchaseRoutes from "./routes/purchase.routes.js";
 import stripeRoutes from "./routes/stripe.routes.js";
 import type { NextFunction, Request, Response } from "express";
 import { handleStripeWebhook } from "./controllers/stripe.controller.js";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -41,6 +45,11 @@ app.use("/api/products", productRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/purchases", purchaseRoutes);
 app.use("/api/stripe", stripeRoutes);
+
+// SPA fallback
+app.get("*", (_req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, "../dist/index.html"));
+});
 
 app.use((err: Error, _: Request, res: Response, _next: NextFunction) => {
   const message = err.message || "Something went wrong";
