@@ -18,6 +18,7 @@ import CommentsSection from "../components/CommentSection";
 import { formatCurrency } from "../lib/formatter";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cart-store";
+import { useIsAdmin } from "@/hooks/useAuthReq";
 
 function ProductDetailsPage() {
   const { id } = useParams();
@@ -25,7 +26,7 @@ function ProductDetailsPage() {
   const cart = useCartStore();
 
   const isInCart = cart.cartItems.some((item) => item.id === id);
-
+  const isAdmin = useIsAdmin();
   const navigate = useNavigate();
   const { data: product, error, isLoading } = useProduct(id!);
   const deleteProduct = useDeleteProduct();
@@ -58,7 +59,7 @@ function ProductDetailsPage() {
         <Link to="/" className="btn btn-ghost btn-sm gap-1">
           <ArrowLeftIcon className="size-4" /> Back
         </Link>
-        {isOwner && (
+        {isOwner && isAdmin && (
           <div className="flex gap-2">
             <Link
               to={`/edit/${product.id}`}

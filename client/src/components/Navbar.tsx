@@ -51,16 +51,20 @@ function Navbar() {
             {isSignedIn ? (
               <>
                 {isAdmin && (
-                  <Link to="/dashboard" className="btn btn-ghost btn-sm gap-1">
-                    <LayoutDashboardIcon className="w-4 h-4" />
-                    <span>Dashboard</span>
-                  </Link>
+                  <>
+                    <Link
+                      to="/dashboard"
+                      className="btn btn-ghost btn-sm gap-1"
+                    >
+                      <LayoutDashboardIcon className="w-4 h-4" />
+                      <span>Dashboard</span>
+                    </Link>
+                    <Link to="/create" className="btn btn-primary btn-sm gap-1">
+                      <PlusIcon className="w-4 h-4" />
+                      <span>New Product</span>
+                    </Link>
+                  </>
                 )}
-
-                <Link to="/create" className="btn btn-primary btn-sm gap-1">
-                  <PlusIcon className="w-4 h-4" />
-                  <span>New Product</span>
-                </Link>
 
                 <Link to="/profile" className="btn btn-ghost btn-sm gap-1">
                   <UserIcon className="w-4 h-4" />
