@@ -2,7 +2,7 @@ import Navbar from "./components/Navbar";
 import { Navigate, Route, Routes } from "react-router";
 import HomePage from "./pages/HomePage";
 import CreatePage from "./pages/CreatePage";
-import useAuthReq from "./hooks/useAuthReq";
+import { useAuthReq, useIsAdmin } from "./hooks/useAuthReq";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import EditProductPage from "./pages/EditProductPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -16,6 +16,7 @@ import OrdersPage from "./pages/OrdersPage";
 
 function App() {
   const { isSignedIn, isClerkLoaded } = useAuthReq();
+  const isAdmin = useIsAdmin();
   if (!isClerkLoaded) return null;
 
   return (
@@ -25,7 +26,7 @@ function App() {
         <Route
           path="/dashboard/*"
           element={
-            isSignedIn ? (
+            isSignedIn && isAdmin ? (
               <>
                 <DashboardNavbar />
                 <main className="max-w-6xl mx-auto px-4 py-6">
@@ -67,7 +68,7 @@ function App() {
                   <Route path="/product/:id" element={<ProductDetailsPage />} />
                   <Route
                     path="/create"
-                    element={isSignedIn ? <CreatePage /> : <Navigate to="/" />}
+                    element={isAdmin ? <CreatePage /> : <Navigate to="/" />}
                   />
                   <Route
                     path="/profile"
@@ -76,7 +77,7 @@ function App() {
                   <Route
                     path="/edit/:id"
                     element={
-                      isSignedIn ? <EditProductPage /> : <Navigate to="/" />
+                      isAdmin ? <EditProductPage /> : <Navigate to="/" />
                     }
                   />
                 </Routes>

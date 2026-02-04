@@ -12,11 +12,13 @@ import {
   ListOrderedIcon,
 } from "lucide-react";
 import { Cart } from "./Cart";
+import { useIsAdmin } from "@/hooks/useAuthReq";
 
 function Navbar() {
   const { isSignedIn } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const isAdmin = useIsAdmin();
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -48,10 +50,12 @@ function Navbar() {
 
             {isSignedIn ? (
               <>
-                <Link to="/dashboard" className="btn btn-ghost btn-sm gap-1">
-                  <LayoutDashboardIcon className="w-4 h-4" />
-                  <span>Dashboard</span>
-                </Link>
+                {isAdmin && (
+                  <Link to="/dashboard" className="btn btn-ghost btn-sm gap-1">
+                    <LayoutDashboardIcon className="w-4 h-4" />
+                    <span>Dashboard</span>
+                  </Link>
+                )}
 
                 <Link to="/create" className="btn btn-primary btn-sm gap-1">
                   <PlusIcon className="w-4 h-4" />
@@ -111,27 +115,30 @@ function Navbar() {
           <div className="py-3 space-y-2 border-t border-base-content/10">
             {isSignedIn ? (
               <>
-                <button
-                  onClick={() => handleNavigation("/dashboard")}
-                  className="btn btn-ghost w-full justify-start py-3 gap-2"
-                >
-                  <LayoutDashboardIcon className="w-4 h-4 shrink-0" />
-                  Dashboard
-                </button>
+                {isAdmin && (
+                  <>
+                    <button
+                      onClick={() => handleNavigation("/dashboard")}
+                      className="btn btn-ghost w-full justify-start py-3 gap-2"
+                    >
+                      <LayoutDashboardIcon className="w-4 h-4 shrink-0" />
+                      Dashboard
+                    </button>
+                    <button
+                      onClick={() => handleNavigation("/create")}
+                      className="btn btn-ghost w-full justify-start py-3 gap-2"
+                    >
+                      <PlusIcon className="w-4 h-4 shrink-0" />
+                      New Product
+                    </button>
+                  </>
+                )}
                 <button
                   onClick={() => handleNavigation("/orders")}
                   className="btn btn-ghost w-full justify-start py-3 gap-2"
                 >
                   <ListOrderedIcon className="w-4 h-4 shrink-0" />
                   Orders
-                </button>
-
-                <button
-                  onClick={() => handleNavigation("/create")}
-                  className="btn btn-ghost w-full justify-start py-3 gap-2"
-                >
-                  <PlusIcon className="w-4 h-4 shrink-0" />
-                  New Product
                 </button>
 
                 <button
