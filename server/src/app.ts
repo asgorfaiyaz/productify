@@ -5,7 +5,7 @@ import { clerkMiddleware } from "@clerk/express";
 import clerkRoutes from "./routes/clerk.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import commentRoutes from "./routes/comment.routes.js";
-// import purchaseRoutes from "./routes/purchase.routes.js";
+import purchaseRoutes from "./routes/purchase.routes.js";
 import stripeRoutes from "./routes/stripe.routes.js";
 import type { NextFunction, Request, Response } from "express";
 import { handleStripeWebhook } from "./controllers/stripe.controller.js";
@@ -39,7 +39,7 @@ app.use(
 app.use("/api/webhooks", clerkRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/comments", commentRoutes);
-// app.use("/api/purchases", purchaseRoutes);
+app.use("/api/purchases", purchaseRoutes);
 app.use("/api/stripe", stripeRoutes);
 
 app.use((err: Error, _: Request, res: Response, _next: NextFunction) => {
