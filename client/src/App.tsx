@@ -11,6 +11,8 @@ import DashboardPage from "./dashboard/pages/DashboardPage";
 import DashboardProducts from "./dashboard/pages/DashboardProducts";
 import Checkout from "./components/Checkout";
 import DashboardSales from "./dashboard/pages/DashboardSales";
+import { PaymentSuccessPage } from "./pages/PaymentSuccessPage";
+import { PaymentCancelPage } from "./pages/PaymentCancelPage";
 
 function App() {
   const { isSignedIn, isClerkLoaded } = useAuthReq();
@@ -51,6 +53,14 @@ function App() {
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/checkout" element={<Checkout />} />
+                  <Route
+                    path="/payment/success"
+                    element={<PaymentSuccessPage />}
+                  />
+                  <Route
+                    path="/payment/cancel"
+                    element={<PaymentCancelPage />}
+                  />
                   <Route path="/product/:id" element={<ProductDetailsPage />} />
                   <Route
                     path="/create"
