@@ -18,7 +18,7 @@ function OrdersPage() {
     return (
       <div className="p-6 max-w-5xl mx-auto space-y-4">
         {[1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-40 w-full rounded-2xl" />
+          <Skeleton key={i} className="h-40 bg-base-300 w-full rounded-2xl" />
         ))}
       </div>
     );
