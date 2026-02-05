@@ -120,22 +120,13 @@ function Navbar() {
             {isSignedIn ? (
               <>
                 {isAdmin && (
-                  <>
-                    <button
-                      onClick={() => handleNavigation("/dashboard")}
-                      className="btn btn-ghost w-full justify-start py-3 gap-2"
-                    >
-                      <LayoutDashboardIcon className="w-4 h-4 shrink-0" />
-                      Dashboard
-                    </button>
-                    <button
-                      onClick={() => handleNavigation("/create")}
-                      className="btn btn-ghost w-full justify-start py-3 gap-2"
-                    >
-                      <PlusIcon className="w-4 h-4 shrink-0" />
-                      New Product
-                    </button>
-                  </>
+                  <button
+                    onClick={() => handleNavigation("/dashboard")}
+                    className="btn btn-ghost w-full justify-start py-3 gap-2"
+                  >
+                    <LayoutDashboardIcon className="w-4 h-4 shrink-0" />
+                    Dashboard
+                  </button>
                 )}
                 <button
                   onClick={() => handleNavigation("/orders")}
