@@ -5,6 +5,7 @@ import DashboardProducts from "./DashboardProducts";
 import DashboardSales from "./DashboardSales";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "./sidebar/DashboardSidebar";
+import CreatePage from "@/pages/CreatePage";
 
 function DashboardLayout() {
   return (
@@ -18,7 +19,7 @@ function DashboardLayout() {
               <Route index element={<DashboardPage />} />
               <Route path="products" element={<DashboardProducts />} />
               <Route path="sales" element={<DashboardSales />} />
-              {/* Add more dashboard sub-routes here */}
+              <Route path="/create" element={<CreatePage />} />
             </Routes>
           </main>
         </section>

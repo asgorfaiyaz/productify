@@ -6,7 +6,6 @@ import OrdersPage from "@/pages/OrdersPage";
 import { PaymentSuccessPage } from "@/pages/PaymentSuccessPage";
 import { PaymentCancelPage } from "@/pages/PaymentCancelPage";
 import ProductDetailsPage from "@/pages/ProductDetailsPage";
-import CreatePage from "@/pages/CreatePage";
 import ProfilePage from "@/pages/ProfilePage";
 import EditProductPage from "@/pages/EditProductPage";
 import { useIsAdmin } from "@/hooks/useAuthReq";
@@ -28,10 +27,6 @@ function CustomerLayout() {
           <Route path="/payment/success" element={<PaymentSuccessPage />} />
           <Route path="/payment/cancel" element={<PaymentCancelPage />} />
           <Route path="/product/:id" element={<ProductDetailsPage />} />
-          <Route
-            path="/create"
-            element={isAdmin ? <CreatePage /> : <Navigate to="/" />}
-          />
           <Route
             path="/profile"
             element={isSignedIn ? <ProfilePage /> : <Navigate to="/" />}
