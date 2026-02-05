@@ -18,8 +18,8 @@ function DashboardLayout() {
             <Routes>
               <Route index element={<DashboardPage />} />
               <Route path="products" element={<DashboardProducts />} />
+              <Route path="products/create" element={<CreatePage />} />
               <Route path="sales" element={<DashboardSales />} />
-              <Route path="/create" element={<CreatePage />} />
             </Routes>
           </main>
         </section>
