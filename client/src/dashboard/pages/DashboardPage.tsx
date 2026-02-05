@@ -1,7 +1,6 @@
-import { Home, Globe, Lock, DollarSign, Package } from "lucide-react";
+import { Globe, Lock, DollarSign, Package } from "lucide-react";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useMyProducts } from "../../hooks/useProducts";
-import { Link } from "react-router";
 // import { formatCurrency } from "../../lib/formatter";
 // import { useSalesDataByUser } from "@/hooks/usePurchases";
 
@@ -25,14 +24,6 @@ function DashboardPage() {
             Overview of your products and activity
           </p>
         </div>
-
-        <Link
-          to="/"
-          className="flex items-center gap-2 text-sm font-medium text-primary hover:underline"
-        >
-          <Home className="size-4" />
-          Back to Home
-        </Link>
       </div>
 
       {/* Content */}

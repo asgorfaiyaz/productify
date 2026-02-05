@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  ShoppingBag,
   ListOrdered,
   ShoppingCart,
   LayoutDashboard,
@@ -8,6 +7,7 @@ import {
   X,
 } from "lucide-react";
 import { useNavigate } from "react-router";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 function DashboardNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -20,20 +20,12 @@ function DashboardNavbar() {
   };
 
   return (
-    <nav className="bg-base-300 shadow-md sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto w-full px-4">
+    <nav className="bg-base-300 w-full shadow-md sticky top-0 z-50">
+      <div className="mx-auto w-full px-4">
         {/* Main Navbar Container */}
         <div className="flex justify-between items-center h-16">
           {/* LOGO */}
-          <button
-            onClick={() => handleNavigation("/")}
-            className="flex items-center gap-2 btn btn-ghost px-2 hover:bg-transparent"
-          >
-            <ShoppingBag className="w-5 h-5 text-primary shrink-0" />
-            <span className="text-base sm:text-lg font-bold font-mono uppercase tracking-wider">
-              Productify-Dashboard
-            </span>
-          </button>
+          <SidebarTrigger />
 
           {/* DESKTOP LINKS */}
           <div className="hidden lg:flex gap-2 items-center">
