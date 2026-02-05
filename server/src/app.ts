@@ -20,6 +20,7 @@ app.head("/health", (_req: Request, res: Response) => {
 // middlewares
 app.use(clerkMiddleware());
 
+app.use("/api/webhooks", webhookRoutes);
 app.use(express.json());
 app.use(
   cors({
@@ -32,7 +33,6 @@ app.use(
 app.use("/api/products", productRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/purchases", purchaseRoutes);
-app.use("/api/webhooks", webhookRoutes);
 
 app.use((err: Error, _: Request, res: Response, _next: NextFunction) => {
   const message = err.message || "Something went wrong";
