@@ -6,13 +6,10 @@ import { useAuthReq, useIsAdmin } from "./hooks/useAuthReq";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import EditProductPage from "./pages/EditProductPage";
 import ProfilePage from "./pages/ProfilePage";
-import DashboardNavbar from "./dashboard/components/DashboardNavbar";
-import DashboardPage from "./dashboard/pages/DashboardPage";
-import DashboardProducts from "./dashboard/pages/DashboardProducts";
-import DashboardSales from "./dashboard/pages/DashboardSales";
 import { PaymentSuccessPage } from "./pages/PaymentSuccessPage";
 import { PaymentCancelPage } from "./pages/PaymentCancelPage";
 import OrdersPage from "./pages/OrdersPage";
+import DashboardLayout from "./dashboard/pages/DashboardLayout";
 
 function App() {
   const { isSignedIn, isClerkLoaded } = useAuthReq();
@@ -26,21 +23,7 @@ function App() {
         <Route
           path="/dashboard/*"
           element={
-            isSignedIn && isAdmin ? (
-              <>
-                <DashboardNavbar />
-                <main className="max-w-6xl mx-auto px-4 py-6">
-                  <Routes>
-                    <Route index element={<DashboardPage />} />
-                    <Route path="products" element={<DashboardProducts />} />
-                    <Route path="sales" element={<DashboardSales />} />
-                    {/* Add more dashboard sub-routes here */}
-                  </Routes>
-                </main>
-              </>
-            ) : (
-              <Navigate to="/" />
-            )
+            isSignedIn && isAdmin ? <DashboardLayout /> : <Navigate to="/" />
           }
         />
 
