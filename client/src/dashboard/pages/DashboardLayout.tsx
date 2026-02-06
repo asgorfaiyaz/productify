@@ -8,6 +8,7 @@ import CreatePage from "@/pages/CreatePage";
 import { DashboardUsers } from "./DashboardUsers";
 import { DashboardProducts } from "./DashboardProducts";
 import { useIsAdmin } from "@/hooks/useAuthReq";
+import DashboardCreateUserPage from "./DashboardCreateUserPage";
 
 function DashboardLayout() {
   const isAdmin = useIsAdmin();
@@ -22,8 +23,12 @@ function DashboardLayout() {
             <Routes>
               <Route index element={<DashboardPage />} />
               <Route path="products" element={<DashboardProducts />} />
-              <Route path="users" element={<DashboardUsers />} />
               <Route path="products/create" element={<CreatePage />} />
+              <Route path="users" element={<DashboardUsers />} />
+              <Route
+                path="users/create"
+                element={<DashboardCreateUserPage />}
+              />
               <Route path="sales" element={<DashboardSales />} />
             </Routes>
           </main>

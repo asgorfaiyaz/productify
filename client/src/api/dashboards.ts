@@ -41,3 +41,21 @@ export const fetchDashboardUsers = async (
   );
   return response.data;
 };
+export const createUser = async (data: {
+  firstName: string;
+  lastName: string;
+  email: string;
+}): Promise<{
+  id: string;
+  name: string;
+  email: string;
+  role: "user" | "admin";
+  createdAt: Date;
+}> => {
+  const response = await axiosInstance.post("/dashboard/users", data);
+  return response.data;
+};
+export const deleteUser = async (id: string) => {
+  const response = await axiosInstance.delete(`/dashboard/users/${id}`);
+  return response.data;
+};

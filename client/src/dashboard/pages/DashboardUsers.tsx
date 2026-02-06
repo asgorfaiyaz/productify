@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import {
   Table,
@@ -11,11 +13,28 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useDashboardUsers } from "@/hooks/useDashboards";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  useDashboardUsers,
+  useDeleteDashboardUser,
+} from "@/hooks/useDashboards";
 
 export function DashboardUsers() {
   const [page, setPage] = useState(1);
   const { data, isLoading } = useDashboardUsers(page);
+
+  const { mutate: deleteUserMutation } = useDeleteDashboardUser();
+
+  const handleDelete = (id: string) => {
+    if (confirm("Are you sure you want to delete this user?")) {
+      deleteUserMutation(id);
+    }
+  };
 
   if (isLoading) {
     return <Skeleton className="h-75 w-full" />;
@@ -32,6 +51,7 @@ export function DashboardUsers() {
             <TableHead>Email</TableHead>
             <TableHead>Role</TableHead>
             <TableHead>Joined</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -60,6 +80,25 @@ export function DashboardUsers() {
 
               <TableCell>
                 {new Date(user.createdAt).toLocaleDateString()}
+              </TableCell>
+
+              {/* Action button */}
+              <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      ⋮
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      className="text-destructive"
+                      onClick={() => handleDelete(user.id)}
+                    >
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
             </TableRow>
           ))}
