@@ -1,111 +1,105 @@
-import { Link, useNavigate } from "react-router";
+"use client";
+
+import { useState } from "react";
 import {
-  PlusIcon,
-  PackageIcon,
-  EyeIcon,
-  EditIcon,
-  Trash2Icon,
-} from "lucide-react";
-import { useDeleteProduct, useMyProducts } from "../../hooks/useProducts";
-import LoadingSpinner from "../../components/LoadingSpinner";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useDashboardProducts } from "@/hooks/useDashboards";
 
-const DashboardProducts = () => {
-  const navigate = useNavigate();
-  const { data: products, isLoading, error } = useMyProducts();
-  const deleteProduct = useDeleteProduct();
+export function DashboardProducts() {
+  const [page, setPage] = useState(1);
+  const { data, isLoading } = useDashboardProducts(page);
 
-  const handleDelete = (id: string) => {
-    if (confirm("Delete this product?")) deleteProduct.mutate(id);
-  };
-
-  if (isLoading) return <LoadingSpinner />;
-  if (isLoading) return <LoadingSpinner />;
-  if (error) {
-    return (
-      <div className="alert alert-error">
-        Failed to load products. Please try again.
-      </div>
-    );
+  if (isLoading) {
+    return <Skeleton className="h-75 w-full" />;
   }
+
+  if (!data) return null;
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">My Products</h1>
-          <p className="text-base-content/60 text-sm">Manage your listings</p>
-        </div>
-        <Link to="/create" className="btn btn-primary btn-sm gap-1">
-          <PlusIcon className="size-4" /> New
-        </Link>
-      </div>
+    <div className="space-y-4">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Product</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Owner</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Created</TableHead>
+          </TableRow>
+        </TableHeader>
 
-      {/* Stats */}
-      <div className="stats bg-base-300 w-full">
-        <div className="stat">
-          <div className="stat-title">Total Products</div>
-          <div className="stat-value text-primary">{products?.length || 0}</div>
-        </div>
-      </div>
-
-      {/* Products */}
-      {products && products.length === 0 ? (
-        <div className="card bg-base-300">
-          <div className="card-body items-center text-center py-16">
-            <PackageIcon className="size-16 text-base-content/20" />
-            <h3 className="card-title text-base-content/50">No products yet</h3>
-            <p className="text-base-content/40 text-sm">
-              Start by creating your first product
-            </p>
-            <Link to="/create" className="btn btn-primary btn-sm mt-4">
-              Create Product
-            </Link>
-          </div>
-        </div>
-      ) : (
-        <div className="grid gap-4">
-          {products &&
-            products.map((product) => (
-              <div key={product.id} className="card card-side bg-base-300">
-                <figure className="w-32 shrink-0">
+        <TableBody>
+          {data.products.map((product, index) => (
+            <TableRow key={index}>
+              <TableCell className="flex items-center gap-3">
+                {product.imageUrl ? (
                   <img
                     src={product.imageUrl}
                     alt={product.title}
-                    className="h-full object-cover"
+                    width={40}
+                    height={40}
+                    className="rounded-md object-cover"
                   />
-                </figure>
-                <div className="card-body p-4">
-                  <h2 className="card-title text-base">{product.title}</h2>
-                  <p className="text-sm text-base-content/60 line-clamp-1">
-                    {product.description}
-                  </p>
-                  <div className="card-actions justify-end mt-2">
-                    <button
-                      onClick={() => navigate(`/product/${product.id}`)}
-                      className="btn btn-ghost btn-xs gap-1"
-                    >
-                      <EyeIcon className="size-3" /> View
-                    </button>
-                    <button
-                      onClick={() => navigate(`/edit/${product.id}`)}
-                      className="btn btn-ghost btn-xs gap-1"
-                    >
-                      <EditIcon className="size-3" /> Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(product.id)}
-                      className="btn btn-ghost btn-xs text-error gap-1"
-                      disabled={deleteProduct.isPending}
-                    >
-                      <Trash2Icon className="size-3" /> Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-        </div>
-      )}
+                ) : (
+                  <div className="h-10 w-10 rounded-md bg-muted" />
+                )}
+                <span>{product.title}</span>
+              </TableCell>
+
+              <TableCell>
+                <Badge
+                  variant={
+                    product.status === "public" ? "default" : "secondary"
+                  }
+                >
+                  {product.status}
+                </Badge>
+              </TableCell>
+
+              <TableCell>{product.owner.name ?? "Unknown"}</TableCell>
+
+              <TableCell>
+                {product.priceInCents
+                  ? `$${(product.priceInCents / 100).toFixed(2)}`
+                  : "—"}
+              </TableCell>
+
+              <TableCell>
+                {new Date(product.createdAt).toLocaleDateString()}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      {/* Pagination */}
+      <div className="flex justify-end gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={page === 1}
+          onClick={() => setPage((p) => p - 1)}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={page === data.totalPages}
+          onClick={() => setPage((p) => p + 1)}
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
-};
-
-export default DashboardProducts;
+}

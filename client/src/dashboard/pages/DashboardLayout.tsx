@@ -1,11 +1,12 @@
 import { Route, Routes } from "react-router";
 import DashboardNavbar from "../components/DashboardNavbar";
 import DashboardPage from "./DashboardPage";
-import DashboardProducts from "./DashboardProducts";
 import DashboardSales from "./DashboardSales";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "./sidebar/DashboardSidebar";
 import CreatePage from "@/pages/CreatePage";
+import { DashboardUsers } from "./DashboardUsers";
+import { DashboardProducts } from "./DashboardProducts";
 
 function DashboardLayout() {
   return (
@@ -18,6 +19,7 @@ function DashboardLayout() {
             <Routes>
               <Route index element={<DashboardPage />} />
               <Route path="products" element={<DashboardProducts />} />
+              <Route path="users" element={<DashboardUsers />} />
               <Route path="products/create" element={<CreatePage />} />
               <Route path="sales" element={<DashboardSales />} />
             </Routes>
