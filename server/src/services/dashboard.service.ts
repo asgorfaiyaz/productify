@@ -1,6 +1,6 @@
-import { sql } from "drizzle-orm";
+import { isNull, sql } from "drizzle-orm";
 import db from "../db/index.js";
-import { ProductsTable } from "../db/schema.js";
+import { ProductsTable, UsersTable } from "../db/schema.js";
 
 export const getDashboardProductsFromService = async (
   page: number,
@@ -51,6 +51,7 @@ export const getDashboardUsersFromService = async (
       imageUrl: true,
       createdAt: true,
     },
+    where: isNull(UsersTable.deletedAt),
     limit,
     offset,
   });

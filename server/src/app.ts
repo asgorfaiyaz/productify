@@ -38,10 +38,11 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use((err: Error, _: Request, res: Response, _next: NextFunction) => {
   const message = err.message || "Something went wrong";
 
-  res.json({
+  // Use 500 for server errors, or err.status if you have one
+  res.status((err as any).status || 500).json({
     success: false,
     message,
-    stack: err.stack ? err.stack : {},
+    stack: process.env.NODE_ENV === "development" ? err.stack : {},
   });
 });
 
