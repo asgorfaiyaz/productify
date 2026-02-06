@@ -19,8 +19,8 @@ export const getDashboardUsers = handleAsync(
   async (req: Request, res: Response) => {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
-    const { users, totalPages, totalProducts } =
+    const { users, totalPages, totalUsers } =
       await getDashboardUsersFromService(page, limit);
-    return res.status(200).json({ users, totalPages, totalProducts });
+    return res.status(200).json({ users, totalPages, totalUsers });
   },
 );

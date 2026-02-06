@@ -54,14 +54,14 @@ export const getDashboardUsersFromService = async (
     limit,
     offset,
   });
-  const [{ total: totalProducts }] = await db
+  const [{ total: totalUsers }] = await db
     .select({ total: sql<number>`count(*)` })
     .from(ProductsTable);
 
-  const totalPages = Math.ceil(totalProducts / limit);
+  const totalPages = Math.ceil(totalUsers / limit);
   return {
     users,
-    totalProducts,
+    totalUsers,
     totalPages,
   };
 };
