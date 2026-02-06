@@ -21,6 +21,7 @@ import {
   ShoppingBasket,
 } from "lucide-react";
 import { Link } from "react-router";
+import CategorySidebarGroup from "./CategorySidebarGroup";
 
 function DashboardSidebarContent() {
   const items = [
@@ -44,7 +45,7 @@ function DashboardSidebarContent() {
   return (
     <SidebarContent>
       <SidebarGroup>
-        <SidebarGroupLabel>Application</SidebarGroupLabel>
+        <SidebarGroupLabel>Explore Dashboard</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
             {items.map((item) => {
@@ -95,6 +96,7 @@ function DashboardSidebarContent() {
           </CollapsibleContent>
         </SidebarGroup>
       </Collapsible>
+
       <Collapsible defaultOpen className="group/collapsible">
         <SidebarGroup>
           <CollapsibleTrigger asChild>
@@ -127,6 +129,8 @@ function DashboardSidebarContent() {
           </CollapsibleContent>
         </SidebarGroup>
       </Collapsible>
+
+      <CategorySidebarGroup />
     </SidebarContent>
   );
 }
