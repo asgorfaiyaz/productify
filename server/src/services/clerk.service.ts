@@ -3,7 +3,7 @@ import { UsersTable } from "../db/schema/users.js";
 
 export const syncClerkMetaData = async (
   clerkId: string,
-  user: typeof UsersTable.$inferInsert
+  user: typeof UsersTable.$inferInsert,
 ) => {
   const client = clerkClient;
   client.users.updateUser(clerkId, {
@@ -12,4 +12,8 @@ export const syncClerkMetaData = async (
       role: user.role,
     },
   });
+};
+export const isUserAdmin = async (clerkId: string) => {
+  const client = clerkClient;
+  return (await client.users.getUser(clerkId)).publicMetadata.role === "admin";
 };

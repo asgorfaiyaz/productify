@@ -8,7 +8,7 @@ export const insertUser = async (data: typeof UsersTable.$inferInsert) => {
 };
 export async function updateUser(
   clerkId: string,
-  data: Partial<typeof UsersTable.$inferInsert>
+  data: Partial<typeof UsersTable.$inferInsert>,
 ) {
   const [updatedUser] = await db
     .update(UsersTable)
