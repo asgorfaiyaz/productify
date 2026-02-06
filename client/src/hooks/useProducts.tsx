@@ -14,7 +14,9 @@ export function useCreateProduct() {
     mutationFn: createProduct,
     onSuccess: () => {
       // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({
+        queryKey: ["products", "dashboardproducts"],
+      });
     },
   });
 }

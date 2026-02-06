@@ -7,8 +7,11 @@ import { DashboardSidebar } from "./sidebar/DashboardSidebar";
 import CreatePage from "@/pages/CreatePage";
 import { DashboardUsers } from "./DashboardUsers";
 import { DashboardProducts } from "./DashboardProducts";
+import { useIsAdmin } from "@/hooks/useAuthReq";
 
 function DashboardLayout() {
+  const isAdmin = useIsAdmin();
+  if (!isAdmin) return null;
   return (
     <SidebarProvider>
       <section className="flex w-full">
