@@ -6,6 +6,7 @@ import {
   createDashboardUser,
   deleteDashboardUser,
   getDashboardProducts,
+  getDashboardSales,
   getDashboardUsers,
 } from "../controllers/dashboard.controller.js";
 const router = express.Router();
@@ -13,6 +14,10 @@ const router = express.Router();
 router
   .route("/products")
   .get(requireAuth(), requireUser, requireAdmin, getDashboardProducts);
+
+router
+  .route("/sales")
+  .get(requireAuth(), requireUser, requireAdmin, getDashboardSales);
 
 router
   .route("/users")

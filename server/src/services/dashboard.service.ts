@@ -1,6 +1,6 @@
 import { isNull, sql } from "drizzle-orm";
 import db from "../db/index.js";
-import { ProductsTable, UsersTable } from "../db/schema.js";
+import { ProductsTable, PurchasesTable, UsersTable } from "../db/schema.js";
 
 export const getDashboardProductsFromService = async (
   page: number,
@@ -63,6 +63,28 @@ export const getDashboardUsersFromService = async (
   return {
     users,
     totalUsers,
+    totalPages,
+  };
+};
+
+export const getDashboardSalesFromService = async (
+  page: number,
+  limit: number,
+) => {
+  const offset = (page - 1) * limit;
+  const sales = await db.query.PurchasesTable.findMany({
+    with: {
+      items: true,
+      owner: true,
+    },
+    limit,
+    offset,
+  });
+  const totalSales = await db.$count(PurchasesTable);
+  const totalPages = Math.ceil(totalSales / limit);
+  return {
+    sales,
+    totalSales,
     totalPages,
   };
 };

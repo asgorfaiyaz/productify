@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import handleAsync from "../utils/handleAsync.js";
 import {
   getDashboardProductsFromService,
+  getDashboardSalesFromService,
   getDashboardUsersFromService,
 } from "../services/dashboard.service.js";
 import {
@@ -28,6 +29,16 @@ export const getDashboardUsers = handleAsync(
     const { users, totalPages, totalUsers } =
       await getDashboardUsersFromService(page, limit);
     return res.status(200).json({ users, totalPages, totalUsers });
+  },
+);
+
+export const getDashboardSales = handleAsync(
+  async (req: Request, res: Response) => {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const { sales, totalSales, totalPages } =
+      await getDashboardSalesFromService(page, limit);
+    return res.status(200).json({ sales, totalSales, totalPages });
   },
 );
 
