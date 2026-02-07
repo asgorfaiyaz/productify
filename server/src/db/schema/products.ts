@@ -10,6 +10,8 @@ import { UsersTable } from "./users.js";
 import { relations } from "drizzle-orm";
 import { CommentsTable } from "./comments.js";
 import { PurchasesTable } from "./purchases.js";
+import { CategoriesTable } from "./categories.js";
+import { ProductsToCategoriesTable } from "./products-categories.js";
 
 export const productStatuses = ["public", "private"] as const;
 export type ProductStatus = (typeof productStatuses)[number];
@@ -37,4 +39,5 @@ export const productsRelations = relations(ProductsTable, ({ one, many }) => ({
   }),
   comments: many(CommentsTable),
   orders: many(PurchasesTable),
+  productsCategories: many(ProductsToCategoriesTable),
 }));
