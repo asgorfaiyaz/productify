@@ -73,9 +73,27 @@ export const getDashboardSalesFromService = async (
 ) => {
   const offset = (page - 1) * limit;
   const sales = await db.query.PurchasesTable.findMany({
+    columns: {
+      id: true,
+      createdAt: true,
+      totalAmount: true,
+      isPaid: true,
+    },
     with: {
-      items: true,
-      owner: true,
+      items: {
+        columns: {
+          id: true,
+          priceInCents: true,
+          quantity: true,
+        },
+      },
+      owner: {
+        columns: {
+          id: true,
+          name: true,
+          imageUrl: true,
+        },
+      },
     },
     limit,
     offset,
