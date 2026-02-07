@@ -29,7 +29,7 @@ function CategorySidebarGroup() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link className="gap-4" to="/dashboard/users/create">
+                  <Link className="gap-4" to="/dashboard/categories/create">
                     <Plus />
                     <span>New Category</span>
                   </Link>
@@ -37,7 +37,7 @@ function CategorySidebarGroup() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link className="gap-4" to="/dashboard/users">
+                  <Link className="gap-4" to="/dashboard/categories">
                     <SlidersHorizontal />
                     <span>Category List</span>
                   </Link>
