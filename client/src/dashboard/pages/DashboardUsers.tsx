@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import {
   Table,
@@ -19,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   useDashboardUsers,
   useDeleteDashboardUser,
@@ -27,7 +26,6 @@ import {
 export function DashboardUsers() {
   const [page, setPage] = useState(1);
   const { data, isLoading } = useDashboardUsers(page);
-
   const { mutate: deleteUserMutation } = useDeleteDashboardUser();
 
   const handleDelete = (id: string) => {
@@ -36,94 +34,108 @@ export function DashboardUsers() {
     }
   };
 
-  if (isLoading) {
-    return <Skeleton className="h-75 w-full" />;
-  }
-
-  if (!data) return null;
-
   return (
-    <div className="space-y-4">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>User</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Joined</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
+    <Card className="w-full">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle className="text-lg md:text-xl">Users</CardTitle>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            Prev
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={page === data?.totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next
+          </Button>
+        </div>
+      </CardHeader>
 
-        <TableBody>
-          {data.users.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell className="flex items-center gap-3">
-                <Avatar>
-                  <AvatarImage src={user.imageUrl ?? undefined} />
-                  <AvatarFallback>
-                    {user.name?.[0]?.toUpperCase() ?? "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <span>{user.name ?? "Unnamed"}</span>
-              </TableCell>
+      <CardContent className="overflow-x-auto">
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-full" />
+            ))}
+          </div>
+        ) : !data ? null : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>User</TableHead>
+                <TableHead className="hidden md:table-cell">Email</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead className="hidden sm:table-cell">Joined</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
 
-              <TableCell>{user.email}</TableCell>
+            <TableBody>
+              {data.users.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.imageUrl ?? undefined} />
+                      <AvatarFallback>
+                        {user.name?.[0]?.toUpperCase() ?? "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <span className="font-medium">
+                        {user.name ?? "Unnamed"}
+                      </span>
+                      <span className="text-xs text-muted-foreground md:hidden">
+                        {user.email}
+                      </span>
+                    </div>
+                  </TableCell>
 
-              <TableCell>
-                <Badge
-                  variant={user.role === "admin" ? "default" : "secondary"}
-                >
-                  {user.role}
-                </Badge>
-              </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {user.email}
+                  </TableCell>
 
-              <TableCell>
-                {new Date(user.createdAt).toLocaleDateString()}
-              </TableCell>
-
-              {/* Action button */}
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      ⋮
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      className="text-destructive"
-                      onClick={() => handleDelete(user.id)}
+                  <TableCell>
+                    <Badge
+                      variant={user.role === "admin" ? "default" : "secondary"}
                     >
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                      {user.role}
+                    </Badge>
+                  </TableCell>
 
-      {/* Pagination */}
-      <div className="flex justify-end gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={page === 1}
-          onClick={() => setPage((p) => p - 1)}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={page === data.totalPages}
-          onClick={() => setPage((p) => p + 1)}
-        >
-          Next
-        </Button>
-      </div>
-    </div>
+                  <TableCell className="hidden sm:table-cell">
+                    {new Date(user.createdAt).toLocaleDateString()}
+                  </TableCell>
+
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          ⋮
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          onClick={() => handleDelete(user.id)}
+                        >
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
   );
 }
