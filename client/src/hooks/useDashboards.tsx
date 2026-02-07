@@ -2,6 +2,7 @@ import {
   createUser,
   deleteUser,
   fetchDashboardProducts,
+  fetchDashboardSales,
   fetchDashboardUsers,
 } from "@/api/dashboards";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -16,6 +17,12 @@ export function useDashboardUsers(page: number) {
   return useQuery({
     queryFn: () => fetchDashboardUsers(page),
     queryKey: ["dashboardusers", page],
+  });
+}
+export function useDashboardSales(page: number) {
+  return useQuery({
+    queryFn: () => fetchDashboardSales(page),
+    queryKey: ["dashboardsales", page],
   });
 }
 

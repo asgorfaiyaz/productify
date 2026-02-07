@@ -41,6 +41,33 @@ export const fetchDashboardUsers = async (
   );
   return response.data;
 };
+export const fetchDashboardSales = async (
+  page: number,
+): Promise<{
+  sales: {
+    id: string;
+    createdAt: Date;
+    totalAmount: number;
+    isPaid: boolean | null;
+    owner: {
+      id: string;
+      name: string | null;
+      imageUrl: string | null;
+    };
+    items: {
+      id: string;
+      priceInCents: number;
+      quantity: number;
+    }[];
+  }[];
+  totalSales: number;
+  totalPages: number;
+}> => {
+  const response = await axiosInstance.get(
+    `/dashboard/sales?page=${page || 1}`,
+  );
+  return response.data;
+};
 export const createUser = async (data: {
   firstName: string;
   lastName: string;
