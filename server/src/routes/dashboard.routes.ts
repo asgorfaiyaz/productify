@@ -3,8 +3,10 @@ import express from "express";
 import { requireUser } from "../middlewares/requireUser.js";
 import { requireAdmin } from "../middlewares/requireAdmin.js";
 import {
+  createDashboardCategory,
   createDashboardUser,
   deleteDashboardUser,
+  getDashboardCategories,
   getDashboardProducts,
   getDashboardSales,
   getDashboardUsers,
@@ -23,6 +25,11 @@ router
   .route("/users")
   .get(requireAuth(), requireUser, requireAdmin, getDashboardUsers)
   .post(requireAuth(), requireUser, requireAdmin, createDashboardUser);
+
+router
+  .route("/categories")
+  .get(requireAuth(), requireUser, requireAdmin, getDashboardCategories)
+  .post(requireAuth(), requireUser, requireAdmin, createDashboardCategory);
 
 router
   .route("/users/:id")

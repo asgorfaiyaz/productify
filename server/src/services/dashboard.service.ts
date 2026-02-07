@@ -1,6 +1,11 @@
 import { isNull, sql } from "drizzle-orm";
 import db from "../db/index.js";
-import { ProductsTable, PurchasesTable, UsersTable } from "../db/schema.js";
+import {
+  CategoriesTable,
+  ProductsTable,
+  PurchasesTable,
+  UsersTable,
+} from "../db/schema.js";
 
 export const getDashboardProductsFromService = async (
   page: number,
@@ -105,4 +110,36 @@ export const getDashboardSalesFromService = async (
     totalSales,
     totalPages,
   };
+};
+
+export const getDashboardCategoriesFromService = async (
+  page: number,
+  limit: number,
+) => {
+  const offset = (page - 1) * limit;
+  const categories = await db.query.CategoriesTable.findMany({
+    columns: {
+      id: true,
+      name: true,
+      createdAt: true,
+    },
+    limit,
+    offset,
+  });
+  const totalCategories = await db.$count(CategoriesTable);
+  const totalPages = Math.ceil(totalCategories / limit);
+  return {
+    categories,
+    totalCategories,
+    totalPages,
+  };
+};
+export const createCategoryFromDashboard = async (name: string) => {
+  const [category] = await db
+    .insert(CategoriesTable)
+    .values({
+      name,
+    })
+    .returning();
+  return category;
 };

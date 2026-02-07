@@ -1,6 +1,8 @@
 import type { Request, Response } from "express";
 import handleAsync from "../utils/handleAsync.js";
 import {
+  createCategoryFromDashboard,
+  getDashboardCategoriesFromService,
   getDashboardProductsFromService,
   getDashboardSalesFromService,
   getDashboardUsersFromService,
@@ -42,6 +44,20 @@ export const getDashboardSales = handleAsync(
   },
 );
 
+export const getDashboardCategories = handleAsync(
+  async (req: Request, res: Response) => {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const { categories, totalCategories, totalPages } =
+      await getDashboardCategoriesFromService(page, limit);
+    return res.status(200).json({
+      categories,
+      totalCategories,
+      totalPages,
+    });
+  },
+);
+
 export const createDashboardUser = handleAsync(
   async (req: Request, res: Response) => {
     const { firstName, lastName, email } = req.body;
@@ -52,6 +68,18 @@ export const createDashboardUser = handleAsync(
     }
     const user = await createUserFromDashboard({ firstName, lastName, email });
     res.status(201).json(user);
+  },
+);
+export const createDashboardCategory = handleAsync(
+  async (req: Request, res: Response) => {
+    const { name } = req.body;
+    if (!name) {
+      return res
+        .status(400)
+        .json({ error: "failed to create category, invalid input" });
+    }
+    const category = await createCategoryFromDashboard(name);
+    res.status(201).json(category);
   },
 );
 
