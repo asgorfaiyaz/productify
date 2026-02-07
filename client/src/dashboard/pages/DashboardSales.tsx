@@ -1,68 +1,105 @@
-import { DollarSign, TrendingUp, BarChart2 } from "lucide-react";
+import { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useDashboardSales } from "@/hooks/useDashboards";
 
-function DashboardSales() {
-  // Placeholder data
-  const totalRevenue = 12500; // in cents
-  const monthlyGrowth = 12; // %
-  const orders = 34;
+export default function DashboardSalesTable() {
+  const [page, setPage] = useState(1);
+  const { data, isLoading } = useDashboardSales(page);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col items-center justify-center py-12 px-4 space-y-4">
-        {/* Header */}
-        <h2 className="text-3xl font-extrabold tracking-tight text-center text-base-content">
-          Sales Overview
-        </h2>
-
-        {/* Subheading / Coming Soon */}
-        <h1 className="text-xl font-semibold text-center text-primary">
-          Coming Soon 🚀
-        </h1>
-
-        {/* Description */}
-        <p className="text-center text-base-content/60 max-w-md">
-          Currently displaying placeholder data. Real sales metrics will appear
-          here in a few days. Stay tuned!
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Total Revenue */}
-        <div className="stat bg-base-300 rounded-xl shadow p-4">
-          <div className="stat-figure text-primary">
-            <DollarSign className="size-6" />
-          </div>
-          <div className="stat-title">Total Revenue</div>
-          <div className="stat-value text-primary">
-            ${(totalRevenue / 100).toLocaleString()}
-          </div>
-          <div className="stat-desc text-base-content/60">All time</div>
+    <Card className="w-full">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle className="text-lg md:text-xl">Recent Sales</CardTitle>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            Prev
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={page === data?.totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next
+          </Button>
         </div>
+      </CardHeader>
 
-        {/* Monthly Growth */}
-        <div className="stat bg-base-300 rounded-xl shadow p-4">
-          <div className="stat-figure text-success">
-            <TrendingUp className="size-6" />
+      <CardContent className="overflow-x-auto">
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-full" />
+            ))}
           </div>
-          <div className="stat-title">Monthly Growth</div>
-          <div className="stat-value text-success">{monthlyGrowth}%</div>
-          <div className="stat-desc text-base-content/60">
-            Compared to last month
-          </div>
-        </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Customer</TableHead>
+                <TableHead className="hidden sm:table-cell">Date</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data?.sales.map((sale) => (
+                <TableRow key={sale.id}>
+                  <TableCell className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={sale.owner.imageUrl ?? undefined} />
+                      <AvatarFallback>
+                        {sale.owner.name?.charAt(0) ?? "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <span className="font-medium">
+                        {sale.owner.name ?? "Unknown"}
+                      </span>
+                      <span className="text-xs text-muted-foreground sm:hidden">
+                        {new Date(sale.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </TableCell>
 
-        {/* Total Orders */}
-        <div className="stat bg-base-300 rounded-xl shadow p-4">
-          <div className="stat-figure text-warning">
-            <BarChart2 className="size-6" />
-          </div>
-          <div className="stat-title">Orders</div>
-          <div className="stat-value text-warning">{orders}</div>
-          <div className="stat-desc text-base-content/60">Completed orders</div>
-        </div>
-      </div>
-    </div>
+                  <TableCell className="hidden sm:table-cell">
+                    {new Date(sale.createdAt).toLocaleDateString()}
+                  </TableCell>
+
+                  <TableCell>
+                    {sale.isPaid ? (
+                      <Badge>Paid</Badge>
+                    ) : (
+                      <Badge variant="destructive">Unpaid</Badge>
+                    )}
+                  </TableCell>
+
+                  <TableCell className="text-right font-medium">
+                    ${(sale.totalAmount / 100).toFixed(2)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
   );
 }
-
-export default DashboardSales;
