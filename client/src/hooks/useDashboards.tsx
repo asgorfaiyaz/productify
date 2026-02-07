@@ -1,6 +1,8 @@
 import {
+  createCategory,
   createUser,
   deleteUser,
+  fetchDashboardCategories,
   fetchDashboardProducts,
   fetchDashboardSales,
   fetchDashboardUsers,
@@ -25,6 +27,12 @@ export function useDashboardSales(page: number) {
     queryKey: ["dashboardsales", page],
   });
 }
+export function useDashboardCategories(page: number) {
+  return useQuery({
+    queryFn: () => fetchDashboardCategories(page),
+    queryKey: ["dashboardcategories", page],
+  });
+}
 
 export function useCreateDashboardUser() {
   const queryClient = useQueryClient();
@@ -35,6 +43,19 @@ export function useCreateDashboardUser() {
       // Refresh users list after creation
       queryClient.invalidateQueries({
         queryKey: ["dashboardusers"],
+      });
+    },
+  });
+}
+export function useCreateDashboardCategory() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createCategory,
+    onSuccess: () => {
+      // Refresh users list after creation
+      queryClient.invalidateQueries({
+        queryKey: ["dashboardcategories"],
       });
     },
   });

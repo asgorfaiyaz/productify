@@ -41,6 +41,34 @@ export const fetchDashboardUsers = async (
   );
   return response.data;
 };
+export const fetchDashboardCategories = async (
+  page: number,
+): Promise<{
+  categories: {
+    id: string;
+    name: string;
+    createdAt: Date;
+  }[];
+  totalCategories: number;
+  totalPages: number;
+}> => {
+  const response = await axiosInstance.get(
+    `/dashboard/categories?page=${page || 1}`,
+  );
+  return response.data;
+};
+export const createCategory = async (data: {
+  name: string;
+}): Promise<{
+  id: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+}> => {
+  const response = await axiosInstance.post("/dashboard/categories", data);
+  return response.data;
+};
+
 export const fetchDashboardSales = async (
   page: number,
 ): Promise<{
@@ -82,6 +110,7 @@ export const createUser = async (data: {
   const response = await axiosInstance.post("/dashboard/users", data);
   return response.data;
 };
+
 export const deleteUser = async (id: string) => {
   const response = await axiosInstance.delete(`/dashboard/users/${id}`);
   return response.data;
