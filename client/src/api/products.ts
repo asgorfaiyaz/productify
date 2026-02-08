@@ -6,12 +6,14 @@ export const createProduct = async ({
   imageUrl,
   price,
   status,
+  categoryIds,
 }: {
   title: string;
   description: string;
   imageUrl: string;
   price: number;
   status: "public" | "private";
+  categoryIds: string[];
 }) => {
   const response = await axiosInstance.post("/products", {
     title,
@@ -19,6 +21,7 @@ export const createProduct = async ({
     imageUrl,
     price,
     status,
+    categories: categoryIds,
   });
   return response.data;
 };

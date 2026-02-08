@@ -9,6 +9,7 @@ import {
   DollarSignIcon,
 } from "lucide-react";
 import { useCreateProduct } from "../hooks/useProducts";
+import { useDashboardCategories } from "@/hooks/useDashboards";
 
 type ProductFormState = {
   title: string;
@@ -21,6 +22,14 @@ type ProductFormState = {
 function CreatePage() {
   const navigate = useNavigate();
   const createProductMutation = useCreateProduct();
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+  const { data, isLoading } = useDashboardCategories(1);
+  const toggleCategory = (id: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
+    );
+  };
 
   const [formData, setFormData] = useState<ProductFormState>({
     title: "",
@@ -41,6 +50,7 @@ function CreatePage() {
       {
         ...formData,
         price: Number(formData.price),
+        categoryIds: selectedCategories,
       },
       {
         onSuccess: () => navigate("/"),
@@ -115,6 +125,48 @@ function CreatePage() {
                 <option value="private">Private</option>
               </select>
             </label>
+
+            {/* CATEGORIES */}
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-base-content/70">
+                Categories
+              </p>
+
+              {isLoading ? (
+                <p className="text-sm text-base-content/50">
+                  Loading categories…
+                </p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {data?.categories?.map((category) => {
+                    const isSelected = selectedCategories.includes(category.id);
+
+                    return (
+                      <button
+                        key={category.id}
+                        type="button"
+                        onClick={() => toggleCategory(category.id)}
+                        className={`
+              px-3 py-1 rounded-full text-sm capitalize border
+              transition-all
+              ${
+                isSelected
+                  ? "bg-green-500 text-primary-content border-primary"
+                  : "bg-base-200 border-base-300 hover:bg-base-300"
+              }
+            `}
+                      >
+                        {category.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              <p className="text-xs text-base-content/50">
+                {selectedCategories.length} selected
+              </p>
+            </div>
 
             {/* IMAGE URL */}
             <label className="input input-bordered flex items-center gap-2 bg-base-200">
