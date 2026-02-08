@@ -21,6 +21,7 @@ function EditProductForm({
   product,
   isPending,
   isError,
+  error,
   onSubmit,
 }: {
   product: {
@@ -32,6 +33,7 @@ function EditProductForm({
   };
   isPending: boolean;
   isError: boolean;
+  error: any;
   onSubmit: (data: {
     title: string;
     description: string;
@@ -162,7 +164,7 @@ function EditProductForm({
 
             {isError && (
               <div role="alert" className="alert alert-error alert-sm">
-                <span>Failed to update. Try again.</span>
+                <span>{error?.message || "Failed to update product"}</span>
               </div>
             )}
 

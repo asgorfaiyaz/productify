@@ -30,10 +30,14 @@ function ProductDetailsPage() {
   const isAdmin = useIsAdmin();
   const navigate = useNavigate();
   const { data: product, error, isLoading } = useProduct(id!);
-  const deleteProduct = useDeleteProduct();
+  const {
+    mutate: deleteProduct,
+    error: deleteError,
+    isPending: deleteIsPending,
+  } = useDeleteProduct();
   const handleDelete = () => {
     if (confirm("Delete this product permanently?")) {
-      deleteProduct.mutate(id!, { onSuccess: () => navigate("/") });
+      deleteProduct(id!, { onSuccess: () => navigate("/") });
     }
   };
 
@@ -71,9 +75,9 @@ function ProductDetailsPage() {
             <button
               onClick={handleDelete}
               className="btn btn-error btn-sm gap-1 text-white"
-              disabled={deleteProduct.isPending}
+              disabled={deleteIsPending}
             >
-              {deleteProduct.isPending ? (
+              {deleteIsPending ? (
                 <span className="loading loading-spinner loading-xs" />
               ) : (
                 <Trash2Icon className="size-4" />
@@ -83,6 +87,13 @@ function ProductDetailsPage() {
           </div>
         )}
       </div>
+      {deleteError && (
+        <div className="alert alert-error shadow-lg">
+          <div>
+            <div>{deleteError?.message || "Failed to delete product"}</div>
+          </div>
+        </div>
+      )}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Image */}
         <div className="card bg-base-300">
