@@ -109,6 +109,7 @@ export const fetchProduct = async (id: string) => {
       content: string;
       owner: { id: string; name: string; imageUrl: string };
     }[];
+    categories: { id: string; name: string }[];
   };
 };
 export const deleteProduct = async (id: string) => {
