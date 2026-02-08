@@ -1,6 +1,10 @@
 import { eq, inArray, sql } from "drizzle-orm";
 import type { z } from "zod";
-import { ProductsTable, UsersTable } from "../db/schema.js";
+import {
+  ProductsTable,
+  ProductsToCategoriesTable,
+  UsersTable,
+} from "../db/schema.js";
 import {
   createProductSchema,
   updateProductSchema,
@@ -14,11 +18,24 @@ export const insertProduct = async (
   userId: string,
   data: CreateProductInput,
 ) => {
-  const { price, ...rest } = data;
+  const { price, categoryIds, ...rest } = data;
   const [product] = await db
     .insert(ProductsTable)
     .values({ ...rest, userId, priceInCents: Math.round(price * 100) })
     .returning();
+
+  if (categoryIds && categoryIds.length > 0) {
+    categoryIds.map(async (categoryId) => {
+      await db
+        .insert(ProductsToCategoriesTable)
+        .values({
+          productId: product.id,
+          categoryId,
+        })
+        .returning();
+    });
+  }
+
   return product;
 };
 

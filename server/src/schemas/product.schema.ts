@@ -8,6 +8,7 @@ export const createProductSchema = z.object({
   imageUrl: z.string().url(),
   price: z.number(),
   status: z.enum(productStatuses),
+  categoryIds: z.array(z.string()).optional(),
 });
 
 export const updateProductSchema = createProductSchema.partial();
