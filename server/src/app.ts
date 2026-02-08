@@ -37,7 +37,7 @@ app.use("/api/dashboard", dashboardRoutes);
 
 app.use((err: Error, _: Request, res: Response, _next: NextFunction) => {
   const message = err.message || "Something went wrong";
-
+  console.log(err);
   // Use 500 for server errors, or err.status if you have one
   res.status((err as any).status || 500).json({
     success: false,
