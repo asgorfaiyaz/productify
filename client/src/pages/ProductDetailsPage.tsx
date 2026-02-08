@@ -19,6 +19,7 @@ import { formatCurrency } from "../lib/formatter";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cart-store";
 import { useIsAdmin } from "@/hooks/useAuthReq";
+import { Badge } from "@/components/ui/badge";
 
 function ProductDetailsPage() {
   const { id } = useParams();
@@ -82,7 +83,6 @@ function ProductDetailsPage() {
           </div>
         )}
       </div>
-
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Image */}
         <div className="card bg-base-300">
@@ -167,6 +167,21 @@ function ProductDetailsPage() {
             <p className="text-base-content/80 leading-relaxed">
               {product.description}
             </p>
+
+            <div className="flex gap-2 flex-wrap mt-2">
+              {product.categories?.map((category) => (
+                <Link key={category.id} to={`/category/${category.name}`}>
+                  <Badge
+                    variant="outline"
+                    className="capitalize px-3 py-1 cursor-pointer 
+                   hover:bg-primary hover:text-primary-foreground 
+                   transition-colors"
+                  >
+                    #{category.name}
+                  </Badge>
+                </Link>
+              ))}
+            </div>
 
             {product?.owner && (
               <>
