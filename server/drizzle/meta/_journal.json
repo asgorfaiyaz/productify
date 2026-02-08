@@ -36,6 +36,20 @@
       "when": 1770479426880,
       "tag": "0004_pale_turbo",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1770554440694,
+      "tag": "0005_thick_sumo",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1770554713318,
+      "tag": "0006_useful_revanche",
+      "breakpoints": true
     }
   ]
 }

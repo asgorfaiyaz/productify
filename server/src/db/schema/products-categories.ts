@@ -8,10 +8,10 @@ export const ProductsToCategoriesTable = pgTable(
   {
     productId: uuid("product_id")
       .notNull()
-      .references(() => ProductsTable.id),
+      .references(() => ProductsTable.id, { onDelete: "cascade" }),
     categoryId: uuid("category_id")
       .notNull()
-      .references(() => CategoriesTable.id),
+      .references(() => CategoriesTable.id, { onDelete: "cascade" }),
   },
   (t) => [primaryKey({ columns: [t.productId, t.categoryId] })],
 );
