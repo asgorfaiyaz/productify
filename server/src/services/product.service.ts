@@ -50,7 +50,7 @@ export const deleteProductById = async (productId: string) => {
 };
 
 export const getProductById = async (productId: string) => {
-  return await db.query.ProductsTable.findFirst({
+  const product = await db.query.ProductsTable.findFirst({
     where: eq(ProductsTable.id, productId),
     with: {
       owner: true,
@@ -59,8 +59,21 @@ export const getProductById = async (productId: string) => {
           owner: true,
         },
       },
+      productsCategories: {
+        with: {
+          category: {
+            columns: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
     },
   });
+  if (!product) throw new Error("product not found");
+  const { productsCategories, ...rest } = product;
+  return { ...rest, categories: productsCategories.map((c) => c.category) };
 };
 
 export const getUserByClerkId = async (clerkId: string) => {
