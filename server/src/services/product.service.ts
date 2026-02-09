@@ -1,6 +1,7 @@
-import { eq, inArray, sql } from "drizzle-orm";
+import { and, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import type { z } from "zod";
 import {
+  CommentsTable,
   ProductsTable,
   ProductsToCategoriesTable,
   UsersTable,
@@ -115,23 +116,70 @@ export const isProductExist = async (productId: string) => {
   });
 };
 
-export const getAllProducts = async (page: number, limit: number) => {
+export const getAllProducts = async (
+  page: number,
+  limit: number,
+  categoryId?: string,
+  search?: string,
+) => {
   const offset = (page - 1) * limit;
-  const products = await db.query.ProductsTable.findMany({
-    with: {
+
+  const searchCondition = search
+    ? or(
+        ilike(ProductsTable.title, `%${search}%`),
+        ilike(ProductsTable.description, `%${search}%`),
+      )
+    : undefined;
+
+  const whereCondition =
+    categoryId && search
+      ? and(
+          eq(ProductsToCategoriesTable.categoryId, categoryId),
+          searchCondition,
+        )
+      : categoryId
+        ? eq(ProductsToCategoriesTable.categoryId, categoryId)
+        : search
+          ? searchCondition
+          : undefined;
+
+  const products = await db
+    .selectDistinctOn([ProductsTable.id], {
+      id: ProductsTable.id,
+      title: ProductsTable.title,
+      description: ProductsTable.description,
+      imageUrl: ProductsTable.imageUrl,
+      priceInCents: ProductsTable.priceInCents,
+      createdAt: ProductsTable.createdAt,
+      status: ProductsTable.status,
       owner: {
-        columns: {
-          name: true,
-          imageUrl: true,
-        },
+        name: UsersTable.name,
+        imageUrl: UsersTable.imageUrl,
       },
-    },
-    limit,
-    offset,
-  });
-  const [{ total: totalProducts }] = await db
-    .select({ total: sql<number>`count(*)` })
-    .from(ProductsTable);
+      totalComments: sql<number>`count(${CommentsTable.id})`,
+    })
+    .from(ProductsTable)
+    .leftJoin(
+      ProductsToCategoriesTable,
+      eq(ProductsToCategoriesTable.productId, ProductsTable.id),
+    )
+    .leftJoin(UsersTable, eq(UsersTable.id, ProductsTable.userId))
+    .leftJoin(CommentsTable, eq(CommentsTable.productId, ProductsTable.id))
+    .where(whereCondition)
+    .limit(limit)
+    .offset(offset)
+    .groupBy(ProductsTable.id, UsersTable.name, UsersTable.imageUrl);
+
+  const [{ total: totalProducts = 0 } = {}] = await db
+    .select({
+      total: sql<number>`count(distinct ${ProductsTable.id})`,
+    })
+    .from(ProductsTable)
+    .leftJoin(
+      ProductsToCategoriesTable,
+      eq(ProductsToCategoriesTable.productId, ProductsTable.id),
+    )
+    .where(whereCondition);
 
   const totalPages = Math.ceil(totalProducts / limit);
   return {
