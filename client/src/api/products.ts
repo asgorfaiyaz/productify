@@ -45,9 +45,17 @@ export const updateProduct = async ({
   return response.data;
 };
 
-export const fetchProducts = async (
-  page: number,
-): Promise<{
+export const fetchProducts = async ({
+  page,
+  limit,
+  categoryId,
+  search,
+}: {
+  page: number;
+  limit: number;
+  categoryId?: string;
+  search?: string;
+}): Promise<{
   products: {
     title: string;
     description: string;
@@ -58,14 +66,16 @@ export const fetchProducts = async (
       name: string;
       imageUrl: string;
     };
-    comments: { id: string }[];
+    totalComments: number;
     createdAt: string;
     id: string;
   }[];
   totalProducts: number;
   totalPages: number;
 }> => {
-  const response = await axiosInstance.get(`/products?page=${page || 1}`);
+  const response = await axiosInstance.get(
+    `/products?page=${page || 1}&limit=${limit}&category=${categoryId}&search=${search}`,
+  );
   return response.data;
 };
 export const fetchMyProducts = async () => {
