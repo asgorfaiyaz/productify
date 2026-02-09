@@ -15,7 +15,7 @@ const ProductCard = ({
       name: string;
       imageUrl: string;
     };
-    comments: { id: string }[];
+    totalComments: number;
     createdAt: string;
     id: string;
   };
@@ -47,7 +47,7 @@ const ProductCard = ({
         </h2>
 
         <p className="text-sm text-base-content/70 line-clamp-2">
-          {product.description}
+          {product.description} with - {product.totalComments} comments
         </p>
 
         <div className="divider my-1" />
