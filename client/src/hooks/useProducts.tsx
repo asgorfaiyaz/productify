@@ -7,6 +7,7 @@ import {
   fetchProducts,
   updateProduct,
 } from "../api/products";
+import { useFilterStore } from "@/store/filter-store";
 
 export function useCreateProduct() {
   const queryClient = useQueryClient();
@@ -20,23 +21,15 @@ export function useCreateProduct() {
     },
   });
 }
+export function useProducts() {
+  const filters = useFilterStore((state) => state.filters);
 
-export function useProducts({
-  page,
-  limit,
-  categoryId,
-  search,
-}: {
-  page: number;
-  limit: number;
-  categoryId?: string;
-  search?: string;
-}) {
   return useQuery({
-    queryFn: () => fetchProducts({ page, limit, categoryId, search }),
-    queryKey: ["products", page, limit, categoryId, search],
+    queryKey: ["products", filters],
+    queryFn: () => fetchProducts(filters),
   });
 }
+
 export function useMyProducts() {
   return useQuery({
     queryFn: fetchMyProducts,
