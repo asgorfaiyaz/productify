@@ -15,11 +15,11 @@ function ProductPagination({
 }: {
   currentPage: number;
   totalPages: number;
-  setCurrentPage: (page: number) => void;
+  setCurrentPage: ({ page }: { page: number }) => void;
 }) {
   const goToPage = (page: number) => {
     if (page < 1 || page > totalPages) return;
-    setCurrentPage(page);
+    setCurrentPage({ page });
   };
   return (
     <Pagination className="mb-6">
