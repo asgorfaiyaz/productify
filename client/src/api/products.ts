@@ -21,7 +21,7 @@ export const createProduct = async ({
     imageUrl,
     price,
     status,
-    categories: categoryIds,
+    categoryIds,
   });
   return response.data;
 };
