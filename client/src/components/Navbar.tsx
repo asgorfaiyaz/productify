@@ -29,7 +29,7 @@ function Navbar() {
 
   return (
     <nav className="bg-base-300 shadow-md sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto w-full px-4">
+      <div className="mx-auto w-full px-4">
         {/* MAIN BAR */}
         <div className="flex justify-between items-center h-16">
           {/* LOGO */}
