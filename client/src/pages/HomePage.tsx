@@ -4,12 +4,12 @@ import { SignInButton } from "@clerk/clerk-react";
 import { useProducts } from "../hooks/useProducts";
 import ProductCard from "../components/ProductCard";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { useState } from "react";
 import ProductPagination from "@/components/ProductPagination";
+import { useFilterStore } from "@/store/filter-store";
 
 function HomePage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const { data, isLoading } = useProducts(currentPage);
+  const { filters, setFilters } = useFilterStore();
+  const { data, isLoading } = useProducts();
   const totalPages = data?.totalPages ?? 1;
 
   return (
@@ -53,8 +53,8 @@ function HomePage() {
         {/* PAGINATION CONTROLS */}
         {!isLoading && (
           <ProductPagination
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
+            currentPage={filters.page}
+            setCurrentPage={setFilters}
             totalPages={totalPages}
           />
         )}
