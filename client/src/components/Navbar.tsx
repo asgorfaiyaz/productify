@@ -2,23 +2,17 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { SignInButton, SignUpButton, useAuth } from "@clerk/clerk-react";
 
-import {
-  ShoppingBagIcon,
-  PlusIcon,
-  UserIcon,
-  LayoutDashboardIcon,
-  Menu,
-  X,
-  ListOrderedIcon,
-} from "lucide-react";
+import { ShoppingBagIcon, LayoutDashboardIcon, Menu } from "lucide-react";
 import { Cart } from "./Cart";
 import { useIsAdmin } from "@/hooks/useAuthReq";
+import { useSidebar } from "./ui/sidebar";
 
 function Navbar() {
   const { isSignedIn } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const isAdmin = useIsAdmin();
+  const { toggleSidebar } = useSidebar();
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -59,21 +53,9 @@ function Navbar() {
                       <LayoutDashboardIcon className="w-4 h-4" />
                       <span>Dashboard</span>
                     </Link>
-                    <Link to="/create" className="btn btn-primary btn-sm gap-1">
-                      <PlusIcon className="w-4 h-4" />
-                      <span>New Product</span>
-                    </Link>
                   </>
                 )}
 
-                <Link to="/profile" className="btn btn-ghost btn-sm gap-1">
-                  <UserIcon className="w-4 h-4" />
-                  <span>Profile</span>
-                </Link>
-                <Link to="/orders" className="btn btn-ghost btn-sm gap-1">
-                  <ListOrderedIcon className="w-4 h-4" />
-                  <span>Orders</span>
-                </Link>
                 <Cart />
               </>
             ) : (
@@ -97,15 +79,11 @@ function Navbar() {
             <Cart />
             {/* MOBILE HAMBURGER */}
             <button
-              onClick={() => setMenuOpen(!menuOpen)}
+              onClick={() => toggleSidebar()}
               className="lg:hidden btn btn-ghost btn-square btn-sm"
               aria-label="Toggle menu"
             >
-              {menuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
+              <Menu className="w-6 h-6" />
             </button>
           </div>
         </div>
@@ -128,21 +106,6 @@ function Navbar() {
                     Dashboard
                   </button>
                 )}
-                <button
-                  onClick={() => handleNavigation("/orders")}
-                  className="btn btn-ghost w-full justify-start py-3 gap-2"
-                >
-                  <ListOrderedIcon className="w-4 h-4 shrink-0" />
-                  Orders
-                </button>
-
-                <button
-                  onClick={() => handleNavigation("/profile")}
-                  className="btn btn-ghost w-full justify-start py-3 gap-2"
-                >
-                  <UserIcon className="w-4 h-4 shrink-0" />
-                  Profile
-                </button>
               </>
             ) : (
               <>
