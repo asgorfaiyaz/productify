@@ -73,9 +73,15 @@ export const fetchProducts = async ({
   totalProducts: number;
   totalPages: number;
 }> => {
-  const response = await axiosInstance.get(
-    `/products?page=${page || 1}&limit=${limit}&category=${categoryId}&search=${search}`,
-  );
+  const response = await axiosInstance.get("/products", {
+    params: {
+      page: page ?? 1,
+      limit,
+      ...(categoryId && { category: categoryId }),
+      ...(search && { search }),
+    },
+  });
+
   return response.data;
 };
 export const fetchMyProducts = async () => {
