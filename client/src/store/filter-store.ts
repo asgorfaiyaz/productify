@@ -18,7 +18,7 @@ export const useFilterStore = create<FilterStore>()(
     (set) => ({
       filters: {
         page: 1,
-        limit: 3,
+        limit: 9,
         categoryId: undefined,
         search: undefined,
       },
@@ -26,7 +26,7 @@ export const useFilterStore = create<FilterStore>()(
         set((state) => ({
           filters: { ...state.filters, ...newFilters },
         })),
-      clearFilters: () => set({ filters: { page: 1, limit: 3 } }),
+      clearFilters: () => set({ filters: { page: 1, limit: 9 } }),
     }),
     {
       name: "filter-store",

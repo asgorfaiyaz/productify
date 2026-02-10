@@ -17,16 +17,21 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Link } from "react-router";
+import { useCustomerCategories } from "@/hooks/useCategories";
+import { useFilterStore } from "@/store/filter-store";
 
 function CustomerSidebar() {
+  const { setFilters, clearFilters } = useFilterStore();
   // static data for an ecommerce-like sidebar
-  const categories = [
+  const { data: categories = [], isLoading: isCategoriesLoading } =
+    useCustomerCategories();
+
+  const tempCategories = [
     { id: "electronics", name: "Electronics" },
     { id: "fashion", name: "Fashion" },
     { id: "books", name: "Books" },
     { id: "home", name: "Home & Kitchen" },
   ];
-
   const priceRanges = [
     { id: "under-50", label: "Under $50" },
     { id: "50-100", label: "$50 – $100" },
@@ -49,15 +54,22 @@ function CustomerSidebar() {
           <SidebarGroupLabel>Categories</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {categories.map((category) => (
-                <SidebarMenuItem key={category.id}>
-                  <SidebarMenuButton asChild>
-                    <button className="w-full text-left">
-                      {category.name}
-                    </button>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {(isCategoriesLoading ? tempCategories : categories).map(
+                (category) => (
+                  <SidebarMenuItem key={category.id}>
+                    <SidebarMenuButton asChild>
+                      <button
+                        onClick={() =>
+                          setFilters({ categoryId: category.id, page: 1 })
+                        }
+                        className="w-full capitalize text-left"
+                      >
+                        {category.name}
+                      </button>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ),
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -88,7 +100,10 @@ function CustomerSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <button className="flex w-full items-center gap-2 text-sm text-muted-foreground">
+                  <button
+                    onClick={() => clearFilters()}
+                    className="flex w-full items-center gap-2 text-sm text-muted-foreground"
+                  >
                     <X className="h-4 w-4" />
                     Clear all filters
                   </button>
