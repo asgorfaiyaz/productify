@@ -44,7 +44,7 @@ function HomePage() {
       </div>
 
       {/* PRODUCTS SECTION - Added mt-10 for separation from Hero */}
-      <div className="mt-3">
+      <div id="products" className="mt-3">
         <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
           <PackageIcon className="size-5 text-primary" />
           All Products

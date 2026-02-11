@@ -1,67 +1,126 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router";
 import { SignInButton, SignUpButton, useAuth } from "@clerk/clerk-react";
+import {
+  ShoppingBagIcon,
+  LayoutDashboardIcon,
+  Menu,
+  Search,
+  X,
+} from "lucide-react";
 
-import { ShoppingBagIcon, LayoutDashboardIcon, Menu } from "lucide-react";
 import { Cart } from "./Cart";
 import { useIsAdmin } from "@/hooks/useAuthReq";
 import { useSidebar } from "./ui/sidebar";
+import { Input } from "@/components/ui/input";
+import { useFilterStore } from "@/store/filter-store";
 
 function Navbar() {
+  const { filters, setFilters } = useFilterStore();
   const { isSignedIn } = useAuth();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const navigate = useNavigate();
   const isAdmin = useIsAdmin();
   const { toggleSidebar } = useSidebar();
+  const [forceShowSearch, setForceShowSearch] = useState(false);
+  const navbarRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const closeMenu = () => setMenuOpen(false);
+  // Close search when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (navbarRef.current && !navbarRef.current.contains(e.target as Node)) {
+        setForceShowSearch(false);
+      }
+    };
 
-  const handleNavigation = (path: string) => {
-    navigate(path);
-    closeMenu();
+    if (forceShowSearch) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [forceShowSearch]);
+
+  const handleSearchChange = (value: string) => {
+    setFilters({
+      search: value,
+      categoryId: undefined,
+      page: 1,
+    });
+
+    // Scroll to products section if it exists
+    const productsSection = document.getElementById("products");
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
-    <nav className="bg-base-300 shadow-md sticky top-0 z-50">
+    <nav ref={navbarRef} className="bg-base-300 shadow-md sticky top-0 z-50">
       <div className="mx-auto w-full px-4">
         {/* MAIN BAR */}
-        <div className="flex justify-between items-center h-16">
-          {/* LOGO */}
-          <Link
-            to="/"
-            className="flex items-center gap-2 btn btn-ghost px-2 hover:bg-transparent"
-            onClick={closeMenu}
-          >
-            <ShoppingBagIcon className="w-5 h-5 text-primary shrink-0" />
-            <span className="text-base sm:text-lg font-bold font-mono uppercase tracking-wider">
-              Productify
-            </span>
-          </Link>
+        <div className="flex items-center h-16 gap-4">
+          {/* LOGO / MOBILE SEARCH */}
+          {!forceShowSearch ? (
+            <Link
+              to="/"
+              className="flex items-center gap-2 btn btn-ghost px-2 hover:bg-transparent"
+            >
+              <ShoppingBagIcon className="w-5 h-5 text-primary shrink-0" />
+              <span className="text-base sm:text-lg font-bold font-mono uppercase tracking-wider">
+                Productify
+              </span>
+            </Link>
+          ) : (
+            // MOBILE SEARCH INPUT
+            <div className="flex-1 lg:hidden relative w-full flex items-center gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  ref={searchInputRef}
+                  autoFocus
+                  value={filters.search}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  placeholder="Search products..."
+                  className="pl-9 h-10 w-full rounded-full"
+                />
+              </div>
+              <button
+                onClick={() => setForceShowSearch(false)}
+                className="btn btn-ghost btn-square btn-sm"
+                aria-label="Close search"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          )}
+
+          {/* DESKTOP SEARCH */}
+          <div className="hidden lg:flex flex-1 max-w-xl mx-6">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                value={filters.search}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                placeholder="Search products..."
+                className="pl-9 h-9 outline-none rounded-full"
+              />
+            </div>
+          </div>
 
           {/* DESKTOP ACTIONS */}
-          <div className="hidden lg:flex gap-2 items-center">
-            {/* <ThemeSelector /> */}
-
+          <div className="hidden lg:flex gap-2 items-center ml-auto">
             {isSignedIn ? (
               <>
                 {isAdmin && (
-                  <>
-                    <Link
-                      to="/dashboard"
-                      className="btn btn-ghost btn-sm gap-1"
-                    >
-                      <LayoutDashboardIcon className="w-4 h-4" />
-                      <span>Dashboard</span>
-                    </Link>
-                  </>
+                  <Link to="/dashboard" className="btn btn-ghost btn-sm gap-1">
+                    <LayoutDashboardIcon className="w-4 h-4" />
+                    Dashboard
+                  </Link>
                 )}
-
                 <Cart />
               </>
             ) : (
               <>
                 <Cart />
-
                 <SignInButton mode="modal">
                   <button className="btn ml-5 btn-primary btn-sm">
                     Sign In
@@ -75,59 +134,29 @@ function Navbar() {
               </>
             )}
           </div>
-          <div className="lg:hidden flex gap-6 justify-end items-center">
+
+          {/* MOBILE */}
+          <div className="lg:hidden flex gap-4 items-center ml-auto">
+            {/* SEARCH BUTTON */}
+            {!forceShowSearch && (
+              <button
+                onClick={() => setForceShowSearch(true)}
+                className="btn btn-ghost btn-square btn-sm"
+                aria-label="Open search"
+              >
+                <Search className="w-5 h-5" />
+              </button>
+            )}
+
             <Cart />
-            {/* MOBILE HAMBURGER */}
+
             <button
-              onClick={() => toggleSidebar()}
-              className="lg:hidden btn btn-ghost btn-square btn-sm"
-              aria-label="Toggle menu"
+              onClick={toggleSidebar}
+              className="btn btn-ghost btn-square btn-sm"
+              aria-label="Toggle sidebar"
             >
               <Menu className="w-6 h-6" />
             </button>
-          </div>
-        </div>
-
-        {/* MOBILE MENU */}
-        <div
-          className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-            menuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-          }`}
-        >
-          <div className="py-3 space-y-2 border-t border-base-content/10">
-            {isSignedIn ? (
-              <>
-                {isAdmin && (
-                  <button
-                    onClick={() => handleNavigation("/dashboard")}
-                    className="btn btn-ghost w-full justify-start py-3 gap-2"
-                  >
-                    <LayoutDashboardIcon className="w-4 h-4 shrink-0" />
-                    Dashboard
-                  </button>
-                )}
-              </>
-            ) : (
-              <>
-                <SignInButton mode="modal">
-                  <button
-                    onClick={closeMenu}
-                    className="btn btn-primary w-full justify-start py-3"
-                  >
-                    Sign In
-                  </button>
-                </SignInButton>
-
-                <SignUpButton mode="modal">
-                  <button
-                    onClick={closeMenu}
-                    className="btn btn-primary w-full justify-start py-3"
-                  >
-                    Get Started
-                  </button>
-                </SignUpButton>
-              </>
-            )}
           </div>
         </div>
       </div>
