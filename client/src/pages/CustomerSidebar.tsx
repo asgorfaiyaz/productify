@@ -54,13 +54,33 @@ function CustomerSidebar() {
           <SidebarGroupLabel>Categories</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <button
+                    onClick={() =>
+                      setFilters({
+                        categoryId: undefined,
+                        search: "",
+                        page: 1,
+                      })
+                    }
+                    className="w-full text-left font-medium"
+                  >
+                    All
+                  </button>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               {(isCategoriesLoading ? tempCategories : categories).map(
                 (category) => (
                   <SidebarMenuItem key={category.id}>
                     <SidebarMenuButton asChild>
                       <button
                         onClick={() =>
-                          setFilters({ categoryId: category.id, page: 1 })
+                          setFilters({
+                            categoryId: category.id,
+                            page: 1,
+                            search: undefined,
+                          })
                         }
                         className="w-full capitalize text-left"
                       >
