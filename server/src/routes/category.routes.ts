@@ -1,9 +1,13 @@
 import { requireAuth } from "@clerk/express";
 import express from "express";
-import { getCustomerCategories } from "../controllers/category.controller.js";
+import {
+  getCategoriesByProductId,
+  getCustomerCategories,
+} from "../controllers/category.controller.js";
 
 const router = express.Router();
 
 router.get("/", getCustomerCategories);
+router.get("/:productId", requireAuth(), getCategoriesByProductId);
 
 export default router;
