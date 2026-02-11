@@ -152,7 +152,7 @@ function Navbar() {
 
             <button
               onClick={toggleSidebar}
-              className="btn btn-ghost btn-square btn-sm"
+              className="md:hidden btn btn-ghost btn-square btn-sm"
               aria-label="Toggle sidebar"
             >
               <Menu className="w-6 h-6" />

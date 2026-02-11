@@ -1,3 +1,5 @@
+import { useCategoriesByProductId } from "@/hooks/useCategories";
+import { useDashboardCategories } from "@/hooks/useDashboards";
 import {
   ArrowLeftIcon,
   ImageIcon,
@@ -6,7 +8,7 @@ import {
   SaveIcon,
   DollarSignIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 
 type ProductFormState = {
@@ -15,6 +17,7 @@ type ProductFormState = {
   imageUrl: string;
   price: number | "";
   status: "public" | "private";
+  categoryIds: string[]; // ✅ Added
 };
 
 function EditProductForm({
@@ -25,6 +28,7 @@ function EditProductForm({
   onSubmit,
 }: {
   product: {
+    id: string;
     title: string;
     description: string;
     imageUrl: string;
@@ -40,6 +44,7 @@ function EditProductForm({
     imageUrl: string;
     price: number | "";
     status: "public" | "private";
+    categoryIds: string[]; // ✅ Added
   }) => void;
 }) {
   const [formData, setFormData] = useState<ProductFormState>({
@@ -48,7 +53,35 @@ function EditProductForm({
     imageUrl: product.imageUrl,
     price: product.priceInCents,
     status: product.status,
+    categoryIds: [], // ✅ Added
   });
+
+  // Get all available categories (dashboard categories)
+  const { data: dashboardData, isLoading: isDashboardCategoriesLoading } =
+    useDashboardCategories(1);
+
+  // Get product's current categories
+  const { data: productCategories, isLoading: isProductCategoriesLoading } =
+    useCategoriesByProductId(product.id);
+
+  // ✅ Initialize selected categories when product categories load
+  useEffect(() => {
+    if (productCategories && productCategories.length > 0) {
+      const categoryIds = productCategories.map((cat) => cat.id);
+      setFormData((prev) => ({ ...prev, categoryIds }));
+    }
+  }, [productCategories]);
+
+  const toggleCategory = (id: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      categoryIds: prev.categoryIds.includes(id)
+        ? prev.categoryIds.filter((c) => c !== id)
+        : [...prev.categoryIds, id],
+    }));
+  };
+
+  const isLoading = isDashboardCategoriesLoading || isProductCategoriesLoading;
 
   return (
     <div className="max-w-lg mx-auto">
@@ -66,7 +99,7 @@ function EditProductForm({
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              onSubmit(formData);
+              onSubmit(formData); // ✅ Now includes categoryIds
             }}
             className="space-y-4 mt-4"
           >
@@ -103,6 +136,51 @@ function EditProductForm({
                 required
               />
             </label>
+
+            {/* CATEGORIES */}
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-base-content/70">
+                Categories
+              </p>
+
+              {isLoading ? (
+                <p className="text-sm text-base-content/50">
+                  Loading categories…
+                </p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {/* ✅ Always show all dashboard categories */}
+                  {dashboardData?.categories?.map((category) => {
+                    const isSelected = formData.categoryIds.includes(
+                      category.id,
+                    );
+
+                    return (
+                      <button
+                        key={category.id}
+                        type="button"
+                        onClick={() => toggleCategory(category.id)}
+                        className={`
+                          px-3 py-1 rounded-full text-sm capitalize border
+                          transition-all
+                          ${
+                            isSelected
+                              ? "bg-primary text-primary-content border-primary"
+                              : "bg-base-200 border-base-300 hover:bg-base-300"
+                          }
+                        `}
+                      >
+                        {category.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              <p className="text-xs text-base-content/50">
+                {formData.categoryIds.length} selected
+              </p>
+            </div>
 
             {/* STATUS */}
             <label className="input input-bordered flex items-center gap-2 bg-base-200">
