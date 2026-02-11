@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { SignInButton, SignUpButton, useAuth } from "@clerk/clerk-react";
 import {
   ShoppingBagIcon,
@@ -18,11 +18,14 @@ import { useFilterStore } from "@/store/filter-store";
 function Navbar() {
   const { filters, setFilters } = useFilterStore();
   const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const isAdmin = useIsAdmin();
   const { toggleSidebar } = useSidebar();
   const [forceShowSearch, setForceShowSearch] = useState(false);
   const navbarRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const [search, setSearch] = useState(filters.search || "");
 
   // Close search when clicking outside
   useEffect(() => {
@@ -39,19 +42,32 @@ function Navbar() {
     }
   }, [forceShowSearch]);
 
-  const handleSearchChange = (value: string) => {
-    setFilters({
-      search: value,
-      categoryId: undefined,
-      page: 1,
-    });
+  useEffect(() => {
+    const shouldSearch = search.length >= 2 || search.length === 0;
 
-    // Scroll to products section if it exists
-    const productsSection = document.getElementById("products");
-    if (productsSection) {
-      productsSection.scrollIntoView({ behavior: "smooth" });
+    if (shouldSearch) {
+      // 1. Redirect if not on home
+      if (location.pathname !== "/") {
+        navigate("/");
+      }
+
+      // 2. Update Store
+      setFilters({
+        search: search,
+        categoryId: undefined,
+        page: 1,
+      });
+
+      // 3. Scroll after a tiny delay to allow navigation to finish
+      const timer = setTimeout(() => {
+        document
+          .getElementById("products")
+          ?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+
+      return () => clearTimeout(timer);
     }
-  };
+  }, [search, navigate, location.pathname, setFilters]);
 
   return (
     <nav ref={navbarRef} className="bg-base-300 shadow-md sticky top-0 z-50">
@@ -78,7 +94,7 @@ function Navbar() {
                   ref={searchInputRef}
                   autoFocus
                   value={filters.search}
-                  onChange={(e) => handleSearchChange(e.target.value)}
+                  onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search products..."
                   className="pl-9 h-10 w-full rounded-full"
                 />
@@ -98,8 +114,8 @@ function Navbar() {
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                value={filters.search}
-                onChange={(e) => handleSearchChange(e.target.value)}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search products..."
                 className="pl-9 h-9 outline-none rounded-full"
               />
