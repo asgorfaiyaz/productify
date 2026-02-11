@@ -16,7 +16,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useCustomerCategories } from "@/hooks/useCategories";
 import { useFilterStore } from "@/store/filter-store";
 
@@ -25,6 +25,9 @@ function CustomerSidebar() {
   // static data for an ecommerce-like sidebar
   const { data: categories = [], isLoading: isCategoriesLoading } =
     useCustomerCategories();
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const tempCategories = [
     { id: "electronics", name: "Electronics" },
@@ -57,13 +60,16 @@ function CustomerSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <button
-                    onClick={() =>
+                    onClick={() => {
                       setFilters({
                         categoryId: undefined,
                         search: "",
                         page: 1,
-                      })
-                    }
+                      });
+                      if (location.pathname !== "/") {
+                        navigate("/");
+                      }
+                    }}
                     className="w-full text-left font-medium"
                   >
                     All
@@ -75,13 +81,16 @@ function CustomerSidebar() {
                   <SidebarMenuItem key={category.id}>
                     <SidebarMenuButton asChild>
                       <button
-                        onClick={() =>
+                        onClick={() => {
                           setFilters({
                             categoryId: category.id,
                             page: 1,
                             search: undefined,
-                          })
-                        }
+                          });
+                          if (location.pathname !== "/") {
+                            navigate("/");
+                          }
+                        }}
                         className="w-full capitalize text-left"
                       >
                         {category.name}
@@ -121,7 +130,12 @@ function CustomerSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <button
-                    onClick={() => clearFilters()}
+                    onClick={() => {
+                      clearFilters();
+                      if (location.pathname !== "/") {
+                        navigate("/");
+                      }
+                    }}
                     className="flex w-full items-center gap-2 text-sm text-muted-foreground"
                   >
                     <X className="h-4 w-4" />
