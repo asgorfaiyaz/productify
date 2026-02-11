@@ -44,7 +44,7 @@ export const updateProductById = async (
   productId: string,
   data: UpdateProductInput,
 ) => {
-  const { price, ...rest } = data;
+  const { price, categoryIds, ...rest } = data;
 
   const updatedData: Partial<typeof ProductsTable.$inferInsert> = {
     ...rest,
@@ -59,6 +59,27 @@ export const updateProductById = async (
     .set(updatedData)
     .where(eq(ProductsTable.id, productId))
     .returning();
+
+  if (categoryIds && categoryIds.length > 0) {
+    categoryIds.map(async (categoryId) => {
+      const isCategoryLinked =
+        await db.query.ProductsToCategoriesTable.findFirst({
+          where: and(
+            eq(ProductsToCategoriesTable.productId, productId),
+            eq(ProductsToCategoriesTable.categoryId, categoryId),
+          ),
+        });
+      if (!isCategoryLinked) {
+        await db
+          .insert(ProductsToCategoriesTable)
+          .values({
+            productId: product.id,
+            categoryId,
+          })
+          .returning();
+      }
+    });
+  }
 
   return product;
 };

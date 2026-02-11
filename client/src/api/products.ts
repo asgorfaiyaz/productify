@@ -36,6 +36,7 @@ export const updateProduct = async ({
     imageUrl?: string;
     price?: number;
     status?: "public" | "private";
+    categoryIds?: string[];
   };
 }) => {
   const response = await axiosInstance.put(
