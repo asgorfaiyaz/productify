@@ -9,6 +9,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarSeparator,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { ChevronDown, User, Package, Filter, X } from "lucide-react";
 import {
@@ -20,6 +21,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { useCustomerCategories } from "@/hooks/useCategories";
 import { useFilterStore } from "@/store/filter-store";
 import { useAuth } from "@clerk/clerk-react";
+import { useRef } from "react";
 
 function CustomerSidebar() {
   const { setFilters, clearFilters } = useFilterStore();
@@ -29,6 +31,8 @@ function CustomerSidebar() {
   const { isSignedIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const hasScrolledRef = useRef(false);
+  const { setOpenMobile, isMobile } = useSidebar();
 
   const tempCategories = [
     { id: "electronics", name: "Electronics" },
@@ -62,6 +66,13 @@ function CustomerSidebar() {
                 <SidebarMenuButton asChild>
                   <button
                     onClick={() => {
+                      if (!hasScrolledRef.current) {
+                        document
+                          .getElementById("products")
+                          ?.scrollIntoView({ behavior: "auto" });
+
+                        hasScrolledRef.current = true;
+                      }
                       setFilters({
                         categoryId: undefined,
                         search: "",
@@ -83,13 +94,24 @@ function CustomerSidebar() {
                     <SidebarMenuButton asChild>
                       <button
                         onClick={() => {
+                          if (location.pathname !== "/") {
+                            navigate("/");
+                          }
+                          if (!hasScrolledRef.current) {
+                            document
+                              .getElementById("products")
+                              ?.scrollIntoView({ behavior: "auto" });
+
+                            hasScrolledRef.current = true;
+                          }
                           setFilters({
                             categoryId: category.id,
                             page: 1,
                             search: undefined,
                           });
-                          if (location.pathname !== "/") {
-                            navigate("/");
+
+                          if (isMobile) {
+                            setOpenMobile(false);
                           }
                         }}
                         className="w-full capitalize text-left"
