@@ -24,8 +24,7 @@ import { useAuth } from "@clerk/clerk-react";
 import { useRef } from "react";
 
 function CustomerSidebar() {
-  const { setFilters, clearFilters } = useFilterStore();
-  // static data for an ecommerce-like sidebar
+  const { setFilters, clearFilters, filters } = useFilterStore(); // static data for an ecommerce-like sidebar
   const { data: categories = [], isLoading: isCategoriesLoading } =
     useCustomerCategories();
   const { isSignedIn } = useAuth();
@@ -41,10 +40,10 @@ function CustomerSidebar() {
     { id: "home", name: "Home & Kitchen" },
   ];
   const priceRanges = [
-    { id: "under-50", label: "Under $50" },
-    { id: "50-100", label: "$50 – $100" },
-    { id: "100-500", label: "$100 – $500" },
-    { id: "above-500", label: "Above $500" },
+    { id: "under-50", label: "Under $50", min: undefined, max: 5000 },
+    { id: "50-100", label: "$50 – $100", min: 5000, max: 10000 },
+    { id: "100-500", label: "$100 – $500", min: 10000, max: 50000 },
+    { id: "above-500", label: "Above $500", min: 50000, max: undefined },
   ];
 
   return (
@@ -133,13 +132,45 @@ function CustomerSidebar() {
           <SidebarGroupLabel>Price</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {priceRanges.map((price) => (
-                <SidebarMenuItem key={price.id}>
-                  <SidebarMenuButton asChild>
-                    <button className="w-full text-left">{price.label}</button>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {priceRanges.map((price) => {
+                const isActive =
+                  filters.minPrice === price.min &&
+                  filters.maxPrice === price.max;
+
+                return (
+                  <SidebarMenuItem key={price.id}>
+                    <SidebarMenuButton asChild>
+                      <button
+                        onClick={() => {
+                          if (isActive) {
+                            // clicking the same range toggles it off
+                            setFilters({
+                              minPrice: undefined,
+                              maxPrice: undefined,
+                              page: 1,
+                            });
+                            return;
+                          }
+                          if (location.pathname !== "/") navigate("/");
+                          setFilters({
+                            minPrice: price.min,
+                            maxPrice: price.max,
+                            page: 1,
+                          });
+                          if (isMobile) setOpenMobile(false);
+                        }}
+                        className={`w-full text-left transition-colors ${
+                          isActive
+                            ? "font-semibold text-primary"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {price.label}
+                      </button>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
