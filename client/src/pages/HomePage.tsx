@@ -7,8 +7,7 @@ import ProductPagination from "@/components/ProductPagination";
 import { useFilterStore } from "@/store/filter-store";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
-import "swiper/swiper.css";
-import "swiper/modules/pagination.css";
+import "swiper/swiper-bundle.css";
 function HomePage() {
   const { filters, setFilters } = useFilterStore();
   const { data, isLoading } = useProducts();
