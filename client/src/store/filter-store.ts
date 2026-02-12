@@ -6,6 +6,8 @@ type filters = {
   limit: number;
   categoryId?: string;
   search?: string;
+  minPrice?: number; // in cents
+  maxPrice?: number; // in cents
 };
 
 type FilterStore = {

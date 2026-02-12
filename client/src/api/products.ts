@@ -51,11 +51,15 @@ export const fetchProducts = async ({
   limit,
   categoryId,
   search,
+  maxPrice,
+  minPrice,
 }: {
   page: number;
   limit: number;
   categoryId?: string;
   search?: string;
+  minPrice?: number;
+  maxPrice?: number;
 }): Promise<{
   products: {
     title: string;
@@ -80,6 +84,8 @@ export const fetchProducts = async ({
       limit,
       ...(categoryId && { category: categoryId }),
       ...(search && { search }),
+      ...(minPrice && { minPrice }),
+      ...(maxPrice && { maxPrice }),
     },
   });
 
