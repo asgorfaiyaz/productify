@@ -18,15 +18,14 @@ import { useFilterStore } from "@/store/filter-store";
 function Navbar() {
   const { filters, setFilters } = useFilterStore();
   const { isSignedIn } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
   const isAdmin = useIsAdmin();
   const { toggleSidebar } = useSidebar();
   const [forceShowSearch, setForceShowSearch] = useState(false);
   const navbarRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [search, setSearch] = useState(filters.search || "");
-
+  const hasScrolledRef = useRef(false);
+  const navigate = useNavigate();
+  const location = useLocation();
   // Close search when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -41,33 +40,6 @@ function Navbar() {
         document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [forceShowSearch]);
-
-  useEffect(() => {
-    const shouldSearch = search.length >= 2 || search.length === 0;
-
-    if (shouldSearch) {
-      // 1. Redirect if not on home
-      if (location.pathname !== "/") {
-        navigate("/");
-      }
-
-      // 2. Update Store
-      setFilters({
-        search: search,
-        categoryId: undefined,
-        page: 1,
-      });
-
-      // 3. Scroll after a tiny delay to allow navigation to finish
-      const timer = setTimeout(() => {
-        document
-          .getElementById("products")
-          ?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-
-      return () => clearTimeout(timer);
-    }
-  }, [search, navigate, location.pathname, setFilters]);
 
   return (
     <nav ref={navbarRef} className="bg-base-300 shadow-md sticky top-0 z-50">
@@ -94,7 +66,25 @@ function Navbar() {
                   ref={searchInputRef}
                   autoFocus
                   value={filters.search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onFocus={() => {
+                    if (!hasScrolledRef.current) {
+                      document
+                        .getElementById("products")
+                        ?.scrollIntoView({ behavior: "auto" });
+
+                      hasScrolledRef.current = true;
+                    }
+                  }}
+                  onChange={(e) => {
+                    if (location.pathname !== "/") {
+                      navigate("/");
+                    }
+                    setFilters({
+                      search: e.target.value,
+                      categoryId: undefined,
+                      page: 1,
+                    });
+                  }}
                   placeholder="Search products..."
                   className="pl-9 h-10 w-full rounded-full"
                 />
@@ -114,8 +104,30 @@ function Navbar() {
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                value={filters.search}
+                onFocus={() => {
+                  if (!hasScrolledRef.current) {
+                    document
+                      .getElementById("products")
+                      ?.scrollIntoView({ behavior: "auto" });
+
+                    hasScrolledRef.current = true;
+                  }
+                }}
+                onChange={(e) => {
+                  if (location.pathname !== "/") {
+                    navigate("/");
+                  }
+                  setFilters({
+                    search: e.target.value,
+                    categoryId: undefined,
+                    page: 1,
+                  });
+
+                  document
+                    .getElementById("products")
+                    ?.scrollIntoView({ behavior: "auto" });
+                }}
                 placeholder="Search products..."
                 className="pl-9 h-9 outline-none rounded-full"
               />
