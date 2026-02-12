@@ -114,6 +114,15 @@ export const getProduct = handleAsync(async (req: Request, res: Response) => {
 
 export const getProducts = handleAsync(async (req: Request, res: Response) => {
   const page = Number(req.query.page) || 1;
+  const minPrice = req.query.minPrice
+    ? parseInt(req.query.minPrice as string)
+    : undefined;
+  const maxPrice = req.query.maxPrice
+    ? parseInt(req.query.maxPrice as string)
+    : undefined;
+
+  console.log("minPrice:", minPrice, typeof minPrice);
+  console.log("maxPrice:", maxPrice, typeof maxPrice);
   const limit = Number(req.query.limit) || 6;
   const category = req.query.category as string;
   const search = req.query.search as string;
@@ -122,6 +131,8 @@ export const getProducts = handleAsync(async (req: Request, res: Response) => {
     limit,
     category,
     search,
+    minPrice,
+    maxPrice,
   );
   return res.status(200).json({ products, totalPages, totalProducts });
 });

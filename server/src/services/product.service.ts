@@ -1,4 +1,16 @@
-import { and, eq, ilike, inArray, or, sql } from "drizzle-orm";
+import {
+  and,
+  between,
+  eq,
+  gte,
+  ilike,
+  inArray,
+  lt,
+  lte,
+  or,
+  SQL,
+  sql,
+} from "drizzle-orm";
 import type { z } from "zod";
 import {
   CommentsTable,
@@ -142,6 +154,8 @@ export const getAllProducts = async (
   limit: number,
   categoryId?: string,
   search?: string,
+  minPrice?: number, // in cents
+  maxPrice?: number, // in cents
 ) => {
   const offset = (page - 1) * limit;
 
@@ -152,17 +166,29 @@ export const getAllProducts = async (
       )
     : undefined;
 
-  const whereCondition =
-    categoryId && search
+  // 👇 Build price condition separately
+  const priceCondition =
+    minPrice !== undefined && maxPrice !== undefined
       ? and(
-          eq(ProductsToCategoriesTable.categoryId, categoryId),
-          searchCondition,
+          gte(ProductsTable.priceInCents, minPrice),
+          lt(ProductsTable.priceInCents, maxPrice),
         )
-      : categoryId
-        ? eq(ProductsToCategoriesTable.categoryId, categoryId)
-        : search
-          ? searchCondition
+      : minPrice !== undefined
+        ? gte(ProductsTable.priceInCents, minPrice)
+        : maxPrice !== undefined
+          ? lt(ProductsTable.priceInCents, maxPrice) // lt, not lte
           : undefined;
+
+  // 👇 Collect all active conditions into an array
+  const conditions = [
+    categoryId
+      ? eq(ProductsToCategoriesTable.categoryId, categoryId)
+      : undefined,
+    searchCondition,
+    priceCondition,
+  ].filter((c): c is SQL => c !== undefined); // remove undefined entries
+
+  const whereCondition = conditions.length ? and(...conditions) : undefined;
 
   const products = await db
     .selectDistinctOn([ProductsTable.id], {
