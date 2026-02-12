@@ -19,13 +19,14 @@ import {
 import { Link, useLocation, useNavigate } from "react-router";
 import { useCustomerCategories } from "@/hooks/useCategories";
 import { useFilterStore } from "@/store/filter-store";
+import { useAuth } from "@clerk/clerk-react";
 
 function CustomerSidebar() {
   const { setFilters, clearFilters } = useFilterStore();
   // static data for an ecommerce-like sidebar
   const { data: categories = [], isLoading: isCategoriesLoading } =
     useCustomerCategories();
-
+  const { isSignedIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -150,52 +151,54 @@ function CustomerSidebar() {
         <SidebarSeparator />
 
         {/* Account & Orders (collapsible) */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Account</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <Collapsible defaultOpen>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton>
-                      <div className="flex w-full items-center justify-between">
-                        <span>Manage your account & orders</span>
-                        <ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" />
-                      </div>
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                </SidebarMenuItem>
+        {isSignedIn && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Account</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <Collapsible defaultOpen>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton>
+                        <div className="flex w-full items-center justify-between">
+                          <span>Manage your account & orders</span>
+                          <ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" />
+                        </div>
+                      </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                  </SidebarMenuItem>
 
-                <CollapsibleContent>
-                  <div className="ml-4 mt-1 space-y-1 overflow-x-hidden">
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
-                        <Link
-                          to="/profile"
-                          className="flex items-center gap-2 text-sm"
-                        >
-                          <User className="h-4 w-4" />
-                          Profile
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
-                        <Link
-                          to="/orders"
-                          className="flex items-center gap-2 text-sm"
-                        >
-                          <Package className="h-4 w-4" />
-                          Orders
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  </div>
-                </CollapsibleContent>
-              </SidebarMenu>
-            </Collapsible>
-          </SidebarGroupContent>
-        </SidebarGroup>
+                  <CollapsibleContent>
+                    <div className="ml-4 mt-1 space-y-1 overflow-x-hidden">
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                          <Link
+                            to="/profile"
+                            className="flex items-center gap-2 text-sm"
+                          >
+                            <User className="h-4 w-4" />
+                            Profile
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                          <Link
+                            to="/orders"
+                            className="flex items-center gap-2 text-sm"
+                          >
+                            <Package className="h-4 w-4" />
+                            Orders
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </div>
+                  </CollapsibleContent>
+                </SidebarMenu>
+              </Collapsible>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
     </Sidebar>
   );
