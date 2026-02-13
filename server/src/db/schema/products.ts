@@ -8,10 +8,9 @@ import {
 } from "../schemaHelper.js";
 import { UsersTable } from "./users.js";
 import { relations } from "drizzle-orm";
-import { CommentsTable } from "./comments.js";
 import { PurchasesTable } from "./purchases.js";
-import { CategoriesTable } from "./categories.js";
 import { ProductsToCategoriesTable } from "./products-categories.js";
+import { ReviewsTable } from "./reviews.js";
 
 export const productStatuses = ["public", "private"] as const;
 export type ProductStatus = (typeof productStatuses)[number];
@@ -37,7 +36,7 @@ export const productsRelations = relations(ProductsTable, ({ one, many }) => ({
     fields: [ProductsTable.userId],
     references: [UsersTable.id],
   }),
-  comments: many(CommentsTable),
+  reviews: many(ReviewsTable),
   orders: many(PurchasesTable),
   productsCategories: many(ProductsToCategoriesTable),
 }));

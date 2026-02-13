@@ -2,8 +2,8 @@ import { pgEnum, pgTable, text, uniqueIndex } from "drizzle-orm/pg-core";
 import { createdAt, deletedAt, id, updatedAt } from "../schemaHelper.js";
 import { relations, sql } from "drizzle-orm";
 import { ProductsTable } from "./products.js";
-import { CommentsTable } from "./comments.js";
 import { PurchasesTable } from "./purchases.js";
+import { ReviewsTable } from "./reviews.js";
 
 export const userRoles = ["user", "admin"] as const;
 export type UserRole = (typeof userRoles)[number];
@@ -31,6 +31,6 @@ export const UsersTable = pgTable(
 
 export const usersRelations = relations(UsersTable, ({ many }) => ({
   products: many(ProductsTable),
-  comments: many(CommentsTable),
+  reviews: many(ReviewsTable),
   orders: many(PurchasesTable),
 }));
