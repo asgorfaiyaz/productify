@@ -3,7 +3,7 @@ import cors from "cors";
 import { env } from "./config/env.js";
 import { clerkMiddleware } from "@clerk/express";
 import productRoutes from "./routes/product.routes.js";
-import commentRoutes from "./routes/comment.routes.js";
+import reviewRoutes from "./routes/review.routes.js";
 import purchaseRoutes from "./routes/purchase.routes.js";
 import webhookRoutes from "./routes/webhook.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
@@ -32,7 +32,7 @@ app.use(express.json());
 
 // routes
 app.use("/api/products", productRoutes);
-app.use("/api/comments", commentRoutes);
+app.use("/api/reviews", reviewRoutes);
 app.use("/api/purchases", purchaseRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/categories", categoryRoutes);
