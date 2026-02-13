@@ -13,9 +13,9 @@ import {
 } from "drizzle-orm";
 import type { z } from "zod";
 import {
-  CommentsTable,
   ProductsTable,
   ProductsToCategoriesTable,
+  ReviewsTable,
   UsersTable,
 } from "../db/schema.js";
 import {
@@ -105,7 +105,7 @@ export const getProductById = async (productId: string) => {
     where: eq(ProductsTable.id, productId),
     with: {
       owner: true,
-      comments: {
+      reviews: {
         with: {
           owner: true,
         },
@@ -203,7 +203,7 @@ export const getAllProducts = async (
         name: UsersTable.name,
         imageUrl: UsersTable.imageUrl,
       },
-      totalComments: sql<number>`count(${CommentsTable.id})`,
+      totalReviews: sql<number>`count(${ReviewsTable.id})`,
     })
     .from(ProductsTable)
     .leftJoin(
@@ -211,7 +211,7 @@ export const getAllProducts = async (
       eq(ProductsToCategoriesTable.productId, ProductsTable.id),
     )
     .leftJoin(UsersTable, eq(UsersTable.id, ProductsTable.userId))
-    .leftJoin(CommentsTable, eq(CommentsTable.productId, ProductsTable.id))
+    .leftJoin(ReviewsTable, eq(ReviewsTable.productId, ProductsTable.id))
     .where(whereCondition)
     .limit(limit)
     .offset(offset)
