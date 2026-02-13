@@ -71,7 +71,7 @@ export const fetchProducts = async ({
       name: string;
       imageUrl: string;
     };
-    totalComments: number;
+    totalReviews: number;
     createdAt: string;
     id: string;
   }[];
@@ -129,10 +129,11 @@ export const fetchProduct = async (id: string) => {
       imageUrl: string;
       clerkId: string;
     };
-    comments: {
+    reviews: {
       id: string;
       createdAt: string;
       content: string;
+      rating: number;
       owner: { id: string; name: string; imageUrl: string };
     }[];
     categories: { id: string; name: string }[];
