@@ -1,12 +1,12 @@
+import { useDeleteReview } from "@/hooks/useReviews";
 import { Trash2Icon } from "lucide-react";
-import { useDeleteComment } from "../hooks/useComments";
 
-function CommentCard({
-  comment,
+function ReviewCard({
+  review,
   currentUserId,
   productId,
 }: {
-  comment: {
+  review: {
     id: string;
     createdAt: string;
     content: string;
@@ -19,40 +19,40 @@ function CommentCard({
   currentUserId: string;
   productId: string;
 }) {
-  const deleteComment = useDeleteComment();
+  const deleteReview = useDeleteReview();
 
   return (
     <div className="chat chat-start">
       <div className="chat-image avatar">
         <div className="w-8 rounded-full">
-          <img src={comment.owner?.imageUrl} alt={comment.owner?.name} />
+          <img src={review.owner?.imageUrl} alt={review.owner?.name} />
         </div>
       </div>
 
       <div className="chat-header text-xs opacity-70 mb-2">
-        {comment.owner?.name}
+        {review.owner?.name}
         <time className="ml-2 text-xs opacity-50">
-          {new Date(comment.createdAt).toLocaleDateString()}
+          {new Date(review.createdAt).toLocaleDateString()}
         </time>
       </div>
 
       <div className="chat-bubble chat-bubble-neutral text-sm">
-        {comment.content}
+        {review.content}
       </div>
 
-      {currentUserId === comment.owner.id && (
+      {currentUserId === review.owner.id && (
         <div className="chat-footer">
           <button
             onClick={() => {
-              deleteComment.mutate({
-                commentId: comment.id,
+              deleteReview.mutate({
+                reviewId: review.id,
                 productId,
               });
             }}
             className="btn btn-ghost btn-xs text-error"
-            disabled={deleteComment.isPending}
+            disabled={deleteReview.isPending}
           >
-            {deleteComment.isPending ? (
+            {deleteReview.isPending ? (
               <span className="loading loading-spinner loading-xs" />
             ) : (
               <Trash2Icon className="size-3" />
@@ -64,4 +64,4 @@ function CommentCard({
   );
 }
 
-export default CommentCard;
+export default ReviewCard;
