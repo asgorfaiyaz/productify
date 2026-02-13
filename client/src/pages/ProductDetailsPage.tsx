@@ -14,12 +14,12 @@ import { useAuth } from "@clerk/clerk-react";
 import { useParams, Link, useNavigate } from "react-router";
 import { useDeleteProduct, useProduct } from "../hooks/useProducts";
 import LoadingSpinner from "../components/LoadingSpinner";
-import CommentsSection from "../components/CommentSection";
 import { formatCurrency } from "../lib/formatter";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cart-store";
 import { useIsAdmin } from "@/hooks/useAuthReq";
 import { Badge } from "@/components/ui/badge";
+import ReviewsSection from "@/components/ReviewsSection";
 
 function ProductDetailsPage() {
   const { id } = useParams();
@@ -217,12 +217,12 @@ function ProductDetailsPage() {
         </div>
       </div>
 
-      {/* Comments */}
+      {/* Reviews */}
       <div className="card bg-base-300">
         <div className="card-body">
-          <CommentsSection
+          <ReviewsSection
             productId={product.id}
-            comments={product.comments}
+            reviews={product.reviews}
             currentUserId={product.owner.id}
           />
         </div>
