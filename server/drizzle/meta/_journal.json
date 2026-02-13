@@ -50,6 +50,13 @@
       "when": 1770554713318,
       "tag": "0006_useful_revanche",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1770980234766,
+      "tag": "0007_sloppy_chronomancer",
+      "breakpoints": true
     }
   ]
 }
