@@ -1,10 +1,10 @@
+import { createReview, deleteReview } from "@/api/reviews";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createComment, deleteComment } from "../api/comments";
 
-export function useCreateComment() {
+export function useCreateReview() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: createComment,
+    mutationFn: createReview,
     onSuccess: (_, variable) => {
       // Invalidate and refetch
       queryClient.invalidateQueries({
@@ -14,10 +14,10 @@ export function useCreateComment() {
   });
 }
 
-export const useDeleteComment = () => {
+export const useDeleteReview = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deleteComment,
+    mutationFn: deleteReview,
     onSuccess: (_, variable) => {
       // Invalidate and refetch
       queryClient.invalidateQueries({
