@@ -1,32 +1,33 @@
 import { useState } from "react";
 import { useAuth, SignInButton } from "@clerk/clerk-react";
 import { SendIcon, MessageSquareIcon, LogInIcon } from "lucide-react";
-import { useCreateComment } from "../hooks/useComments";
-import CommentCard from "./CommentCard";
+import { useCreateReview } from "@/hooks/useReviews";
+import ReviewCard from "./ReviewCard";
 
-function CommentsSection({
+function ReviewsSection({
   productId,
-  comments,
+  reviews,
   currentUserId,
 }: {
   productId: string;
-  comments: {
+  reviews: {
     id: string;
     createdAt: string;
     content: string;
+    rating: number;
     owner: { id: string; name: string; imageUrl: string };
   }[];
   currentUserId: string;
 }) {
   const { isSignedIn } = useAuth();
   const [content, setContent] = useState("");
-  const createComment = useCreateComment();
+  const createReview = useCreateReview();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!content.trim()) return;
-    createComment.mutate(
-      { productId, content },
+    createReview.mutate(
+      { productId, content, rating: 5 },
       { onSuccess: () => setContent("") },
     );
   };
@@ -35,8 +36,8 @@ function CommentsSection({
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <MessageSquareIcon className="size-5 text-primary" />
-        <h3 className="font-bold">Comments</h3>
-        <span className="">{comments.length}</span>
+        <h3 className="font-bold">Reviews</h3>
+        <span className="">{reviews.length}</span>
       </div>
 
       {isSignedIn ? (
@@ -47,14 +48,14 @@ function CommentsSection({
             className="input input-bordered input-sm flex-1 bg-base-200"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            disabled={createComment.isPending}
+            disabled={createReview.isPending}
           />
           <button
             type="submit"
             className="btn btn-primary btn-sm btn-square"
-            disabled={createComment.isPending || !content.trim()}
+            disabled={createReview.isPending || !content.trim()}
           >
-            {createComment.isPending ? (
+            {createReview.isPending ? (
               <span className="loading loading-spinner loading-xs" />
             ) : (
               <SendIcon className="size-4" />
@@ -76,16 +77,16 @@ function CommentsSection({
       )}
 
       <div className="space-y-2 max-h-80 overflow-y-auto">
-        {comments.length === 0 ? (
+        {reviews.length === 0 ? (
           <div className="text-center py-8 text-base-content/50">
             <MessageSquareIcon className="size-8 mx-auto mb-2 opacity-30" />
-            <p className="text-sm">No comments yet. Be first!</p>
+            <p className="text-sm">No reviews yet. Be first!</p>
           </div>
         ) : (
-          comments.map((comment) => (
-            <CommentCard
-              key={comment.id}
-              comment={comment}
+          reviews.map((review) => (
+            <ReviewCard
+              key={review.id}
+              review={review}
               currentUserId={currentUserId}
               productId={productId}
             />
@@ -96,4 +97,4 @@ function CommentsSection({
   );
 }
 
-export default CommentsSection;
+export default ReviewsSection;
