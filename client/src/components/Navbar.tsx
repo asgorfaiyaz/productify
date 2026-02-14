@@ -14,7 +14,7 @@ import { useAuthRole } from "@/hooks/useAuthReq";
 import { useSidebar } from "./ui/sidebar";
 import { Input } from "@/components/ui/input";
 import { useFilterStore } from "@/store/filter-store";
-import { GuestLoginButton } from "./guestLogin";
+import { GuestLoginButton } from "./GuestLogin";
 
 function Navbar() {
   const { filters, setFilters } = useFilterStore();
