@@ -25,3 +25,7 @@ export const useIsAdmin = () => {
   const { user } = useUser();
   return user?.publicMetadata?.role === "admin";
 };
+export const useAuthRole = (): "admin" | "guest" | "user" => {
+  const { user } = useUser();
+  return user?.publicMetadata?.role || "user";
+};
