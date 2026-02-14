@@ -23,7 +23,7 @@ function CustomerLayout() {
           <CustomerSidebar />
           <div className="flex-1">
             <Navbar />
-            <main className="mx-auto w-full px-4 py-6">
+            <main className="mx-auto w-full p-6">
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route
