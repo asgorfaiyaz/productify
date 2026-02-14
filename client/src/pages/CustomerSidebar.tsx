@@ -72,6 +72,7 @@ function CustomerSidebar() {
 
                         hasScrolledRef.current = true;
                       }
+
                       setFilters({
                         categoryId: undefined,
                         search: "",
@@ -81,45 +82,63 @@ function CustomerSidebar() {
                         navigate("/");
                       }
                     }}
-                    className="w-full text-left font-medium"
+                    className={`w-full capitalize text-left ${
+                      filters.categoryId === undefined
+                        ? "font-semibold text-primary"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
                   >
                     All
                   </button>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               {(isCategoriesLoading ? tempCategories : categories).map(
-                (category) => (
-                  <SidebarMenuItem key={category.id}>
-                    <SidebarMenuButton asChild>
-                      <button
-                        onClick={() => {
-                          if (location.pathname !== "/") {
-                            navigate("/");
-                          }
-                          if (!hasScrolledRef.current) {
-                            document
-                              .getElementById("products")
-                              ?.scrollIntoView({ behavior: "auto" });
+                (category) => {
+                  const isActive = filters.categoryId === category.id;
+                  return (
+                    <SidebarMenuItem key={category.id}>
+                      <SidebarMenuButton asChild>
+                        <button
+                          onClick={() => {
+                            if (location.pathname !== "/") {
+                              navigate("/");
+                            }
+                            if (!hasScrolledRef.current) {
+                              document
+                                .getElementById("products")
+                                ?.scrollIntoView({ behavior: "auto" });
 
-                            hasScrolledRef.current = true;
-                          }
-                          setFilters({
-                            categoryId: category.id,
-                            page: 1,
-                            search: undefined,
-                          });
-
-                          if (isMobile) {
-                            setOpenMobile(false);
-                          }
-                        }}
-                        className="w-full capitalize text-left"
-                      >
-                        {category.name}
-                      </button>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ),
+                              hasScrolledRef.current = true;
+                            }
+                            if (isActive) {
+                              setFilters({
+                                categoryId: undefined,
+                                page: 1,
+                                search: undefined,
+                              });
+                              return;
+                            }
+                            setFilters({
+                              categoryId: category.id,
+                              page: 1,
+                              search: undefined,
+                            });
+                            if (isMobile) {
+                              setOpenMobile(false);
+                            }
+                          }}
+                          className={`w-full capitalize text-left ${
+                            isActive
+                              ? "font-semibold text-primary"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          {category.name}
+                        </button>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                },
               )}
             </SidebarMenu>
           </SidebarGroupContent>
