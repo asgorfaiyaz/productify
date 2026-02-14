@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
-import { SignInButton, SignUpButton, useAuth } from "@clerk/clerk-react";
+import { SignInButton, useAuth } from "@clerk/clerk-react";
 import {
   ShoppingBagIcon,
   LayoutDashboardIcon,
@@ -10,15 +10,16 @@ import {
 } from "lucide-react";
 
 import { Cart } from "./Cart";
-import { useIsAdmin } from "@/hooks/useAuthReq";
+import { useAuthRole } from "@/hooks/useAuthReq";
 import { useSidebar } from "./ui/sidebar";
 import { Input } from "@/components/ui/input";
 import { useFilterStore } from "@/store/filter-store";
+import { GuestLoginButton } from "./guestLogin";
 
 function Navbar() {
   const { filters, setFilters } = useFilterStore();
   const { isSignedIn } = useAuth();
-  const isAdmin = useIsAdmin();
+  const role = useAuthRole();
   const { toggleSidebar } = useSidebar();
   const [forceShowSearch, setForceShowSearch] = useState(false);
   const navbarRef = useRef<HTMLDivElement>(null);
@@ -138,7 +139,7 @@ function Navbar() {
           <div className="hidden lg:flex gap-2 items-center ml-auto">
             {isSignedIn ? (
               <>
-                {isAdmin && (
+                {role !== "user" && (
                   <Link to="/dashboard" className="btn btn-ghost btn-sm gap-1">
                     <LayoutDashboardIcon className="w-4 h-4" />
                     Dashboard
@@ -154,11 +155,7 @@ function Navbar() {
                     Sign In
                   </button>
                 </SignInButton>
-                <SignUpButton mode="modal">
-                  <button className="btn btn-primary btn-sm">
-                    Get Started
-                  </button>
-                </SignUpButton>
+                <GuestLoginButton />
               </>
             )}
           </div>

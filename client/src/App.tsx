@@ -1,12 +1,12 @@
 import { Navigate, Route, Routes } from "react-router";
-import { useAuthReq, useIsAdmin } from "./hooks/useAuthReq";
+import { useAuthReq, useAuthRole } from "./hooks/useAuthReq";
 
 import DashboardLayout from "./dashboard/pages/DashboardLayout";
 import CustomerLayout from "./components/CustomerLayout";
 
 function App() {
   const { isSignedIn, isClerkLoaded } = useAuthReq();
-  const isAdmin = useIsAdmin();
+  const userRole = useAuthRole();
   if (!isClerkLoaded) return null;
 
   return (
@@ -16,7 +16,11 @@ function App() {
         <Route
           path="/dashboard/*"
           element={
-            isSignedIn && isAdmin ? <DashboardLayout /> : <Navigate to="/" />
+            isSignedIn && userRole !== "user" ? (
+              <DashboardLayout />
+            ) : (
+              <Navigate to="/" />
+            )
           }
         />
 

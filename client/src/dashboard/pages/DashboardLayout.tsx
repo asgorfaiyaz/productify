@@ -7,14 +7,14 @@ import { DashboardSidebar } from "./sidebar/DashboardSidebar";
 import CreatePage from "@/pages/CreatePage";
 import { DashboardUsers } from "./DashboardUsers";
 import { DashboardProducts } from "./DashboardProducts";
-import { useIsAdmin } from "@/hooks/useAuthReq";
+import { useAuthRole } from "@/hooks/useAuthReq";
 import { DashboardCategories } from "./DashboardCategories";
 import { CreateCategory } from "./CreateCategory";
 import DashboardCreateUserPage from "./DashboardCreateUserPage";
 
 function DashboardLayout() {
-  const isAdmin = useIsAdmin();
-  if (!isAdmin) return null;
+  const role = useAuthRole();
+  if (role === "user") return null;
   return (
     <SidebarProvider>
       <section className="flex w-full">
