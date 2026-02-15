@@ -18,6 +18,11 @@ import { getOrdersByDate } from "../services/chart.service.js";
 
 export const getDashboardProducts = handleAsync(
   async (req: Request, res: Response) => {
+    if (req.role !== "admin" && req.role !== "guest") {
+      return res
+        .status(403)
+        .json({ error: "Forbidden: Only admin or guest users are allowed." });
+    }
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
     const { products, totalPages, totalProducts } =
@@ -28,6 +33,11 @@ export const getDashboardProducts = handleAsync(
 
 export const getDashboardUsers = handleAsync(
   async (req: Request, res: Response) => {
+    if (req.role !== "admin" && req.role !== "guest") {
+      return res
+        .status(403)
+        .json({ error: "Forbidden: Only admin or guest users are allowed." });
+    }
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
     const { users, totalPages, totalUsers } =
@@ -38,6 +48,11 @@ export const getDashboardUsers = handleAsync(
 
 export const getDashboardSales = handleAsync(
   async (req: Request, res: Response) => {
+    if (req.role !== "admin" && req.role !== "guest") {
+      return res
+        .status(403)
+        .json({ error: "Forbidden: Only admin or guest users are allowed." });
+    }
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
     const { sales, totalSales, totalPages } =
@@ -74,6 +89,11 @@ function resolvePreset(preset: string): { from: Date; to: Date } | null {
 }
 
 export async function getDashboardSalesByDate(req: Request, res: Response) {
+  if (req.role !== "admin" && req.role !== "guest") {
+    return res
+      .status(403)
+      .json({ error: "Forbidden: Only admin or guest users are allowed." });
+  }
   const { preset, from, to } = req.query as Record<string, string>;
 
   let fromDate: Date;
@@ -112,6 +132,11 @@ export async function getDashboardSalesByDate(req: Request, res: Response) {
 
 export const getDashboardCategories = handleAsync(
   async (req: Request, res: Response) => {
+    if (req.role !== "admin" && req.role !== "guest") {
+      return res
+        .status(403)
+        .json({ error: "Forbidden: Only admin or guest users are allowed." });
+    }
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
     const { categories, totalCategories, totalPages } =

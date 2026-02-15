@@ -12,27 +12,28 @@ import {
   getDashboardSalesByDate,
   getDashboardUsers,
 } from "../controllers/dashboard.controller.js";
+import { attachRole } from "../middlewares/attachRole.js";
 const router = express.Router();
 
 router
   .route("/products")
-  .get(requireAuth(), requireUser, requireAdmin, getDashboardProducts);
+  .get(requireAuth(), requireUser, attachRole, getDashboardProducts);
 
 router
   .route("/sales")
-  .get(requireAuth(), requireUser, requireAdmin, getDashboardSales);
+  .get(requireAuth(), requireUser, attachRole, getDashboardSales);
 router
   .route("/sales/by-date")
-  .get(requireAuth(), requireUser, requireAdmin, getDashboardSalesByDate);
+  .get(requireAuth(), requireUser, attachRole, getDashboardSalesByDate);
 
 router
   .route("/users")
-  .get(requireAuth(), requireUser, requireAdmin, getDashboardUsers)
+  .get(requireAuth(), requireUser, attachRole, getDashboardUsers)
   .post(requireAuth(), requireUser, requireAdmin, createDashboardUser);
 
 router
   .route("/categories")
-  .get(requireAuth(), requireUser, requireAdmin, getDashboardCategories)
+  .get(requireAuth(), requireUser, attachRole, getDashboardCategories)
   .post(requireAuth(), requireUser, requireAdmin, createDashboardCategory);
 
 router
