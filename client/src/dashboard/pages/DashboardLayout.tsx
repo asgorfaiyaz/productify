@@ -4,13 +4,13 @@ import DashboardPage from "./DashboardPage";
 import DashboardSales from "./DashboardSales";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "./sidebar/DashboardSidebar";
-import CreatePage from "@/pages/CreatePage";
 import { DashboardUsers } from "./DashboardUsers";
 import { DashboardProducts } from "./DashboardProducts";
 import { useAuthRole } from "@/hooks/useAuthReq";
 import { DashboardCategories } from "./DashboardCategories";
 import { CreateCategory } from "./CreateCategory";
 import DashboardCreateUserPage from "./DashboardCreateUserPage";
+import DashboardCreateProductPage from "@/pages/CreatePage";
 
 function DashboardLayout() {
   const role = useAuthRole();
@@ -25,7 +25,10 @@ function DashboardLayout() {
             <Routes>
               <Route index element={<DashboardPage />} />
               <Route path="products" element={<DashboardProducts />} />
-              <Route path="products/create" element={<CreatePage />} />
+              <Route
+                path="products/create"
+                element={<DashboardCreateProductPage />}
+              />
               <Route path="categories" element={<DashboardCategories />} />
               <Route path="categories/create" element={<CreateCategory />} />
               <Route path="users" element={<DashboardUsers />} />
