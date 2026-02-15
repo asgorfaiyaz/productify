@@ -31,7 +31,7 @@ export const DashboardCategories = () => {
           <Skeleton className="h-4 w-48 mt-2" />
         </CardHeader>
         <CardContent className="space-y-3">
-          {[...Array(5)].map((_, i) => (
+          {[...Array(7)].map((_, i) => (
             <Skeleton key={i} className="h-12 w-full" />
           ))}
         </CardContent>
