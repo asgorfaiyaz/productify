@@ -1,61 +1,45 @@
-import { eq, gte, lte, and, asc } from "drizzle-orm";
+import { sql, gte, lte, and } from "drizzle-orm";
+import { startOfDay, endOfDay } from "date-fns";
 import db from "../db/index.js";
 import { PurchasesTable } from "../db/schema.js";
-import { eachDayOfInterval, interval, startOfDay } from "date-fns";
 
-export const getSalesDataByDate = async ({
-  createdAfter,
-  createdBefore,
-}: {
-  createdAfter: Date;
-  createdBefore?: Date;
-}) => {
-  const conditions = [];
-  if (createdAfter) {
-    conditions.push(gte(PurchasesTable.createdAt, createdAfter));
-  }
-  if (createdBefore) {
-    conditions.push(lte(PurchasesTable.createdAt, createdBefore));
-  }
-  const whereConditions =
-    conditions.length > 0 ? and(...conditions) : undefined;
+export interface OrdersByDateParams {
+  from: Date;
+  to: Date;
+}
 
-  const result = await db.query.PurchasesTable.findMany({
-    columns: {
-      createdAt: true,
-      totalAmount: true,
-    },
-    where: whereConditions,
-    orderBy: asc(PurchasesTable.createdAt),
-  });
+export interface OrdersByDateResult {
+  date: string;
+  totalOrders: number;
+  totalRevenue: number;
+}
 
-  const DATE_FORMATTER = new Intl.DateTimeFormat("en", {
-    dateStyle: "medium",
-  });
+export async function getOrdersByDate(
+  params: OrdersByDateParams,
+): Promise<OrdersByDateResult[]> {
+  const { from, to } = params;
 
-  function formatDate(date: Date) {
-    return DATE_FORMATTER.format(date);
-  }
+  const rows = await db
+    .select({
+      date: sql<string>`DATE(${PurchasesTable.createdAt})`.as("date"),
+      totalOrders: sql<number>`COUNT(*)`.as("total_orders"),
+      totalRevenue: sql<number>`SUM(${PurchasesTable.totalAmount})`.as(
+        "total_revenue",
+      ),
+    })
+    .from(PurchasesTable)
+    .where(
+      and(
+        gte(PurchasesTable.createdAt, startOfDay(from)),
+        lte(PurchasesTable.createdAt, endOfDay(to)),
+      ),
+    )
+    .groupBy(sql`DATE(${PurchasesTable.createdAt})`)
+    .orderBy(sql`DATE(${PurchasesTable.createdAt}) ASC`);
 
-  const dayArray = eachDayOfInterval(
-    interval(
-      createdAfter || startOfDay(result[0].createdAt),
-      createdBefore || new Date(),
-    ),
-  ).map((date) => {
-    return {
-      date: formatDate(date),
-      totalSales: 0,
-    };
-  });
-
-  return {
-    data: result.reduce((data, order) => {
-      const formattedDate = formatDate(order.createdAt);
-      const entry = dayArray.find((day) => day.date === formattedDate);
-      if (entry == null) return data;
-      entry.totalSales += order.totalAmount / 100;
-      return data;
-    }, dayArray),
-  };
-};
+  return rows.map((row) => ({
+    date: row.date,
+    totalOrders: Number(row.totalOrders),
+    totalRevenue: Number(row.totalRevenue ?? 0),
+  }));
+}

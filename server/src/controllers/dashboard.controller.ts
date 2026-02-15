@@ -13,6 +13,8 @@ import {
   getClerkIdByUserId,
 } from "../services/user.service.js";
 import { getParam } from "../utils/getParam.js";
+import { endOfDay, startOfDay, subDays } from "date-fns";
+import { getOrdersByDate } from "../services/chart.service.js";
 
 export const getDashboardProducts = handleAsync(
   async (req: Request, res: Response) => {
@@ -43,6 +45,70 @@ export const getDashboardSales = handleAsync(
     return res.status(200).json({ sales, totalSales, totalPages });
   },
 );
+
+// Resolve a named preset → { from, to }
+function resolvePreset(preset: string): { from: Date; to: Date } | null {
+  const now = new Date();
+
+  const presets: Record<string, { from: Date; to: Date }> = {
+    today: { from: startOfDay(now), to: endOfDay(now) },
+    yesterday: {
+      from: startOfDay(subDays(now, 1)),
+      to: endOfDay(subDays(now, 1)),
+    },
+    "7days": { from: startOfDay(subDays(now, 6)), to: endOfDay(now) },
+    "14days": { from: startOfDay(subDays(now, 13)), to: endOfDay(now) },
+    "30days": { from: startOfDay(subDays(now, 29)), to: endOfDay(now) },
+    "90days": { from: startOfDay(subDays(now, 89)), to: endOfDay(now) },
+    this_month: {
+      from: startOfDay(new Date(now.getFullYear(), now.getMonth(), 1)),
+      to: endOfDay(now),
+    },
+    last_month: {
+      from: startOfDay(new Date(now.getFullYear(), now.getMonth() - 1, 1)),
+      to: endOfDay(new Date(now.getFullYear(), now.getMonth(), 0)),
+    },
+  };
+
+  return presets[preset] ?? null;
+}
+
+export async function getDashboardSalesByDate(req: Request, res: Response) {
+  const { preset, from, to } = req.query as Record<string, string>;
+
+  let fromDate: Date;
+  let toDate: Date;
+
+  if (preset) {
+    const resolved = resolvePreset(preset);
+    if (!resolved) {
+      return res.status(400).json({ error: `Unknown preset: "${preset}"` });
+    }
+    fromDate = resolved.from;
+    toDate = resolved.to;
+  } else if (from && to) {
+    // Custom range — client sends ISO strings e.g. "2025-01-01"
+    fromDate = new Date(from);
+    toDate = new Date(to);
+
+    if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+      return res
+        .status(400)
+        .json({ error: "Invalid from/to date format. Use ISO 8601." });
+    }
+    if (fromDate > toDate) {
+      return res.status(400).json({ error: "`from` must be before `to`." });
+    }
+  } else {
+    // Default fallback
+    fromDate = startOfDay(subDays(new Date(), 6));
+    toDate = endOfDay(new Date());
+  }
+
+  const data = await getOrdersByDate({ from: fromDate, to: toDate });
+
+  return res.json({ from: fromDate, to: toDate, data });
+}
 
 export const getDashboardCategories = handleAsync(
   async (req: Request, res: Response) => {
