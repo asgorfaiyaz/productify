@@ -57,6 +57,13 @@
       "when": 1770980234766,
       "tag": "0007_sloppy_chronomancer",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1771167559138,
+      "tag": "0008_tan_silver_samurai",
+      "breakpoints": true
     }
   ]
 }

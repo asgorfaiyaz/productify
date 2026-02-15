@@ -5,7 +5,7 @@ import { ProductsTable } from "./products.js";
 import { PurchasesTable } from "./purchases.js";
 import { ReviewsTable } from "./reviews.js";
 
-export const userRoles = ["user", "admin"] as const;
+export const userRoles = ["user", "admin", "guest"] as const;
 export type UserRole = (typeof userRoles)[number];
 export const UserRoleEnum = pgEnum("user_role", userRoles);
 
