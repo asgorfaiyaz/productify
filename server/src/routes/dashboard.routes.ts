@@ -9,6 +9,7 @@ import {
   getDashboardCategories,
   getDashboardProducts,
   getDashboardSales,
+  getDashboardSalesByDate,
   getDashboardUsers,
 } from "../controllers/dashboard.controller.js";
 const router = express.Router();
@@ -20,6 +21,9 @@ router
 router
   .route("/sales")
   .get(requireAuth(), requireUser, requireAdmin, getDashboardSales);
+router
+  .route("/sales/by-date")
+  .get(requireAuth(), requireUser, requireAdmin, getDashboardSalesByDate);
 
 router
   .route("/users")
