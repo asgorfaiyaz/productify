@@ -96,6 +96,19 @@ export const fetchDashboardSales = async (
   );
   return response.data;
 };
+// accepts either a preset string OR a custom from/to range
+export type SalesByDateParams =
+  | { preset: string; from?: never; to?: never }
+  | { preset?: never; from: string; to: string };
+
+export const fetchDashboardSalesByDate = async (
+  params: SalesByDateParams = { preset: "last_7_days" }
+): Promise<{ date: string; totalOrders: number; totalRevenue: number }[]> => {
+  const response = await axiosInstance.get(`/dashboard/sales/by-date`, {
+    params, // axios serializes this to ?preset=last_7_days or ?from=...&to=...
+  });
+  return response.data.data; // ← your API returns { data: [...] }
+};
 export const createUser = async (data: {
   firstName: string;
   lastName: string;

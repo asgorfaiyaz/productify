@@ -5,7 +5,9 @@ import {
   fetchDashboardCategories,
   fetchDashboardProducts,
   fetchDashboardSales,
+  fetchDashboardSalesByDate,
   fetchDashboardUsers,
+  type SalesByDateParams,
 } from "@/api/dashboards";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -25,6 +27,13 @@ export function useDashboardSales(page: number) {
   return useQuery({
     queryFn: () => fetchDashboardSales(page),
     queryKey: ["dashboardsales", page],
+  });
+}
+
+export function useDashboardSalesByDate(params: SalesByDateParams) {
+  return useQuery({
+    queryKey: ["dashboardSalesByDate", params], // re-fetches when params change
+    queryFn: () => fetchDashboardSalesByDate(params),
   });
 }
 export function useDashboardCategories(page: number) {
