@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ChevronsUpDown, LogOut, ShoppingBag, UserRound } from "lucide-react";
+import { ChevronsUpDown, LogOut, UserRound } from "lucide-react";
 import { Link } from "react-router";
 import { useClerk, useUser } from "@clerk/clerk-react";
 
@@ -64,8 +64,8 @@ export function DashboardSidebarFooter() {
 
             {/* ── Dropdown ── */}
             <DropdownMenuContent
-              side="right"
-              align="end"
+              side="top"
+              align="center"
               sideOffset={8}
               className="w-56 rounded-lg"
             >
@@ -91,16 +91,9 @@ export function DashboardSidebarFooter() {
 
               {/* Navigation links */}
               <DropdownMenuItem asChild>
-                <Link to="/account">
+                <Link to="/profile">
                   <UserRound className="mr-2 size-4" />
                   Account
-                </Link>
-              </DropdownMenuItem>
-
-              <DropdownMenuItem asChild>
-                <Link to="/orders">
-                  <ShoppingBag className="mr-2 size-4" />
-                  Orders
                 </Link>
               </DropdownMenuItem>
 
