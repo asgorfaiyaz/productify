@@ -20,7 +20,6 @@ function DashboardLayout() {
       <section className="flex w-full">
         <DashboardSidebar />
         <section className="flex-1">
-          <DashboardNavbar />
           <main className="mx-auto px-4 py-6">
             <Routes>
               <Route index element={<DashboardPage />} />
