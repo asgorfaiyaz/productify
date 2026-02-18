@@ -218,7 +218,7 @@ export default function TotalRevenueBarChart() {
           <ChartContainer config={chartConfig} className="h-48 w-full sm:h-64">
             <BarChart
               data={data}
-              margin={{ top: 4, right: 0, left: -16, bottom: 0 }}
+              margin={{ top: 4, right: 0, left: 0, bottom: 0 }}
             >
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
               <XAxis
