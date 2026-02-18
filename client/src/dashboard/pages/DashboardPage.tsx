@@ -2,6 +2,7 @@ import { Globe, Lock, DollarSign, Package } from "lucide-react";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useMyProducts } from "../../hooks/useProducts";
 import TotalRevenueBarChart from "../charts/TotalRevenueBarChart";
+import OrdersByDayChart from "../charts/OrdersByDayChart";
 // import { formatCurrency } from "../../lib/formatter";
 // import { useSalesDataByUser } from "@/hooks/usePurchases";
 
@@ -109,11 +110,9 @@ function DashboardPage() {
           <div className="bg-primary-foreground p-4 rounded-lg 2xl:col-span-2">
             <TotalRevenueBarChart />
           </div>
-          <div className="bg-primary-foreground p-4 rounded-lg">Test</div>
-          <div className="bg-primary-foreground p-4 rounded-lg">Test</div>
-          <div className="bg-primary-foreground p-4 rounded-lg">Test</div>
-          <div className="bg-primary-foreground p-4 rounded-lg">Test</div>
-          <div className="bg-primary-foreground p-4 rounded-lg">Test</div>
+          <div className="bg-primary-foreground p-4 rounded-lg h-full">
+            <OrdersByDayChart />
+          </div>
         </div>
       </div>
     </>
