@@ -70,9 +70,9 @@ export function CustomerSidebarFooter() {
             {/* ── Trigger ── */}
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton size="lg">
-                <Avatar className="h-8 w-8 rounded-lg">
+                <Avatar className="h-8 w-8 rounded-full">
                   <AvatarImage src={imageUrl} alt={fullName} />
-                  <AvatarFallback className="rounded-lg">
+                  <AvatarFallback className="rounded-full">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
