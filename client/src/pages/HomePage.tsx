@@ -2,12 +2,12 @@ import { PackageIcon, SparklesIcon } from "lucide-react";
 import { Link } from "react-router";
 import { useProducts } from "../hooks/useProducts";
 import ProductCard from "../components/ProductCard";
-import LoadingSpinner from "../components/LoadingSpinner";
 import ProductPagination from "@/components/ProductPagination";
 import { useFilterStore } from "@/store/filter-store";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/swiper-bundle.css";
+import ProductSkeleton from "@/components/ProuductSkeleton";
 function HomePage() {
   const { filters, setFilters } = useFilterStore();
   const { data, isLoading } = useProducts();
@@ -99,30 +99,30 @@ function HomePage() {
           />
         )}
 
-        {data?.products?.length === 0 ? (
-          <div className="card bg-base-300">
-            <div className="card-body items-center text-center py-14">
-              <PackageIcon className="size-16 text-base-content/20" />
-              <h3 className="card-title text-base-content/50">
-                No products yet
-              </h3>
-              <p className="text-base-content/40 text-sm">
-                Be the first to share something!
+        {/* The Grid Container */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {isLoading ? (
+            // Show a nice batch of 8 skeletons to fill the screen
+            Array.from({ length: 8 }).map((_, i) => <ProductSkeleton key={i} />)
+          ) : data?.products?.length === 0 ? (
+            // Empty State
+            <div className="col-span-full flex flex-col items-center justify-center py-20 border-2 border-dashed rounded-xl bg-muted/50">
+              <PackageIcon className="size-12 text-muted-foreground mb-4" />
+              <h3 className="text-xl font-semibold">No products found</h3>
+              <p className="text-muted-foreground mb-6">
+                Start by adding a new item to the store.
               </p>
-              <Link to="/create" className="btn btn-primary btn-sm mt-2">
+              <Link to="/create" className="btn btn-primary">
                 Create Product
               </Link>
             </div>
-          </div>
-        ) : isLoading ? (
-          <LoadingSpinner />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {data?.products?.map((product) => (
+          ) : (
+            // Success State
+            data?.products?.map((product) => (
               <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
