@@ -1,35 +1,47 @@
 import { useSignIn } from "@clerk/clerk-react";
 import { useNavigate } from "react-router";
+import { Loader2 } from "lucide-react";
+import { useAuthStore } from "@/store/auth-store";
 
 export const GuestLoginButton = () => {
   const { isLoaded, signIn, setActive } = useSignIn();
   const navigate = useNavigate();
+  const { isAuthLoading, setAuthLoading } = useAuthStore();
 
   const loginAsGuest = async () => {
-    if (!isLoaded) return;
-
+    if (!isLoaded || isAuthLoading) return;
     try {
-      // 1. Start the sign-in process with the guest credentials
+      setAuthLoading(true);
       const result = await signIn.create({
-        identifier: "guestuser@gmail.com", // The email you created
-        password: "Guest2026", // The password you created
+        identifier: "guestuser@gmail.com",
+        password: "Guest2026",
       });
 
-      // 2. If successful, set the session as active
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
-
-        // 3. Send them straight to the dashboard!
         navigate("/dashboard");
       }
     } catch (err) {
       console.error("Guest login failed:", err);
+    } finally {
+      setAuthLoading(false);
     }
   };
 
   return (
-    <button onClick={loginAsGuest} className="btn btn-primary btn-sm">
-      Guest Mode
+    <button
+      onClick={loginAsGuest}
+      disabled={isAuthLoading}
+      className="btn btn-primary btn-sm flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+    >
+      {isAuthLoading ? (
+        <>
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Signing in...
+        </>
+      ) : (
+        "Guest Mode"
+      )}
     </button>
   );
 };
