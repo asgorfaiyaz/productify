@@ -1,8 +1,8 @@
 import { Globe, Lock, DollarSign, Package } from "lucide-react";
-import LoadingSpinner from "../../components/LoadingSpinner";
 import { useMyProducts } from "../../hooks/useProducts";
 import TotalRevenueBarChart from "../charts/TotalRevenueBarChart";
 import OrdersByDayChart from "../charts/OrdersByDayChart";
+import StatCardSkeleton from "../components/StatCardSkeleton";
 // import { formatCurrency } from "../../lib/formatter";
 // import { useSalesDataByUser } from "@/hooks/usePurchases";
 
@@ -31,7 +31,11 @@ function DashboardPage() {
 
         {/* Content */}
         {isLoading ? (
-          <LoadingSpinner />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <StatCardSkeleton key={i} />
+            ))}
+          </div>
         ) : error ? (
           <div className="alert alert-error">
             Failed to load products. Please retry.
