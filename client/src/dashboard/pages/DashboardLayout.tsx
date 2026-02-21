@@ -8,9 +8,9 @@ import { DashboardUsers } from "./DashboardUsers";
 import { DashboardProducts } from "./DashboardProducts";
 import { useAuthRole } from "@/hooks/useAuthReq";
 import { DashboardCategories } from "./DashboardCategories";
-import { CreateCategory } from "./CreateCategory";
 import DashboardCreateUserPage from "./DashboardCreateUserPage";
 import DashboardCreateProductPage from "@/pages/CreatePage";
+import { DashboardCreateCategoryPage } from "./CreateCategory";
 
 function DashboardLayout() {
   const role = useAuthRole();
@@ -30,7 +30,10 @@ function DashboardLayout() {
                 element={<DashboardCreateProductPage />}
               />
               <Route path="categories" element={<DashboardCategories />} />
-              <Route path="categories/create" element={<CreateCategory />} />
+              <Route
+                path="categories/create"
+                element={<DashboardCreateCategoryPage />}
+              />
               <Route path="users" element={<DashboardUsers />} />
               <Route
                 path="users/create"
