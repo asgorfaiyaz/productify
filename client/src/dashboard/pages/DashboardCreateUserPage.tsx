@@ -46,7 +46,7 @@ function DashboardCreateUserPage() {
   const isFormFilled = firstName.trim() && lastName.trim() && email.trim();
 
   return (
-    <div className="min-h-screen w-full bg-background p-8">
+    <div className="min-h-screen w-full lg:p-8 lg:pt-0">
       <div className="mx-auto">
         {/* Back link */}
         <Button
@@ -181,7 +181,7 @@ function DashboardCreateUserPage() {
                 <Button
                   type="submit"
                   disabled={isPending || !isFormFilled}
-                  className="min-w-[130px] gap-2"
+                  className="min-w-32 gap-2"
                 >
                   {isPending ? (
                     <>
