@@ -42,6 +42,24 @@ export const getDashboardProductsFromService = async (
     totalPages,
   };
 };
+
+export const getDashboardOverviewFromService = async () => {
+  const overview = await db
+    .select({
+      totalProducts: sql<number>`count(*)`,
+      totalPublicProducts: sql<number>`count(*) filter (where status = 'public')`,
+      totalPrivateProducts: sql<number>`count(*) filter (where status = 'private')`,
+    })
+    .from(ProductsTable);
+  const sales = await db
+    .select({
+      totalSales: sql<number>`count(*)`,
+      totalRevenue: sql<number>`sum(total_amount)`,
+      avgSales: sql<number>`avg(total_amount)`,
+    })
+    .from(PurchasesTable);
+  return { ...overview[0], ...sales[0] };
+};
 export const getDashboardUsersFromService = async (
   page: number,
   limit: number,

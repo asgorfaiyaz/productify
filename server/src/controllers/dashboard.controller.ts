@@ -3,6 +3,7 @@ import handleAsync from "../utils/handleAsync.js";
 import {
   createCategoryFromDashboard,
   getDashboardCategoriesFromService,
+  getDashboardOverviewFromService,
   getDashboardProductsFromService,
   getDashboardSalesFromService,
   getDashboardUsersFromService,
@@ -28,6 +29,32 @@ export const getDashboardProducts = handleAsync(
     const { products, totalPages, totalProducts } =
       await getDashboardProductsFromService(page, limit);
     return res.status(200).json({ products, totalPages, totalProducts });
+  },
+);
+export const getDashboardOverview = handleAsync(
+  async (req: Request, res: Response) => {
+    if (req.role !== "admin" && req.role !== "guest") {
+      return res
+        .status(403)
+        .json({ error: "Forbidden: Only admin or guest users are allowed." });
+    }
+
+    const {
+      totalProducts,
+      totalSales,
+      totalRevenue,
+      totalPublicProducts,
+      totalPrivateProducts,
+      avgSales,
+    } = await getDashboardOverviewFromService();
+    return res.status(200).json({
+      totalProducts,
+      totalSales,
+      totalRevenue,
+      totalPublicProducts,
+      totalPrivateProducts,
+      avgSales,
+    });
   },
 );
 

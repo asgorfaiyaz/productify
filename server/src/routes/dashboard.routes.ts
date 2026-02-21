@@ -7,6 +7,7 @@ import {
   createDashboardUser,
   deleteDashboardUser,
   getDashboardCategories,
+  getDashboardOverview,
   getDashboardProducts,
   getDashboardSales,
   getDashboardSalesByDate,
@@ -15,6 +16,9 @@ import {
 import { attachRole } from "../middlewares/attachRole.js";
 const router = express.Router();
 
+router
+  .route("/overview")
+  .get(requireAuth(), requireUser, attachRole, getDashboardOverview);
 router
   .route("/products")
   .get(requireAuth(), requireUser, attachRole, getDashboardProducts);
