@@ -86,7 +86,7 @@ function DashboardCreateProductPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-8">
+    <div className="min-h-screen lg:p-8 lg:pt-0">
       <div className="mx-auto">
         {/* Back link */}
         <Button
@@ -360,7 +360,7 @@ function DashboardCreateProductPage() {
             <Button
               type="submit"
               disabled={!isFormValid || createProductMutation.isPending}
-              className="min-w-[145px] gap-2"
+              className="min-w-36 gap-2"
             >
               {createProductMutation.isPending ? (
                 <>
