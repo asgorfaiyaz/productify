@@ -1,20 +1,15 @@
 import { Globe, Lock, DollarSign, Package } from "lucide-react";
-import { useMyProducts } from "../../hooks/useProducts";
 import TotalRevenueBarChart from "../charts/TotalRevenueBarChart";
 import OrdersByDayChart from "../charts/OrdersByDayChart";
 import StatCardSkeleton from "../components/StatCardSkeleton";
+import { useDashboardOverviewData } from "@/hooks/useDashboards";
+import { formatCurrency } from "@/lib/formatter";
 // import { formatCurrency } from "../../lib/formatter";
 // import { useSalesDataByUser } from "@/hooks/usePurchases";
 
 function DashboardPage() {
-  const { data: products, error, isLoading } = useMyProducts();
+  const { data: overviewData, error, isLoading } = useDashboardOverviewData();
   // const { data: salesInfo, isLoading } = useSalesDataByUser();
-
-  const totalProducts = products?.length || 0;
-  const publicProducts =
-    products?.filter((p) => p.status === "public").length || 0;
-  const privateProducts =
-    products?.filter((p) => p.status === "private").length || 0;
 
   return (
     <>
@@ -48,7 +43,9 @@ function DashboardPage() {
                 <Package className="size-6" />
               </div>
               <div className="stat-title">Total Products</div>
-              <div className="stat-value text-primary">{totalProducts}</div>
+              <div className="stat-value text-primary">
+                {overviewData?.totalProducts}
+              </div>
             </div>
             {/* Total Sales */}
             <div className="stat bg-base-300 rounded-xl shadow">
@@ -57,7 +54,7 @@ function DashboardPage() {
               </div>
               <div className="stat-title">Total Sales</div>
               <div className="stat-value text-primary">
-                {/* {salesInfo?.totalSales} */} 0
+                {overviewData?.totalSales}
               </div>
             </div>
 
@@ -67,7 +64,9 @@ function DashboardPage() {
                 <Globe className="size-6" />
               </div>
               <div className="stat-title">Public Products</div>
-              <div className="stat-value text-success">{publicProducts}</div>
+              <div className="stat-value text-success">
+                {overviewData?.totalPublicProducts}
+              </div>
             </div>
 
             {/* Private */}
@@ -76,7 +75,9 @@ function DashboardPage() {
                 <Lock className="size-6" />
               </div>
               <div className="stat-title">Private Products</div>
-              <div className="stat-value text-warning">{privateProducts}</div>
+              <div className="stat-value text-warning">
+                {overviewData?.totalPrivateProducts}
+              </div>
             </div>
 
             {/* Total Value */}
@@ -84,12 +85,13 @@ function DashboardPage() {
               <div className="stat-figure text-primary">
                 <DollarSign className="size-6" />
               </div>
-              <div className="stat-title">Total Revenu</div>
+              <div className="stat-title">Total Revenue</div>
               <div className="stat-value text-primary">
-                {/* {salesInfo?.totalSalesAmount
-                ? formatCurrency(salesInfo?.totalSalesAmount / 100)
-                : 0}{" "} */}
-                0
+                {formatCurrency(
+                  overviewData?.totalRevenue
+                    ? overviewData.totalRevenue / 100
+                    : 0,
+                )}
               </div>
             </div>
 
@@ -100,10 +102,9 @@ function DashboardPage() {
               </div>
               <div className="stat-title">Avg Sale</div>
               <div className="stat-value text-primary">
-                {/* {salesInfo?.averageSaleValue
-                ? formatCurrency(salesInfo?.averageSaleValue / 100)
-                : 0} */}
-                0
+                {formatCurrency(
+                  overviewData?.avgSales ? overviewData.avgSales / 100 : 0,
+                )}
               </div>
             </div>
           </div>
