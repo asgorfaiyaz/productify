@@ -3,6 +3,7 @@ import {
   createUser,
   deleteUser,
   fetchDashboardCategories,
+  fetchDashboardOverviewData,
   fetchDashboardProducts,
   fetchDashboardSales,
   fetchDashboardSalesByDate,
@@ -15,6 +16,12 @@ export function useDashboardProducts(page: number) {
   return useQuery({
     queryFn: () => fetchDashboardProducts(page),
     queryKey: ["dashboardproducts", page],
+  });
+}
+export function useDashboardOverviewData() {
+  return useQuery({
+    queryFn: fetchDashboardOverviewData,
+    queryKey: ["dashboardoverview"],
   });
 }
 export function useDashboardUsers(page: number) {
