@@ -22,6 +22,17 @@ export const fetchDashboardProducts = async (
   );
   return response.data;
 };
+export const fetchDashboardOverviewData = async (): Promise<{
+  totalSales: number;
+  totalRevenue: number;
+  avgSales: number;
+  totalProducts: number;
+  totalPublicProducts: number;
+  totalPrivateProducts: number;
+}> => {
+  const response = await axiosInstance.get(`/dashboard/overview`);
+  return response.data;
+};
 export const fetchDashboardUsers = async (
   page: number,
 ): Promise<{
@@ -102,7 +113,7 @@ export type SalesByDateParams =
   | { preset?: never; from: string; to: string };
 
 export const fetchDashboardSalesByDate = async (
-  params: SalesByDateParams = { preset: "last_7_days" }
+  params: SalesByDateParams = { preset: "last_7_days" },
 ): Promise<{ date: string; totalOrders: number; totalRevenue: number }[]> => {
   const response = await axiosInstance.get(`/dashboard/sales/by-date`, {
     params, // axios serializes this to ?preset=last_7_days or ?from=...&to=...
