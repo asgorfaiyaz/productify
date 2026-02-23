@@ -17,6 +17,7 @@ declare global {
         id: string;
         clerkId: string;
       };
+      role?: UserRole;
     }
   }
 }

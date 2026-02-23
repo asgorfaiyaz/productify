@@ -1,16 +1,12 @@
-import Navbar from "./components/Navbar";
 import { Navigate, Route, Routes } from "react-router";
-import HomePage from "./pages/HomePage";
-import CreatePage from "./pages/CreatePage";
-import useAuthReq from "./hooks/useAuthReq";
-import ProductDetailsPage from "./pages/ProductDetailsPage";
-import EditProductPage from "./pages/EditProductPage";
-import ProfilePage from "./pages/ProfilePage";
-import DashboardNavbar from "./dashboard/DashboardNavbar";
-import DashboardPage from "./dashboard/DashboardPage";
+import { useAuthReq, useAuthRole } from "./hooks/useAuthReq";
+
+import DashboardLayout from "./dashboard/pages/DashboardLayout";
+import CustomerLayout from "./components/CustomerLayout";
 
 function App() {
   const { isSignedIn, isClerkLoaded } = useAuthReq();
+  const userRole = useAuthRole();
   if (!isClerkLoaded) return null;
 
   return (
@@ -20,16 +16,8 @@ function App() {
         <Route
           path="/dashboard/*"
           element={
-            isSignedIn ? (
-              <>
-                <DashboardNavbar />
-                <main className="max-w-6xl mx-auto px-4 py-6">
-                  <Routes>
-                    <Route index element={<DashboardPage />} />
-                    {/* Add more dashboard sub-routes here */}
-                  </Routes>
-                </main>
-              </>
+            isSignedIn && userRole !== "user" ? (
+              <DashboardLayout />
             ) : (
               <Navigate to="/" />
             )
@@ -37,34 +25,7 @@ function App() {
         />
 
         {/* Main app routes with regular Navbar */}
-        <Route
-          path="/*"
-          element={
-            <>
-              <Navbar />
-              <main className="max-w-6xl mx-auto px-4 py-6">
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/product/:id" element={<ProductDetailsPage />} />
-                  <Route
-                    path="/create"
-                    element={isSignedIn ? <CreatePage /> : <Navigate to="/" />}
-                  />
-                  <Route
-                    path="/profile"
-                    element={isSignedIn ? <ProfilePage /> : <Navigate to="/" />}
-                  />
-                  <Route
-                    path="/edit/:id"
-                    element={
-                      isSignedIn ? <EditProductPage /> : <Navigate to="/" />
-                    }
-                  />
-                </Routes>
-              </main>
-            </>
-          }
-        />
+        <Route path="/*" element={<CustomerLayout />} />
       </Routes>
     </div>
   );

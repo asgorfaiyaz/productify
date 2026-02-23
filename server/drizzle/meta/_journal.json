@@ -8,6 +8,62 @@
       "when": 1769101079597,
       "tag": "0000_gigantic_franklin_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1769875145741,
+      "tag": "0001_blushing_ghost_rider",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770116788337,
+      "tag": "0002_long_spyke",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1770195712272,
+      "tag": "0003_whole_mister_fear",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1770479426880,
+      "tag": "0004_pale_turbo",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1770554440694,
+      "tag": "0005_thick_sumo",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1770554713318,
+      "tag": "0006_useful_revanche",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1770980234766,
+      "tag": "0007_sloppy_chronomancer",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1771167559138,
+      "tag": "0008_tan_silver_samurai",
+      "breakpoints": true
     }
   ]
 }

@@ -4,22 +4,40 @@ import {
   CalendarIcon,
   UserIcon,
   Trash2Icon,
+  GlobeIcon,
+  LockIcon,
+  DollarSignIcon,
+  XIcon,
+  ShoppingCartIcon,
 } from "lucide-react";
 import { useAuth } from "@clerk/clerk-react";
 import { useParams, Link, useNavigate } from "react-router";
 import { useDeleteProduct, useProduct } from "../hooks/useProducts";
 import LoadingSpinner from "../components/LoadingSpinner";
-import CommentsSection from "../components/CommentSection";
+import { formatCurrency } from "../lib/formatter";
+import { Button } from "@/components/ui/button";
+import { useCartStore } from "@/store/cart-store";
+import { useIsAdmin } from "@/hooks/useAuthReq";
+import { Badge } from "@/components/ui/badge";
+import ReviewsSection from "@/components/ReviewsSection";
 
 function ProductDetailsPage() {
   const { id } = useParams();
   const { userId } = useAuth();
+  const cart = useCartStore();
+
+  const isInCart = cart.cartItems.some((item) => item.id === id);
+  const isAdmin = useIsAdmin();
   const navigate = useNavigate();
   const { data: product, error, isLoading } = useProduct(id!);
-  const deleteProduct = useDeleteProduct();
+  const {
+    mutate: deleteProduct,
+    error: deleteError,
+    isPending: deleteIsPending,
+  } = useDeleteProduct();
   const handleDelete = () => {
     if (confirm("Delete this product permanently?")) {
-      deleteProduct.mutate(id!, { onSuccess: () => navigate("/") });
+      deleteProduct(id!, { onSuccess: () => navigate("/") });
     }
   };
 
@@ -38,7 +56,7 @@ function ProductDetailsPage() {
     );
   }
 
-  const isOwner = userId === product?.owner.clerkId;
+  const isOwner = userId === product?.owner?.clerkId;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -46,7 +64,7 @@ function ProductDetailsPage() {
         <Link to="/" className="btn btn-ghost btn-sm gap-1">
           <ArrowLeftIcon className="size-4" /> Back
         </Link>
-        {isOwner && (
+        {isOwner && isAdmin && (
           <div className="flex gap-2">
             <Link
               to={`/edit/${product.id}`}
@@ -56,10 +74,10 @@ function ProductDetailsPage() {
             </Link>
             <button
               onClick={handleDelete}
-              className="btn btn-error btn-sm gap-1"
-              disabled={deleteProduct.isPending}
+              className="btn btn-error btn-sm gap-1 text-white"
+              disabled={deleteIsPending}
             >
-              {deleteProduct.isPending ? (
+              {deleteIsPending ? (
                 <span className="loading loading-spinner loading-xs" />
               ) : (
                 <Trash2Icon className="size-4" />
@@ -69,7 +87,13 @@ function ProductDetailsPage() {
           </div>
         )}
       </div>
-
+      {deleteError && (
+        <div className="alert alert-error shadow-lg">
+          <div>
+            <div>{deleteError?.message || "Failed to delete product"}</div>
+          </div>
+        </div>
+      )}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Image */}
         <div className="card bg-base-300">
@@ -86,6 +110,30 @@ function ProductDetailsPage() {
           <div className="card-body">
             <h1 className="card-title text-2xl">{product.title}</h1>
 
+            {/* PRICE & STATUS */}
+            <div className="flex flex-wrap items-center gap-4 mt-1">
+              <div className="flex items-center gap-1 text-lg font-semibold text-primary">
+                <DollarSignIcon className="size-5" />
+                {formatCurrency(product.priceInCents / 100)}
+              </div>
+
+              <span
+                className={`badge badge-outline ${
+                  product.status === "public" ? "badge-success" : "badge-ghost"
+                }`}
+              >
+                {product.status === "public" ? (
+                  <>
+                    <GlobeIcon className="size-3 mr-1" /> Public
+                  </>
+                ) : (
+                  <>
+                    <LockIcon className="size-3 mr-1" /> Private
+                  </>
+                )}
+              </span>
+            </div>
+
             <div className="flex flex-wrap gap-4 text-sm text-base-content/60 my-2">
               <div className="flex items-center gap-1">
                 <CalendarIcon className="size-4" />
@@ -96,12 +144,55 @@ function ProductDetailsPage() {
                 {product?.owner?.name}
               </div>
             </div>
+            {!isInCart ? (
+              <Button
+                variant={"outline"}
+                className="rounded"
+                onClick={() =>
+                  cart.addToCart({
+                    id: product.id,
+                    title: product.title,
+                    description: product.description,
+                    price: product.priceInCents / 100,
+                    imageUrl: product.imageUrl,
+                    quantity: 1,
+                  })
+                }
+              >
+                <ShoppingCartIcon className="size-5" />
+                Add to Cart
+              </Button>
+            ) : (
+              <Button
+                variant="destructive"
+                className="rounded"
+                onClick={() => cart.removeFromCart(product.id)}
+              >
+                <XIcon className="size-5" />
+                Remove from Cart
+              </Button>
+            )}
 
             <div className="divider my-2"></div>
 
             <p className="text-base-content/80 leading-relaxed">
               {product.description}
             </p>
+
+            <div className="flex gap-2 flex-wrap mt-2">
+              {product.categories?.map((category) => (
+                <Link key={category.id} to={`/category/${category.name}`}>
+                  <Badge
+                    variant="outline"
+                    className="capitalize px-3 py-1 cursor-pointer 
+                   hover:bg-primary hover:text-primary-foreground 
+                   transition-colors"
+                  >
+                    #{category.name}
+                  </Badge>
+                </Link>
+              ))}
+            </div>
 
             {product?.owner && (
               <>
@@ -126,12 +217,12 @@ function ProductDetailsPage() {
         </div>
       </div>
 
-      {/* Comments */}
+      {/* Reviews */}
       <div className="card bg-base-300">
         <div className="card-body">
-          <CommentsSection
+          <ReviewsSection
             productId={product.id}
-            comments={product.comments}
+            reviews={product.reviews}
             currentUserId={product.owner.id}
           />
         </div>

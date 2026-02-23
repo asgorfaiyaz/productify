@@ -34,6 +34,7 @@ function EditProductPage() {
       product={product}
       isPending={updateProduct.isPending}
       isError={updateProduct.isError}
+      error={updateProduct.error}
       onSubmit={(formData: {
         title: string;
         description: string;

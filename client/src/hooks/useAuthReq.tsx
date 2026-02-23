@@ -1,8 +1,8 @@
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import { useEffect } from "react";
 import api from "../lib/axios";
 
-function useAuthReq() {
+export function useAuthReq() {
   const { isSignedIn, getToken, isLoaded } = useAuth();
   useEffect(() => {
     const interceptor = api.interceptors.request.use(async (config) => {
@@ -21,4 +21,11 @@ function useAuthReq() {
   return { isSignedIn, isClerkLoaded: isLoaded };
 }
 
-export default useAuthReq;
+export const useIsAdmin = () => {
+  const { user } = useUser();
+  return user?.publicMetadata?.role === "admin";
+};
+export const useAuthRole = (): "admin" | "guest" | "user" => {
+  const { user } = useUser();
+  return user?.publicMetadata?.role || "user";
+};

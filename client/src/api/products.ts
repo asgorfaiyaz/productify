@@ -6,12 +6,14 @@ export const createProduct = async ({
   imageUrl,
   price,
   status,
+  categoryIds,
 }: {
   title: string;
   description: string;
   imageUrl: string;
   price: number;
   status: "public" | "private";
+  categoryIds: string[];
 }) => {
   const response = await axiosInstance.post("/products", {
     title,
@@ -19,6 +21,7 @@ export const createProduct = async ({
     imageUrl,
     price,
     status,
+    categoryIds,
   });
   return response.data;
 };
@@ -31,6 +34,9 @@ export const updateProduct = async ({
     title?: string;
     description?: string;
     imageUrl?: string;
+    price?: number;
+    status?: "public" | "private";
+    categoryIds?: string[];
   };
 }) => {
   const response = await axiosInstance.put(
@@ -40,26 +46,58 @@ export const updateProduct = async ({
   return response.data;
 };
 
-export const fetchProducts = async () => {
-  const response = await axiosInstance.get("/products");
-  if (response.data === null) return [];
-  return response.data as {
+export const fetchProducts = async ({
+  page,
+  limit,
+  categoryId,
+  search,
+  maxPrice,
+  minPrice,
+}: {
+  page: number;
+  limit: number;
+  categoryId?: string;
+  search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+}): Promise<{
+  products: {
     title: string;
     description: string;
     imageUrl: string;
+    priceInCents: number;
+    status: "public" | "private";
     owner: {
       name: string;
       imageUrl: string;
     };
-    comments: { id: string }[];
+    totalReviews: number;
     createdAt: string;
     id: string;
   }[];
+  totalProducts: number;
+  totalPages: number;
+}> => {
+  const response = await axiosInstance.get("/products", {
+    params: {
+      page: page ?? 1,
+      limit,
+      ...(categoryId && { category: categoryId }),
+      ...(search && { search }),
+      ...(minPrice && { minPrice }),
+      ...(maxPrice && { maxPrice }),
+    },
+  });
+
+  return response.data;
 };
 export const fetchMyProducts = async () => {
   const response = await axiosInstance.get("/products/me");
-  if (response.data === null) return [];
-  return response.data as {
+
+  // if backend returns null, undefined, or object with products
+  const productsArray = Array.isArray(response.data) ? response.data : [];
+
+  return productsArray as {
     title: string;
     description: string;
     imageUrl: string;
@@ -70,8 +108,11 @@ export const fetchMyProducts = async () => {
     comments: { id: string }[];
     createdAt: string;
     id: string;
+    priceInCents: number;
+    status: "public" | "private";
   }[];
 };
+
 export const fetchProduct = async (id: string) => {
   const response = await axiosInstance.get(`/products/${id}`);
   return response.data as {
@@ -80,18 +121,22 @@ export const fetchProduct = async (id: string) => {
     title: string;
     description: string;
     imageUrl: string;
+    priceInCents: number;
+    status: "public" | "private";
     owner: {
       id: string;
       name: string;
       imageUrl: string;
       clerkId: string;
     };
-    comments: {
+    reviews: {
       id: string;
       createdAt: string;
       content: string;
+      rating: number;
       owner: { id: string; name: string; imageUrl: string };
     }[];
+    categories: { id: string; name: string }[];
   };
 };
 export const deleteProduct = async (id: string) => {

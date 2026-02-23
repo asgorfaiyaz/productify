@@ -26,7 +26,8 @@ export const createProduct = handleAsync(
         .json({ error: "Invalid input data for creating product" });
     }
 
-    const { title, description, imageUrl, price, status } = parsedData.data;
+    const { title, description, imageUrl, price, status, categoryIds } =
+      parsedData.data;
 
     const product = await insertProduct(userId, {
       title,
@@ -34,6 +35,7 @@ export const createProduct = handleAsync(
       imageUrl,
       price,
       status,
+      categoryIds,
     });
 
     return res.status(201).json(product);
@@ -110,9 +112,29 @@ export const getProduct = handleAsync(async (req: Request, res: Response) => {
   return res.status(200).json(product);
 });
 
-export const getProducts = handleAsync(async (_: Request, res: Response) => {
-  const products = await getAllProducts();
-  return res.status(200).json(products);
+export const getProducts = handleAsync(async (req: Request, res: Response) => {
+  const page = Number(req.query.page) || 1;
+  const minPrice = req.query.minPrice
+    ? parseInt(req.query.minPrice as string)
+    : undefined;
+  const maxPrice = req.query.maxPrice
+    ? parseInt(req.query.maxPrice as string)
+    : undefined;
+
+  console.log("minPrice:", minPrice, typeof minPrice);
+  console.log("maxPrice:", maxPrice, typeof maxPrice);
+  const limit = Number(req.query.limit) || 6;
+  const category = req.query.category as string;
+  const search = req.query.search as string;
+  const { products, totalPages, totalProducts } = await getAllProducts(
+    page,
+    limit,
+    category,
+    search,
+    minPrice,
+    maxPrice,
+  );
+  return res.status(200).json({ products, totalPages, totalProducts });
 });
 export const myProducts = handleAsync(async (req: Request, res: Response) => {
   const { id: userId } = req.user;

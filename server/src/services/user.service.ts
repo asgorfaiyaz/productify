@@ -1,6 +1,8 @@
 import { eq } from "drizzle-orm";
 import { UsersTable } from "../db/schema.js";
 import db from "../db/index.js";
+import { clerkClient } from "@clerk/express";
+import { syncClerkMetaData } from "./clerk.service.js";
 
 export const insertUser = async (data: typeof UsersTable.$inferInsert) => {
   const [user] = await db.insert(UsersTable).values(data).returning();
@@ -8,7 +10,7 @@ export const insertUser = async (data: typeof UsersTable.$inferInsert) => {
 };
 export async function updateUser(
   clerkId: string,
-  data: Partial<typeof UsersTable.$inferInsert>
+  data: Partial<typeof UsersTable.$inferInsert>,
 ) {
   const [updatedUser] = await db
     .update(UsersTable)
@@ -27,14 +29,11 @@ export const deleteUser = async (clerkId: string) => {
   const [deletedUser] = await db
     .update(UsersTable)
     .set({
-      id: undefined,
-      email: `deleted-${Date.now()}@example.com`,
-      name: "deleted name",
-      imageUrl: "delted image path",
       deletedAt: new Date(),
     })
     .where(eq(UsersTable.clerkId, clerkId))
     .returning();
+  await clerkClient.users.deleteUser(clerkId);
 
   return deletedUser;
 };
@@ -54,4 +53,55 @@ export const upsertUser = async (data: typeof UsersTable.$inferInsert) => {
     })
     .returning();
   return user;
+};
+
+export const createUserFromDashboard = async ({
+  firstName,
+  lastName,
+  email,
+}: {
+  firstName: string;
+  lastName: string;
+  email: string;
+}) => {
+  try {
+    const user = await clerkClient.users.createUser({
+      firstName,
+      lastName,
+      emailAddress: [email],
+      password: "Faiy2006",
+    });
+
+    const newUser = await upsertUser({
+      clerkId: user.id,
+      email,
+      name: `${user.firstName} ${user.lastName}`,
+    });
+
+    await syncClerkMetaData(user.id, newUser);
+
+    return newUser;
+  } catch (error: any) {
+    // Optional: cleanup Clerk user if DB fails
+    console.error("❌ createUserFromDashboard failed:", error);
+
+    if (error?.clerkUserId) {
+      await clerkClient.users.deleteUser(error.clerkUserId);
+    }
+    // Preserve meaningful message
+    throw new Error(
+      error?.errors?.[0]?.message || error?.message || "Failed to create user",
+    );
+  }
+};
+
+export const getClerkIdByUserId = async (id: string) => {
+  const user = await db.query.UsersTable.findFirst({
+    where: eq(UsersTable.id, id),
+    columns: {
+      clerkId: true,
+    },
+  });
+  if (!user) throw new Error("failed to fetch clerk id by user id");
+  return user.clerkId;
 };

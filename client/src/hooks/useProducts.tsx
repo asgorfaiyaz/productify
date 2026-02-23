@@ -7,6 +7,7 @@ import {
   fetchProducts,
   updateProduct,
 } from "../api/products";
+import { useFilterStore } from "@/store/filter-store";
 
 export function useCreateProduct() {
   const queryClient = useQueryClient();
@@ -14,17 +15,21 @@ export function useCreateProduct() {
     mutationFn: createProduct,
     onSuccess: () => {
       // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({
+        queryKey: ["products", "dashboardproducts"],
+      });
     },
   });
 }
-
 export function useProducts() {
+  const filters = useFilterStore((state) => state.filters);
+
   return useQuery({
-    queryFn: fetchProducts,
-    queryKey: ["products"],
+    queryKey: ["products", filters],
+    queryFn: () => fetchProducts(filters),
   });
 }
+
 export function useMyProducts() {
   return useQuery({
     queryFn: fetchMyProducts,

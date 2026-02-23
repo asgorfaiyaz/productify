@@ -15,7 +15,7 @@ const ProductCard = ({
       name: string;
       imageUrl: string;
     };
-    comments: { id: string }[];
+    totalReviews: number;
     createdAt: string;
     id: string;
   };
@@ -40,12 +40,14 @@ const ProductCard = ({
         <h2 className="card-title text-base">
           {product.title}
           {isNew && (
-            <span className="badge badge-secondary badge-sm ml-1">NEW</span>
+            <span className="badge badge-secondary badge-sm w-10 ml-1">
+              NEW
+            </span>
           )}
         </h2>
 
         <p className="text-sm text-base-content/70 line-clamp-2">
-          {product.description}
+          {product.description} with - {product.totalReviews} reviews
         </p>
 
         <div className="divider my-1" />

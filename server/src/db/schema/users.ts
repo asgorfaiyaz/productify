@@ -2,9 +2,10 @@ import { pgEnum, pgTable, text, uniqueIndex } from "drizzle-orm/pg-core";
 import { createdAt, deletedAt, id, updatedAt } from "../schemaHelper.js";
 import { relations, sql } from "drizzle-orm";
 import { ProductsTable } from "./products.js";
-import { CommentsTable } from "./comments.js";
+import { PurchasesTable } from "./purchases.js";
+import { ReviewsTable } from "./reviews.js";
 
-export const userRoles = ["user", "admin"] as const;
+export const userRoles = ["user", "admin", "guest"] as const;
 export type UserRole = (typeof userRoles)[number];
 export const UserRoleEnum = pgEnum("user_role", userRoles);
 
@@ -25,10 +26,11 @@ export const UsersTable = pgTable(
     uniqueIndex("email_idx")
       .on(table.email)
       .where(sql`${table.deletedAt} IS NULL`),
-  ]
+  ],
 );
 
 export const usersRelations = relations(UsersTable, ({ many }) => ({
   products: many(ProductsTable),
-  comments: many(CommentsTable),
+  reviews: many(ReviewsTable),
+  orders: many(PurchasesTable),
 }));
