@@ -2,8 +2,8 @@ import { Route, Routes } from "react-router";
 import DashboardNavbar from "../components/DashboardNavbar";
 import DashboardPage from "./DashboardPage";
 import DashboardSales from "./DashboardSales";
-// import { SidebarProvider } from "@/components/ui/sidebar";
-// import { DashboardSidebar } from "./sidebar/DashboardSidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { DashboardSidebar } from "./sidebar/DashboardSidebar";
 import { DashboardUsers } from "./DashboardUsers";
 import { DashboardProducts } from "./DashboardProducts";
 import { useAuthRole } from "@/hooks/useAuthReq";
@@ -16,11 +16,10 @@ function DashboardLayout() {
   const role = useAuthRole();
   if (role === "user") return null;
   return (
-    <>
-      {/* <SidebarProvider> */}
-      <div className="flex w-full">
-        {/* <DashboardSidebar /> */}
-        <div className="flex-1">
+    <SidebarProvider defaultOpen={false}>
+      <section className="flex w-full">
+        <DashboardSidebar />
+        <section className="flex-1">
           <DashboardNavbar />
           <main className="mx-auto px-4 py-6">
             <Routes>
@@ -43,10 +42,9 @@ function DashboardLayout() {
               <Route path="sales" element={<DashboardSales />} />
             </Routes>
           </main>
-        </div>
-      </div>
-      {/* </SidebarProvider> */}
-    </>
+        </section>
+      </section>
+    </SidebarProvider>
   );
 }
 
