@@ -17,9 +17,9 @@ function DashboardLayout() {
   if (role === "user") return null;
   return (
     <SidebarProvider>
-      <section className="flex w-full">
+      <div className="flex w-full">
         <DashboardSidebar />
-        <section className="flex-1">
+        <div className="flex-1">
           <DashboardNavbar />
           <main className="mx-auto px-4 py-6">
             <Routes>
@@ -42,8 +42,8 @@ function DashboardLayout() {
               <Route path="sales" element={<DashboardSales />} />
             </Routes>
           </main>
-        </section>
-      </section>
+        </div>
+      </div>
     </SidebarProvider>
   );
 }
