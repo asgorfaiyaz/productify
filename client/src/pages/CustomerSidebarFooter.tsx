@@ -124,10 +124,10 @@ export function CustomerSidebarFooter() {
               </DropdownMenuItem>
               {isSignedIn && user?.publicMetadata.role !== "user" && (
                 <DropdownMenuItem asChild className="lg:hidden">
-                  <Link to="/dashboard">
+                  <a href="/dashboard">
                     <UserRound className="mr-2 size-4" />
                     Dashboard
-                  </Link>
+                  </a>
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem asChild>
