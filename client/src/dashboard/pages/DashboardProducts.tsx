@@ -20,7 +20,7 @@ export function DashboardProducts() {
   const { data, isLoading } = useDashboardProducts(page);
 
   return (
-    <Card className="w-full bg-transparent m-0 border-0 pt-0">
+    <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg md:text-xl">Products</CardTitle>
         <div className="flex items-center gap-2">
