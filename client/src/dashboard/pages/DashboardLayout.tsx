@@ -6,19 +6,12 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "./sidebar/DashboardSidebar";
 import { DashboardUsers } from "./DashboardUsers";
 import { DashboardProducts } from "./DashboardProducts";
-import { useAuthRole } from "@/hooks/useAuthReq";
 import { DashboardCategories } from "./DashboardCategories";
 import DashboardCreateUserPage from "./DashboardCreateUserPage";
 import DashboardCreateProductPage from "@/pages/CreatePage";
 import { DashboardCreateCategoryPage } from "./CreateCategory";
-import { useEffect } from "react";
 
 function DashboardLayout() {
-  const role = useAuthRole();
-  useEffect(() => {
-    document.title = "Dashboard - Productify";
-  }, []);
-  if (role === "user") return null;
   return (
     <>
       <SidebarProvider>
