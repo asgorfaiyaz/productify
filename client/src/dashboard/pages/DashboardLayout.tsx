@@ -16,7 +16,7 @@ function DashboardLayout() {
   const role = useAuthRole();
   if (role === "user") return null;
   return (
-    <SidebarProvider defaultOpen={false}>
+    <SidebarProvider>
       <section className="flex w-full">
         <DashboardSidebar />
         <section className="flex-1">
