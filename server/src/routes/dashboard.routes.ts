@@ -14,6 +14,7 @@ import {
   getDashboardUsers,
 } from "../controllers/dashboard.controller.js";
 import { attachRole } from "../middlewares/attachRole.js";
+import { authorizeRoles } from "../middlewares/AuthorizeRoles.js";
 const router = express.Router();
 
 router
@@ -21,7 +22,13 @@ router
   .get(requireAuth(), requireUser, attachRole, getDashboardOverview);
 router
   .route("/products")
-  .get(requireAuth(), requireUser, attachRole, getDashboardProducts);
+  .get(
+    requireAuth(),
+    requireUser,
+    attachRole,
+    authorizeRoles("admin", "guest"),
+    getDashboardProducts,
+  );
 
 router
   .route("/sales")

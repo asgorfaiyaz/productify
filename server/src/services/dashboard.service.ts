@@ -1,8 +1,9 @@
-import { isNull, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 import db from "../db/index.js";
 import {
   CategoriesTable,
   ProductsTable,
+  ProductsToCategoriesTable,
   PurchasesTable,
   UsersTable,
 } from "../db/schema.js";
@@ -10,17 +11,38 @@ import {
 export const getDashboardProductsFromService = async (
   page: number,
   limit: number,
+  categoryId?: string,
+  search?: string,
 ) => {
   const offset = (page - 1) * limit;
+
+  const conditions = [];
+
+  if (search) {
+    conditions.push(sql`${ProductsTable.title} ILIKE ${`%${search}%`}`);
+  }
+
+  if (categoryId) {
+    conditions.push(
+      inArray(
+        ProductsTable.id,
+        db
+          .select({ productId: ProductsToCategoriesTable.productId })
+          .from(ProductsToCategoriesTable)
+          .where(eq(ProductsToCategoriesTable.categoryId, categoryId)),
+      ),
+    );
+  }
+  const whereConditions = conditions.length ? and(...conditions) : undefined;
+
   const products = await db.query.ProductsTable.findMany({
     with: {
       owner: {
-        columns: {
-          name: true,
-        },
+        columns: { name: true },
       },
     },
     columns: {
+      id: true,
       title: true,
       description: true,
       priceInCents: true,
@@ -28,14 +50,18 @@ export const getDashboardProductsFromService = async (
       imageUrl: true,
       createdAt: true,
     },
+    where: whereConditions,
     limit,
     offset,
   });
+
   const [{ total: totalProducts }] = await db
     .select({ total: sql<number>`count(*)` })
-    .from(ProductsTable);
+    .from(ProductsTable)
+    .where(whereConditions);
 
   const totalPages = Math.ceil(totalProducts / limit);
+
   return {
     products,
     totalProducts,

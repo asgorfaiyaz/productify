@@ -16,18 +16,26 @@ import {
 import { getParam } from "../utils/getParam.js";
 import { endOfDay, startOfDay, subDays } from "date-fns";
 import { getOrdersByDate } from "../services/chart.service.js";
+import z from "zod";
+
+const querySchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(10),
+  categoryId: z.string().optional(),
+  search: z.string().min(1).optional(),
+});
 
 export const getDashboardProducts = handleAsync(
   async (req: Request, res: Response) => {
-    if (req.role !== "admin" && req.role !== "guest") {
-      return res
-        .status(403)
-        .json({ error: "Forbidden: Only admin or guest users are allowed." });
+    const parsed = querySchema.safeParse(req.query);
+    if (!parsed.success) {
+      return res.status(400).json({ error: parsed.error.flatten() });
     }
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
+
+    const { page, limit, categoryId, search } = parsed.data;
     const { products, totalPages, totalProducts } =
-      await getDashboardProductsFromService(page, limit);
+      await getDashboardProductsFromService(page, limit, categoryId, search);
+
     return res.status(200).json({ products, totalPages, totalProducts });
   },
 );
