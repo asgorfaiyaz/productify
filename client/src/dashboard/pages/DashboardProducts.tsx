@@ -36,13 +36,20 @@ import {
   ChevronRight,
   SlidersHorizontal,
   MoreVertical,
+  ChevronUp,
+  ChevronDown,
+  ChevronsUpDown,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Link } from "react-router";
 import { AxiosError } from "axios";
 import { fetchDashboardProducts } from "@/api/dashboards";
 import { useDashboardCategories } from "@/hooks/useDashboards";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+
+export type SortField = "title" | "priceInCents" | "createdAt" | "status";
+export type SortOrder = "asc" | "desc";
 
 type Product = {
   id: string;
@@ -87,6 +94,50 @@ function PriceDisplay({ cents }: { cents: number | null }) {
   );
 }
 
+// ─── SortableHead ─────────────────────────────────────────────────────────────
+
+function SortableHead({
+  field,
+  label,
+  sortField,
+  sortOrder,
+  onSort,
+  className,
+}: {
+  field: SortField;
+  label: string;
+  sortField: SortField;
+  sortOrder: SortOrder;
+  onSort: (field: SortField) => void;
+  className?: string;
+}) {
+  const isActive = sortField === field;
+
+  return (
+    <TableHead
+      onClick={() => onSort(field)}
+      className={cn(
+        "py-2.5 text-[10px] font-semibold uppercase tracking-widest cursor-pointer select-none transition-colors duration-150",
+        isActive ? "text-white/60" : "text-white/20 hover:text-white/35",
+        className,
+      )}
+    >
+      <div className="flex items-center gap-1">
+        {label}
+        {isActive ? (
+          sortOrder === "asc" ? (
+            <ChevronUp className="h-3 w-3 shrink-0" />
+          ) : (
+            <ChevronDown className="h-3 w-3 shrink-0" />
+          )
+        ) : (
+          <ChevronsUpDown className="h-3 w-3 shrink-0 text-white/15" />
+        )}
+      </div>
+    </TableHead>
+  );
+}
+
 // ─── ProductRowSkeleton ───────────────────────────────────────────────────────
 
 function ProductRowSkeleton({ index }: { index: number }) {
@@ -95,34 +146,24 @@ function ProductRowSkeleton({ index }: { index: number }) {
       className="border-b border-white/[0.04] hover:bg-transparent"
       style={{ animationDelay: `${index * 60}ms` }}
     >
-      {/* Product — always visible */}
       <TableCell className="py-3 pl-5">
         <div className="flex items-center gap-3">
           <Skeleton className="h-9 w-9 rounded-md shrink-0 bg-white/[0.05]" />
           <div className="space-y-1.5">
             <Skeleton className="h-3 w-28 bg-white/[0.05]" />
-            {/* On mobile we fold status + price into the subtitle line */}
             <Skeleton className="h-2.5 w-20 bg-white/[0.03]" />
           </div>
         </div>
       </TableCell>
-
-      {/* Status — hidden on mobile */}
       <TableCell className="py-3 hidden sm:table-cell">
         <Skeleton className="h-4 w-12 rounded-sm bg-white/[0.05]" />
       </TableCell>
-
-      {/* Price — hidden on mobile */}
       <TableCell className="py-3 hidden sm:table-cell">
         <Skeleton className="h-3 w-14 bg-white/[0.05]" />
       </TableCell>
-
-      {/* Created — hidden below md */}
       <TableCell className="py-3 hidden md:table-cell">
         <Skeleton className="h-3 w-20 bg-white/[0.05]" />
       </TableCell>
-
-      {/* Actions — always visible */}
       <TableCell className="py-3 pr-5 text-right">
         <Skeleton className="h-6 w-6 ml-auto rounded bg-white/[0.05]" />
       </TableCell>
@@ -172,10 +213,9 @@ function ProductRow({ product, index }: { product: Product; index: number }) {
       className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors duration-150 group"
       style={{ animationDelay: `${index * 40}ms` }}
     >
-      {/* ── Product cell — always visible ── */}
+      {/* Product — always visible */}
       <TableCell className="py-3 pl-5">
         <div className="flex items-center gap-3">
-          {/* Thumbnail */}
           {product.imageUrl ? (
             <div className="relative shrink-0">
               <img
@@ -194,22 +234,14 @@ function ProductRow({ product, index }: { product: Product; index: number }) {
               <PackageOpen className="h-3.5 w-3.5 text-white/15" />
             </div>
           )}
-
-          {/* Title + mobile-only sub-info */}
           <div className="flex flex-col min-w-0">
             <span className="text-sm font-medium text-white/80 truncate max-w-[160px] sm:max-w-[200px] leading-tight">
               {product.title}
             </span>
-
-            {/*
-              On mobile (< sm): show owner + status dot + price inline
-              On sm+: just show owner name (status/price have their own columns)
-            */}
             <div className="flex items-center gap-1.5 mt-0.5">
               <span className="text-[11px] text-white/25 truncate leading-tight">
                 {product.owner.name ?? "Unknown"}
               </span>
-
               {/* Mobile-only: status dot + price */}
               <span className="sm:hidden flex items-center gap-1.5 shrink-0">
                 <span className="text-white/15">·</span>
@@ -232,7 +264,7 @@ function ProductRow({ product, index }: { product: Product; index: number }) {
         </div>
       </TableCell>
 
-      {/* ── Status — hidden on mobile ── */}
+      {/* Status — hidden on mobile */}
       <TableCell className="py-3 hidden sm:table-cell">
         <div className="flex items-center gap-1.5">
           <span
@@ -250,12 +282,12 @@ function ProductRow({ product, index }: { product: Product; index: number }) {
         </div>
       </TableCell>
 
-      {/* ── Price — hidden on mobile ── */}
+      {/* Price — hidden on mobile */}
       <TableCell className="py-3 hidden sm:table-cell">
         <PriceDisplay cents={product.priceInCents} />
       </TableCell>
 
-      {/* ── Created — hidden below md ── */}
+      {/* Created — hidden below md */}
       <TableCell className="py-3 hidden md:table-cell">
         <span className="text-xs text-white/35 tabular-nums">
           {new Date(product.createdAt).toLocaleDateString("en-US", {
@@ -266,7 +298,7 @@ function ProductRow({ product, index }: { product: Product; index: number }) {
         </span>
       </TableCell>
 
-      {/* ── Actions — always visible ── */}
+      {/* Actions — always visible */}
       <TableCell className="py-3 pr-5 text-right">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -318,6 +350,8 @@ export function DashboardProducts() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
+  const [sortField, setSortField] = useState<SortField>("createdAt");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
   const debouncedSearch = useDebounce(search, 400);
   const { data: categoriesData } = useDashboardCategories(1);
@@ -327,6 +361,8 @@ export function DashboardProducts() {
     limit: LIMIT,
     search: debouncedSearch || undefined,
     categoryId: category !== "all" ? category : undefined,
+    sortField,
+    sortOrder,
   };
 
   const { data, isLoading, isFetching } = useQuery<
@@ -348,15 +384,31 @@ export function DashboardProducts() {
     setPage(1);
   }, []);
 
+  // Same column → flip order. New column → default desc, reset page
+  const handleSort = useCallback(
+    (field: SortField) => {
+      if (field === sortField) {
+        setSortOrder((o) => (o === "asc" ? "desc" : "asc"));
+      } else {
+        setSortField(field);
+        setSortOrder("desc");
+      }
+      setPage(1);
+    },
+    [sortField],
+  );
+
   const totalPages = data?.totalPages ?? 1;
   const hasFilters = !!debouncedSearch || category !== "all";
   const isEmpty = !isLoading && !data?.products?.length;
+
+  // Shared props to avoid repeating sortField/sortOrder/onSort everywhere
+  const sortProps = { sortField, sortOrder, onSort: handleSort };
 
   return (
     <Card className="w-full border-none bg-transparent rounded-xl overflow-hidden">
       {/* ── Header ─────────────────────────────────────────── */}
       <CardHeader className="space-y-3.5 border-b border-white/[0.05] px-5 py-4">
-        {/* Title + pagination */}
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-0.5">
             <h2 className="text-sm font-semibold text-white/85 tracking-tight">
@@ -444,22 +496,34 @@ export function DashboardProducts() {
         <Table>
           <TableHeader>
             <TableRow className="border-b border-white/[0.04] hover:bg-transparent">
-              {/* Always visible */}
+              {/* Product — not sortable (no single sort value) */}
               <TableHead className="pl-5 py-2.5 text-[10px] font-semibold text-white/20 uppercase tracking-widest">
                 Product
               </TableHead>
-              {/* Hidden on mobile */}
-              <TableHead className="py-2.5 text-[10px] font-semibold text-white/20 uppercase tracking-widest hidden sm:table-cell">
-                Status
-              </TableHead>
-              <TableHead className="py-2.5 text-[10px] font-semibold text-white/20 uppercase tracking-widest hidden sm:table-cell">
-                Price
-              </TableHead>
-              {/* Hidden below md */}
-              <TableHead className="py-2.5 text-[10px] font-semibold text-white/20 uppercase tracking-widest hidden md:table-cell">
-                Created
-              </TableHead>
-              {/* Always visible */}
+
+              {/* Sortable — hidden on mobile */}
+              <SortableHead
+                field="status"
+                label="Status"
+                className="hidden sm:table-cell"
+                {...sortProps}
+              />
+              <SortableHead
+                field="priceInCents"
+                label="Price"
+                className="hidden sm:table-cell"
+                {...sortProps}
+              />
+
+              {/* Sortable — hidden below md */}
+              <SortableHead
+                field="createdAt"
+                label="Created"
+                className="hidden md:table-cell"
+                {...sortProps}
+              />
+
+              {/* Actions — not sortable */}
               <TableHead className="pr-5 py-2.5" />
             </TableRow>
           </TableHeader>

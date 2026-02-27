@@ -1,4 +1,4 @@
-import { and, eq, inArray, isNull, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 import db from "../db/index.js";
 import {
   CategoriesTable,
@@ -7,14 +7,23 @@ import {
   PurchasesTable,
   UsersTable,
 } from "../db/schema.js";
-
+export type SortField = "title" | "priceInCents" | "createdAt" | "status";
+export type SortOrder = "asc" | "desc";
 export const getDashboardProductsFromService = async (
   page: number,
   limit: number,
   categoryId?: string,
   search?: string,
+  sortField: SortField = "createdAt",
+  sortOrder: SortOrder = "desc",
 ) => {
   const offset = (page - 1) * limit;
+  const sortColumn = {
+    title: ProductsTable.title,
+    priceInCents: ProductsTable.priceInCents,
+    createdAt: ProductsTable.createdAt,
+    status: ProductsTable.status,
+  }[sortField];
 
   const conditions = [];
 
@@ -53,6 +62,7 @@ export const getDashboardProductsFromService = async (
     where: whereConditions,
     limit,
     offset,
+    orderBy: sortOrder === "asc" ? asc(sortColumn) : desc(sortColumn),
   });
 
   const [{ total: totalProducts }] = await db
