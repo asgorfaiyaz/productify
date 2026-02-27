@@ -1,9 +1,15 @@
 import axiosInstance from "@/lib/axios";
-
+export type DashboardProductsFiltersType = {
+  page?: number;
+  limit?: number;
+  categoryId?: string;
+  search?: string;
+};
 export const fetchDashboardProducts = async (
-  page: number,
+  filters: DashboardProductsFiltersType,
 ): Promise<{
   products: {
+    id: string;
     imageUrl: string | null;
     createdAt: Date;
     description: string | null;
@@ -17,9 +23,9 @@ export const fetchDashboardProducts = async (
   totalProducts: number;
   totalPages: number;
 }> => {
-  const response = await axiosInstance.get(
-    `/dashboard/products?page=${page || 1}`,
-  );
+  const response = await axiosInstance.get(`/dashboard/products`, {
+    params: filters,
+  });
   return response.data;
 };
 export const fetchDashboardOverviewData = async (): Promise<{

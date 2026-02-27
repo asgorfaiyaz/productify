@@ -8,14 +8,15 @@ import {
   fetchDashboardSales,
   fetchDashboardSalesByDate,
   fetchDashboardUsers,
+  type DashboardProductsFiltersType,
   type SalesByDateParams,
 } from "@/api/dashboards";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function useDashboardProducts(page: number) {
+export function useDashboardProducts(filters: DashboardProductsFiltersType) {
   return useQuery({
-    queryFn: () => fetchDashboardProducts(page),
-    queryKey: ["dashboardproducts", page],
+    queryFn: () => fetchDashboardProducts(filters),
+    queryKey: ["dashboardproducts", filters],
   });
 }
 export function useDashboardOverviewData() {
