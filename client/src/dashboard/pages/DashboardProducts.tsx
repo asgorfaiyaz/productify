@@ -28,7 +28,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Edit3,
-  Trash2,
   ExternalLink,
   Search,
   PackageOpen,
@@ -39,12 +38,14 @@ import {
   ChevronUp,
   ChevronDown,
   ChevronsUpDown,
+  Trash2Icon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { AxiosError } from "axios";
 import { fetchDashboardProducts } from "@/api/dashboards";
 import { useDashboardCategories } from "@/hooks/useDashboards";
+import { useDeleteProduct } from "@/hooks/useProducts";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -206,6 +207,16 @@ function EmptyState({ hasFilters }: { hasFilters: boolean }) {
 // ─── ProductRow ───────────────────────────────────────────────────────────────
 
 function ProductRow({ product, index }: { product: Product; index: number }) {
+  const navigate = useNavigate();
+  const { mutate: deleteProduct, isPending: deleteIsPending } =
+    useDeleteProduct();
+  const handleDelete = () => {
+    if (confirm("Delete this product permanently?")) {
+      deleteProduct(product.id, {
+        onSuccess: () => navigate("/dashboard/products"),
+      });
+    }
+  };
   const isPublic = product.status === "public";
 
   return (
@@ -315,9 +326,18 @@ function ProductRow({ product, index }: { product: Product; index: number }) {
             sideOffset={6}
             className="bg-zinc-950 border border-white/[0.08] text-white/65 min-w-[140px] shadow-xl shadow-black/40 rounded-lg p-1"
           >
-            <DropdownMenuItem className="rounded-md text-xs px-2.5 py-1.5 focus:bg-white/[0.06] focus:text-white/90 cursor-pointer gap-2.5">
-              <Edit3 className="h-3 w-3 shrink-0" />
-              Edit product
+            <DropdownMenuItem
+              asChild
+              className="rounded-md text-xs px-2.5 py-1.5 focus:bg-white/[0.06] focus:text-white/90 cursor-pointer gap-2.5"
+            >
+              <Link
+                target="_blank"
+                rel="noopener noreferrer"
+                to={`/dashboard/products/${product.id}/edit`}
+              >
+                <Edit3 className="h-3 w-3 shrink-0" />
+                Edit product
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem
               asChild
@@ -333,9 +353,18 @@ function ProductRow({ product, index }: { product: Product; index: number }) {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-white/[0.06] my-1" />
-            <DropdownMenuItem className="rounded-md text-xs px-2.5 py-1.5 text-red-400/80 focus:bg-red-500/10 focus:text-red-400 cursor-pointer gap-2.5">
-              <Trash2 className="h-3 w-3 shrink-0" />
-              Delete
+            <DropdownMenuItem
+              asChild
+              className="rounded-md text-xs px-2.5 py-1.5 text-red-400/80 focus:bg-red-500/10 focus:text-red-400 cursor-pointer gap-2.5"
+            >
+              <button onClick={handleDelete} disabled={deleteIsPending}>
+                {deleteIsPending ? (
+                  <span className="loading loading-spinner loading-xs" />
+                ) : (
+                  <Trash2Icon className="size-4" />
+                )}
+                Delete
+              </button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
