@@ -9,6 +9,8 @@ import {
   updateProduct,
 } from "../controllers/product.controller.js";
 import { requireUser } from "../middlewares/requireUser.js";
+import { authorizeRoles } from "../middlewares/AuthorizeRoles.js";
+import { attachRole } from "../middlewares/attachRole.js";
 const router = express.Router();
 
 router
@@ -22,6 +24,12 @@ router
   .route("/:id")
   .get(getProduct)
   .put(requireAuth(), requireUser, updateProduct)
-  .delete(requireAuth(), requireUser, deleteProduct);
+  .delete(
+    requireAuth(),
+    requireUser,
+    attachRole,
+    authorizeRoles("admin"),
+    deleteProduct,
+  );
 
 export default router;

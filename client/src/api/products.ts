@@ -140,5 +140,6 @@ export const fetchProduct = async (id: string) => {
   };
 };
 export const deleteProduct = async (id: string) => {
-  return await axiosInstance.delete(`/products/${id}`);
+  const res = await axiosInstance.delete(`/products/${id}`);
+  return res;
 };

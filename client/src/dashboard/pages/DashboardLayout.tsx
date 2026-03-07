@@ -11,6 +11,7 @@ import { DashboardCategories } from "./DashboardCategories";
 import DashboardCreateUserPage from "./DashboardCreateUserPage";
 import DashboardCreateProductPage from "@/pages/CreatePage";
 import { DashboardCreateCategoryPage } from "./CreateCategory";
+import EditProductPage from "@/pages/EditProductPage";
 
 function DashboardLayout() {
   const role = useAuthRole();
@@ -29,6 +30,7 @@ function DashboardLayout() {
                 path="products/create"
                 element={<DashboardCreateProductPage />}
               />
+              <Route path="products/:id/edit" element={<EditProductPage />} />
               <Route path="categories" element={<DashboardCategories />} />
               <Route
                 path="categories/create"
