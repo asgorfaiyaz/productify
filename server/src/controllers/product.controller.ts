@@ -75,7 +75,11 @@ export const updateProduct = handleAsync(
 
 export const deleteProduct = handleAsync(
   async (req: Request, res: Response) => {
-    const { id: userId } = req.user;
+    if (req.role !== "admin") {
+      return res
+        .status(403)
+        .json({ error: "Forbidden: Only admin user is allowed." });
+    }
 
     const productId = getParam(req.params.id);
     if (!productId) {
@@ -87,10 +91,6 @@ export const deleteProduct = handleAsync(
       return res
         .status(400)
         .send("Product not found, failed to delete product");
-    }
-
-    if (product.userId !== userId) {
-      return res.status(403).send("Forbidden");
     }
 
     await deleteProductById(productId);

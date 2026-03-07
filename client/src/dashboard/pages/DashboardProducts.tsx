@@ -206,17 +206,17 @@ function EmptyState({ hasFilters }: { hasFilters: boolean }) {
 
 // ─── ProductRow ───────────────────────────────────────────────────────────────
 
-function ProductRow({ product, index }: { product: Product; index: number }) {
-  const navigate = useNavigate();
-  const { mutate: deleteProduct, isPending: deleteIsPending } =
-    useDeleteProduct();
-  const handleDelete = () => {
-    if (confirm("Delete this product permanently?")) {
-      deleteProduct(product.id, {
-        onSuccess: () => navigate("/dashboard/products"),
-      });
-    }
-  };
+function ProductRow({
+  product,
+  index,
+  deleteProduct,
+  deleteIsPending,
+}: {
+  product: Product;
+  index: number;
+  deleteProduct: (id: string) => void;
+  deleteIsPending: boolean;
+}) {
   const isPublic = product.status === "public";
 
   return (
@@ -357,7 +357,10 @@ function ProductRow({ product, index }: { product: Product; index: number }) {
               asChild
               className="rounded-md text-xs px-2.5 py-1.5 text-red-400/80 focus:bg-red-500/10 focus:text-red-400 cursor-pointer gap-2.5"
             >
-              <button onClick={handleDelete} disabled={deleteIsPending}>
+              <button
+                onClick={() => deleteProduct(product.id)}
+                disabled={deleteIsPending}
+              >
                 {deleteIsPending ? (
                   <span className="loading loading-spinner loading-xs" />
                 ) : (
@@ -381,7 +384,20 @@ export function DashboardProducts() {
   const [category, setCategory] = useState("all");
   const [sortField, setSortField] = useState<SortField>("createdAt");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  const navigate = useNavigate();
+  const {
+    mutate: deleteProductMutation,
+    isPending: deleteIsPending,
+    error: deleteError,
+  } = useDeleteProduct();
 
+  const handleDelete = (id: string) => {
+    deleteProductMutation(id, {
+      onSuccess: () => {
+        navigate("/dashboard/products");
+      },
+    });
+  };
   const debouncedSearch = useDebounce(search, 400);
   const { data: categoriesData } = useDashboardCategories(1);
 
@@ -522,6 +538,18 @@ export function DashboardProducts() {
 
       {/* ── Table ──────────────────────────────────────────── */}
       <CardContent className="p-0">
+        {deleteError && (
+          <div className="px-5 pt-4">
+            <div className="rounded-md border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-400">
+              {"response" in deleteError &&
+              deleteError.response?.data &&
+              typeof deleteError.response.data === "object" &&
+              "error" in deleteError.response.data
+                ? (deleteError.response.data as ApiError).error
+                : deleteError.message || "Failed to delete product"}
+            </div>
+          </div>
+        )}
         <Table>
           <TableHeader>
             <TableRow className="border-b border-white/[0.04] hover:bg-transparent">
@@ -566,7 +594,13 @@ export function DashboardProducts() {
               <EmptyState hasFilters={hasFilters} />
             ) : (
               data!.products.map((product, i) => (
-                <ProductRow key={product.id} product={product} index={i} />
+                <ProductRow
+                  key={product.id}
+                  product={product}
+                  index={i}
+                  deleteProduct={handleDelete}
+                  deleteIsPending={deleteIsPending}
+                />
               ))
             )}
           </TableBody>
