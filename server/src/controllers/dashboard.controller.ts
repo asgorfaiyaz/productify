@@ -23,7 +23,9 @@ const querySchema = z.object({
   limit: z.coerce.number().min(1).max(100).default(10),
   categoryId: z.string().optional(),
   search: z.string().min(1).optional(),
-  sortField: z.enum(["title", "priceInCents", "createdAt", "status"]).default("createdAt"),
+  sortField: z
+    .enum(["title", "priceInCents", "createdAt", "status"])
+    .default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
@@ -34,9 +36,17 @@ export const getDashboardProducts = handleAsync(
       return res.status(400).json({ error: parsed.error.flatten() });
     }
 
-    const { page, limit, categoryId, search, sortField, sortOrder } = parsed.data;
+    const { page, limit, categoryId, search, sortField, sortOrder } =
+      parsed.data;
     const { products, totalPages, totalProducts } =
-      await getDashboardProductsFromService(page, limit, categoryId, search, sortField,sortOrder);
+      await getDashboardProductsFromService(
+        page,
+        limit,
+        categoryId,
+        search,
+        sortField,
+        sortOrder,
+      );
 
     return res.status(200).json({ products, totalPages, totalProducts });
   },
@@ -188,13 +198,18 @@ export const getDashboardCategories = handleAsync(
 
 export const createDashboardUser = handleAsync(
   async (req: Request, res: Response) => {
-    const { firstName, lastName, email } = req.body;
-    if (!firstName || !lastName || !email) {
+    const { firstName, lastName, email, role } = req.body;
+    if (!firstName || !lastName || !email || !role) {
       return res
         .status(400)
         .json({ error: "failed to create user, invalid input" });
     }
-    const user = await createUserFromDashboard({ firstName, lastName, email });
+    const user = await createUserFromDashboard({
+      firstName,
+      lastName,
+      email,
+      role,
+    });
     res.status(201).json(user);
   },
 );

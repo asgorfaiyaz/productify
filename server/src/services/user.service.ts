@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { UsersTable } from "../db/schema.js";
+import { UserRole, UsersTable } from "../db/schema.js";
 import db from "../db/index.js";
 import { clerkClient } from "@clerk/express";
 import { syncClerkMetaData } from "./clerk.service.js";
@@ -59,10 +59,12 @@ export const createUserFromDashboard = async ({
   firstName,
   lastName,
   email,
+  role,
 }: {
   firstName: string;
   lastName: string;
   email: string;
+  role: UserRole;
 }) => {
   try {
     const user = await clerkClient.users.createUser({
@@ -76,6 +78,7 @@ export const createUserFromDashboard = async ({
       clerkId: user.id,
       email,
       name: `${user.firstName} ${user.lastName}`,
+      role,
     });
 
     await syncClerkMetaData(user.id, newUser);
