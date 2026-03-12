@@ -88,8 +88,10 @@ export const getDashboardUsers = handleAsync(
     }
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
+    const search = req.query.search as string | undefined;
+
     const { users, totalPages, totalUsers } =
-      await getDashboardUsersFromService(page, limit);
+      await getDashboardUsersFromService(page, limit, search);
     return res.status(200).json({ users, totalPages, totalUsers });
   },
 );
