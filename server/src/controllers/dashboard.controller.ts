@@ -17,6 +17,7 @@ import { getParam } from "../utils/getParam.js";
 import { endOfDay, startOfDay, subDays } from "date-fns";
 import { getOrdersByDate } from "../services/chart.service.js";
 import z from "zod";
+import { clerkClient, getAuth } from "@clerk/express";
 
 const querySchema = z.object({
   page: z.coerce.number().min(1).default(1),
@@ -233,6 +234,14 @@ export const deleteDashboardUser = handleAsync(
       return res
         .status(400)
         .json({ error: "failed to create user, invalid input" });
+    const { isAuthenticated, userId: currentUserId } = getAuth(req);
+    if (!isAuthenticated) {
+      return res.status(401).json({ error: "User not authenticated" });
+    }
+    const currentUser = await clerkClient.users.getUser(currentUserId);
+    if (currentUser.id === id || currentUser.publicMetadata.role === "admin")
+      return res.status(400).json({ error: "failed to create admin user" });
+
     const clerkId = await getClerkIdByUserId(id);
     await deleteUser(clerkId);
     res.status(200).json({ success: true });
