@@ -1,4 +1,14 @@
-import { and, asc, desc, eq, inArray, isNull, sql } from "drizzle-orm";
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  isNull,
+  or,
+  sql,
+} from "drizzle-orm";
 import db from "../db/index.js";
 import {
   CategoriesTable,
@@ -99,8 +109,20 @@ export const getDashboardOverviewFromService = async () => {
 export const getDashboardUsersFromService = async (
   page: number,
   limit: number,
+  search?: string,
 ) => {
   const offset = (page - 1) * limit;
+
+  const whereClause = search
+    ? and(
+        isNull(UsersTable.deletedAt),
+        or(
+          ilike(UsersTable.name, `%${search}%`),
+          ilike(UsersTable.email, `%${search}%`),
+        ),
+      )
+    : isNull(UsersTable.deletedAt);
+
   const users = await db.query.UsersTable.findMany({
     columns: {
       id: true,
@@ -110,20 +132,18 @@ export const getDashboardUsersFromService = async (
       imageUrl: true,
       createdAt: true,
     },
-    where: isNull(UsersTable.deletedAt),
+    where: whereClause,
     limit,
     offset,
   });
+
   const [{ total: totalUsers }] = await db
     .select({ total: sql<number>`count(*)` })
-    .from(ProductsTable);
+    .from(UsersTable) // ← was ProductsTable, bug fix
+    .where(whereClause);
 
   const totalPages = Math.ceil(totalUsers / limit);
-  return {
-    users,
-    totalUsers,
-    totalPages,
-  };
+  return { users, totalUsers, totalPages };
 };
 
 export const getDashboardSalesFromService = async (

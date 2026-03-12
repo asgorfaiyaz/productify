@@ -5,6 +5,11 @@ export type DashboardProductsFiltersType = {
   categoryId?: string;
   search?: string;
 };
+export type DashboardUsersFiltersType = {
+  page?: number;
+  limit?: number;
+  search?: string;
+};
 export const fetchDashboardProducts = async (
   filters: DashboardProductsFiltersType,
 ): Promise<{
@@ -40,7 +45,7 @@ export const fetchDashboardOverviewData = async (): Promise<{
   return response.data;
 };
 export const fetchDashboardUsers = async (
-  page: number,
+  filters: DashboardUsersFiltersType,
 ): Promise<{
   users: {
     name: string | null;
@@ -53,9 +58,9 @@ export const fetchDashboardUsers = async (
   totalUsers: number;
   totalPages: number;
 }> => {
-  const response = await axiosInstance.get(
-    `/dashboard/users?page=${page || 1}`,
-  );
+  const response = await axiosInstance.get(`/dashboard/users`, {
+    params: filters,
+  });
   return response.data;
 };
 export const fetchDashboardCategories = async (
@@ -130,6 +135,7 @@ export const createUser = async (data: {
   firstName: string;
   lastName: string;
   email: string;
+  role: string;
 }): Promise<{
   id: string;
   name: string;

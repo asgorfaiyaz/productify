@@ -9,6 +9,7 @@ import {
   fetchDashboardSalesByDate,
   fetchDashboardUsers,
   type DashboardProductsFiltersType,
+  type DashboardUsersFiltersType,
   type SalesByDateParams,
 } from "@/api/dashboards";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -25,10 +26,10 @@ export function useDashboardOverviewData() {
     queryKey: ["dashboardoverview"],
   });
 }
-export function useDashboardUsers(page: number) {
+export function useDashboardUsers(filters: DashboardUsersFiltersType) {
   return useQuery({
-    queryFn: () => fetchDashboardUsers(page),
-    queryKey: ["dashboardusers", page],
+    queryFn: () => fetchDashboardUsers(filters),
+    queryKey: ["dashboardusers", filters],
   });
 }
 export function useDashboardSales(page: number) {

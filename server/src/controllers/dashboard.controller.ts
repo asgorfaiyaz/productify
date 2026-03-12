@@ -17,13 +17,16 @@ import { getParam } from "../utils/getParam.js";
 import { endOfDay, startOfDay, subDays } from "date-fns";
 import { getOrdersByDate } from "../services/chart.service.js";
 import z from "zod";
+import { clerkClient, getAuth } from "@clerk/express";
 
 const querySchema = z.object({
   page: z.coerce.number().min(1).default(1),
   limit: z.coerce.number().min(1).max(100).default(10),
   categoryId: z.string().optional(),
   search: z.string().min(1).optional(),
-  sortField: z.enum(["title", "priceInCents", "createdAt", "status"]).default("createdAt"),
+  sortField: z
+    .enum(["title", "priceInCents", "createdAt", "status"])
+    .default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
@@ -34,9 +37,17 @@ export const getDashboardProducts = handleAsync(
       return res.status(400).json({ error: parsed.error.flatten() });
     }
 
-    const { page, limit, categoryId, search, sortField, sortOrder } = parsed.data;
+    const { page, limit, categoryId, search, sortField, sortOrder } =
+      parsed.data;
     const { products, totalPages, totalProducts } =
-      await getDashboardProductsFromService(page, limit, categoryId, search, sortField,sortOrder);
+      await getDashboardProductsFromService(
+        page,
+        limit,
+        categoryId,
+        search,
+        sortField,
+        sortOrder,
+      );
 
     return res.status(200).json({ products, totalPages, totalProducts });
   },
@@ -77,8 +88,10 @@ export const getDashboardUsers = handleAsync(
     }
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
+    const search = req.query.search as string | undefined;
+
     const { users, totalPages, totalUsers } =
-      await getDashboardUsersFromService(page, limit);
+      await getDashboardUsersFromService(page, limit, search);
     return res.status(200).json({ users, totalPages, totalUsers });
   },
 );
@@ -188,13 +201,18 @@ export const getDashboardCategories = handleAsync(
 
 export const createDashboardUser = handleAsync(
   async (req: Request, res: Response) => {
-    const { firstName, lastName, email } = req.body;
-    if (!firstName || !lastName || !email) {
+    const { firstName, lastName, email, role } = req.body;
+    if (!firstName || !lastName || !email || !role) {
       return res
         .status(400)
         .json({ error: "failed to create user, invalid input" });
     }
-    const user = await createUserFromDashboard({ firstName, lastName, email });
+    const user = await createUserFromDashboard({
+      firstName,
+      lastName,
+      email,
+      role,
+    });
     res.status(201).json(user);
   },
 );
@@ -218,6 +236,14 @@ export const deleteDashboardUser = handleAsync(
       return res
         .status(400)
         .json({ error: "failed to create user, invalid input" });
+    const { isAuthenticated, userId: currentUserId } = getAuth(req);
+    if (!isAuthenticated) {
+      return res.status(401).json({ error: "User not authenticated" });
+    }
+    const currentUser = await clerkClient.users.getUser(currentUserId);
+    if (currentUser.id === id || currentUser.publicMetadata.role === "admin")
+      return res.status(400).json({ error: "failed to create admin user" });
+
     const clerkId = await getClerkIdByUserId(id);
     await deleteUser(clerkId);
     res.status(200).json({ success: true });
