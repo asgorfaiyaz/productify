@@ -141,10 +141,10 @@ function SortableHead({
 
 // ─── ProductRowSkeleton ───────────────────────────────────────────────────────
 
-function ProductRowSkeleton({ index }: { index: number }) {
+export function ProductRowSkeleton({ index }: { index: number }) {
   return (
     <TableRow
-      className="border-b border-white/[0.04] hover:bg-transparent"
+      className="border-b w-full border-white/[0.04] hover:bg-transparent"
       style={{ animationDelay: `${index * 60}ms` }}
     >
       <TableCell className="py-3 pl-5">

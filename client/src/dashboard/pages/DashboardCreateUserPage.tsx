@@ -19,23 +19,29 @@ import {
   CheckCircle2,
   Loader2,
   UserPlus,
+  ShieldCheck,
+  User,
 } from "lucide-react";
 import { Link } from "react-router";
+
+import { cn } from "@/lib/utils";
 
 function DashboardCreateUserPage() {
   const { mutateAsync, isPending, error } = useCreateDashboardUser();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [role, setRole] = useState("user");
   const [email, setEmail] = useState("");
+
   const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSuccess(false);
 
-    await mutateAsync({ firstName, lastName, email });
-
+    await mutateAsync({ firstName, lastName, email, role });
+    setRole("");
     setFirstName("");
     setLastName("");
     setEmail("");
@@ -148,6 +154,86 @@ function DashboardCreateUserPage() {
                   className="h-9 text-sm"
                   required
                 />
+              </div>
+
+              {/* User Role */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  User Role
+                </Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    {
+                      value: "user",
+                      label: "User",
+                      icon: User,
+                      description: "Can view and interact with content",
+                      color: "text-blue-500",
+                      activeBg: "bg-blue-500/10 border-blue-500/40",
+                    },
+                    {
+                      value: "admin",
+                      label: "Admin",
+                      icon: ShieldCheck,
+                      description: "Full access including user management",
+                      color: "text-amber-500",
+                      activeBg: "bg-amber-500/10 border-amber-500/40",
+                    },
+                  ].map(
+                    ({
+                      value,
+                      label,
+                      icon: Icon,
+                      description,
+                      color,
+                      activeBg,
+                    }) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => setRole(value)}
+                        className={cn(
+                          "flex flex-col gap-2 rounded-lg border p-3.5 text-left transition-all duration-150 hover:bg-muted/50",
+                          role === value
+                            ? `${activeBg} shadow-sm`
+                            : "border-border",
+                        )}
+                      >
+                        <div className="flex items-center justify-between">
+                          <Icon
+                            className={cn(
+                              "h-4 w-4",
+                              role === value ? color : "text-muted-foreground",
+                            )}
+                          />
+                          <div
+                            className={cn(
+                              "h-2 w-2 rounded-full transition-all",
+                              role === value
+                                ? `${color.replace("text-", "bg-")}`
+                                : "bg-transparent border border-border",
+                            )}
+                          />
+                        </div>
+                        <div>
+                          <p
+                            className={cn(
+                              "text-sm font-medium",
+                              role === value
+                                ? "text-foreground"
+                                : "text-muted-foreground",
+                            )}
+                          >
+                            {label}
+                          </p>
+                          <p className="text-xs text-muted-foreground leading-snug mt-0.5">
+                            {description}
+                          </p>
+                        </div>
+                      </button>
+                    ),
+                  )}
+                </div>
               </div>
 
               {/* Error */}

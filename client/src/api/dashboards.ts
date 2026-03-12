@@ -130,6 +130,7 @@ export const createUser = async (data: {
   firstName: string;
   lastName: string;
   email: string;
+  role: string;
 }): Promise<{
   id: string;
   name: string;

@@ -10,7 +10,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +21,7 @@ import {
   useDashboardUsers,
   useDeleteDashboardUser,
 } from "@/hooks/useDashboards";
+import { ProductRowSkeleton } from "./DashboardProducts";
 
 export function DashboardUsers() {
   const [page, setPage] = useState(1);
@@ -35,7 +35,7 @@ export function DashboardUsers() {
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full bg-transparent border-none">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg md:text-xl">Users</CardTitle>
         <div className="flex items-center gap-2">
@@ -59,82 +59,81 @@ export function DashboardUsers() {
       </CardHeader>
 
       <CardContent className="overflow-x-auto">
-        {isLoading ? (
-          <div className="space-y-3">
-            {Array.from({ length: 9 }).map((_, i) => (
-              <Skeleton key={i} className="h-10 w-full" />
-            ))}
-          </div>
-        ) : !data ? null : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead className="hidden md:table-cell">Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead className="hidden sm:table-cell">Joined</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>User</TableHead>
+              <TableHead className="hidden md:table-cell">Email</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead className="hidden sm:table-cell">Joined</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
 
-            <TableBody>
-              {data.users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="flex items-center gap-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.imageUrl ?? undefined} />
-                      <AvatarFallback>
-                        {user.name?.[0]?.toUpperCase() ?? "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col">
-                      <span className="font-medium">
-                        {user.name ?? "Unnamed"}
-                      </span>
-                      <span className="text-xs text-muted-foreground md:hidden">
-                        {user.email}
-                      </span>
-                    </div>
-                  </TableCell>
+          <TableBody>
+            {isLoading
+              ? Array.from({ length: 9 }).map((_, i) => (
+                  <ProductRowSkeleton key={i} index={i} />
+                ))
+              : data &&
+                data.users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="flex items-center gap-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={user.imageUrl ?? undefined} />
+                        <AvatarFallback>
+                          {user.name?.[0]?.toUpperCase() ?? "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <span className="font-medium">
+                          {user.name ?? "Unnamed"}
+                        </span>
+                        <span className="text-xs text-muted-foreground md:hidden">
+                          {user.email}
+                        </span>
+                      </div>
+                    </TableCell>
 
-                  <TableCell className="hidden md:table-cell">
-                    {user.email}
-                  </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {user.email}
+                    </TableCell>
 
-                  <TableCell>
-                    <Badge
-                      variant={user.role === "admin" ? "default" : "secondary"}
-                    >
-                      {user.role}
-                    </Badge>
-                  </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          user.role === "admin" ? "default" : "secondary"
+                        }
+                      >
+                        {user.role}
+                      </Badge>
+                    </TableCell>
 
-                  <TableCell className="hidden sm:table-cell">
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </TableCell>
+                    <TableCell className="hidden sm:table-cell">
+                      {new Date(user.createdAt).toLocaleDateString()}
+                    </TableCell>
 
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          ⋮
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          className="text-destructive"
-                          onClick={() => handleDelete(user.id)}
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            ⋮
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => handleDelete(user.id)}
+                          >
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );
