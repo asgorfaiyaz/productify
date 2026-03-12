@@ -292,7 +292,7 @@ export function DashboardUsers() {
                         <span className="text-sm font-medium text-white/80 truncate max-w-[160px] leading-tight">
                           {user.name ?? "Unnamed"}
                         </span>
-                        <span className="text-[11px] text-white/55 truncate md:hidden leading-tight mt-0.5">
+                        <span className="text-[11px] text-white/65 truncate md:hidden leading-tight mt-0.5">
                           {user.email}
                         </span>
                       </div>
