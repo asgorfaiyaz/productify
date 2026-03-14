@@ -541,12 +541,7 @@ export function DashboardProducts() {
         {deleteError && (
           <div className="px-5 pt-4">
             <div className="rounded-md border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-400">
-              {"response" in deleteError &&
-              deleteError.response?.data &&
-              typeof deleteError.response.data === "object" &&
-              "error" in deleteError.response.data
-                ? (deleteError.response.data as ApiError).error
-                : deleteError.message || "Failed to delete product"}
+              {deleteError.message || "Failed to delete product"}
             </div>
           </div>
         )}
