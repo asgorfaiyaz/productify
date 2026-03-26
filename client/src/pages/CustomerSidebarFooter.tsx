@@ -17,7 +17,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronsUpDown, LogIn, LogOut, UserRound } from "lucide-react";
 import { Link } from "react-router";
-import { SignInButton, useClerk, useUser } from "@clerk/clerk-react";
+import { useClerk, useUser } from "@clerk/clerk-react";
 
 export function CustomerSidebarFooter() {
   const { user, isLoaded } = useUser();
@@ -32,7 +32,7 @@ export function CustomerSidebarFooter() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild size="lg">
-              <SignInButton mode="modal">
+              <Link to="/auth/signin">
                 <div className="flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
                     <LogIn className="h-4 w-4" />
@@ -44,7 +44,7 @@ export function CustomerSidebarFooter() {
                     </span>
                   </div>
                 </div>
-              </SignInButton>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
