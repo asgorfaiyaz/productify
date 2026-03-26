@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
-import { SignInButton, useAuth } from "@clerk/clerk-react";
+import { useAuth } from "@clerk/clerk-react";
 import {
   ShoppingBagIcon,
   LayoutDashboardIcon,
@@ -14,13 +14,10 @@ import { useAuthRole } from "@/hooks/useAuthReq";
 import { useSidebar } from "./ui/sidebar";
 import { Input } from "@/components/ui/input";
 import { useFilterStore } from "@/store/filter-store";
-import { GuestLoginButton } from "./GuestLogin";
-import { useAuthStore } from "@/store/auth-store";
 
 function Navbar() {
   const { filters, setFilters } = useFilterStore();
   const { isSignedIn } = useAuth();
-  const { isAuthLoading } = useAuthStore();
   const role = useAuthRole();
   const { toggleSidebar } = useSidebar();
   const [forceShowSearch, setForceShowSearch] = useState(false);
@@ -152,15 +149,9 @@ function Navbar() {
             ) : (
               <>
                 <Cart />
-                <SignInButton mode="modal">
-                  <button
-                    disabled={isAuthLoading}
-                    className="btn ml-5 btn-primary btn-sm"
-                  >
-                    Sign In
-                  </button>
-                </SignInButton>
-                <GuestLoginButton />
+                <Link to="/auth/signin" className="btn ml-5 btn-primary btn-sm">
+                  Sign In
+                </Link>
               </>
             )}
           </div>

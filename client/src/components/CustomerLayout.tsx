@@ -26,6 +26,7 @@ function CustomerLayout() {
             <main className="mx-auto w-full p-6">
               <Routes>
                 <Route path="/" element={<HomePage />} />
+
                 <Route
                   path="/orders"
                   element={isSignedIn ? <OrdersPage /> : <Navigate to="/" />}
