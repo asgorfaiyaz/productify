@@ -13,8 +13,9 @@ import { useCartStore } from "@/store/cart-store";
 import { Loader2, ShoppingCart } from "lucide-react";
 import CartItemCard from "./CartItemCard";
 import { createCheckout } from "@/api/stripes";
-import { SignInButton, useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import { useState } from "react";
+import { Link } from "react-router";
 
 export function Cart() {
   const { cartItems, addToCart, removeFromCart } = useCartStore();
@@ -150,11 +151,11 @@ export function Cart() {
               )}
             </Button>
           ) : (
-            <SignInButton mode="modal">
+            <Link to="/auth/signin">
               <Button disabled={cartItems.length === 0} className="w-full">
                 Sign in to Checkout
               </Button>
-            </SignInButton>
+            </Link>
           )}
 
           <SheetClose asChild>

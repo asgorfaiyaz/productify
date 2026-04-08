@@ -117,7 +117,7 @@ export function CustomerSidebarFooter() {
 
               {/* Navigation links */}
               <DropdownMenuItem asChild>
-                <Link to="/profile">
+                <Link to="/browse/profile">
                   <UserRound className="mr-2 size-4" />
                   Account
                 </Link>
@@ -131,7 +131,7 @@ export function CustomerSidebarFooter() {
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem asChild>
-                <Link to="/orders">
+                <Link to="/browse/orders">
                   <UserRound className="mr-2 size-4" />
                   Orders
                 </Link>
