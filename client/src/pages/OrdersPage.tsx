@@ -7,22 +7,11 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { Package, CreditCard, CheckCircle2, XCircle } from "lucide-react";
 
 function OrdersPage() {
-  const { data, isLoading, isError } = useSalesDataByUser();
-
-  if (isLoading) {
-    return (
-      <div className="p-6 max-w-5xl mx-auto space-y-4">
-        {[1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-40 bg-base-300 w-full rounded-2xl" />
-        ))}
-      </div>
-    );
-  }
+  const { data, isError } = useSalesDataByUser();
 
   if (isError) {
     return (

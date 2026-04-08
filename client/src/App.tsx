@@ -4,6 +4,7 @@ import { useAuthReq, useAuthRole } from "./hooks/useAuthReq";
 import DashboardLayout from "./dashboard/pages/DashboardLayout";
 import CustomerLayout from "./components/CustomerLayout";
 import AuthLayout from "./components/AuthLayout";
+import ProductsLayout from "./components/ProductsLayout";
 
 function App() {
   const { isSignedIn, isClerkLoaded } = useAuthReq();
@@ -36,8 +37,8 @@ function App() {
           }
         />
 
-        {/* Main app routes with regular Navbar */}
-        <Route path="/*" element={<CustomerLayout />} />
+        <Route path="/browse/*" element={<CustomerLayout />} />
+        <Route path="/*" element={<ProductsLayout />} />
       </Routes>
     </div>
   );
