@@ -27,6 +27,8 @@ export function useProducts() {
   return useQuery({
     queryKey: ["products", filters],
     queryFn: () => fetchProducts(filters),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
   });
 }
 
@@ -41,6 +43,8 @@ export const useProduct = (id: string) => {
     queryKey: ["product", id],
     queryFn: () => fetchProduct(id),
     enabled: !!id,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
   });
 };
 export const useDeleteProduct = () => {
