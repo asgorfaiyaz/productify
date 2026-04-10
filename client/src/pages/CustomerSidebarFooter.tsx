@@ -15,11 +15,22 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ChevronsUpDown, LogIn, LogOut, UserRound } from "lucide-react";
+import {
+  ChevronsUpDown,
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  UserRound,
+} from "lucide-react";
 import { Link } from "react-router";
 import { useClerk, useUser } from "@clerk/clerk-react";
 
 export function CustomerSidebarFooter() {
+  const links = [
+    { label: "Account", href: "/browse/profile", icon: UserRound },
+    { label: "Orders", href: "/browse/orders", icon: UserRound },
+    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  ];
   const { user, isLoaded } = useUser();
   const { signOut, isSignedIn } = useClerk();
 
@@ -116,26 +127,20 @@ export function CustomerSidebarFooter() {
               <DropdownMenuSeparator />
 
               {/* Navigation links */}
-              <DropdownMenuItem asChild>
-                <Link to="/browse/profile">
-                  <UserRound className="mr-2 size-4" />
-                  Account
-                </Link>
-              </DropdownMenuItem>
-              {isSignedIn && user?.publicMetadata.role !== "user" && (
-                <DropdownMenuItem asChild className="lg:hidden">
-                  <a href="/dashboard">
-                    <UserRound className="mr-2 size-4" />
-                    Dashboard
-                  </a>
+
+              {links.map((link) => (
+                <DropdownMenuItem key={link.href} asChild>
+                  <Link
+                    onClick={() => {
+                      document.body.style.pointerEvents = "auto";
+                    }}
+                    to={link.href}
+                  >
+                    <link.icon className="mr-2 size-4" />
+                    <span>{link.label}</span>
+                  </Link>
                 </DropdownMenuItem>
-              )}
-              <DropdownMenuItem asChild>
-                <Link to="/browse/orders">
-                  <UserRound className="mr-2 size-4" />
-                  Orders
-                </Link>
-              </DropdownMenuItem>
+              ))}
 
               <DropdownMenuSeparator />
 
